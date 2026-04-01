@@ -1,45 +1,12 @@
-<?php
-
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+<?php namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Kampus extends Model
-{
-    use HasFactory;
-
+class Kampus extends Model {
     protected $table = 'kampus';
+    protected $fillable = ['nama','kode','alamat','telepon'];
 
-    protected $fillable = [
-        'nama',
-        'kode',
-        'alamat',
-        'telepon',
-    ];
-
-    // Relasi: 1 kampus → banyak kelas
-    public function kelas(): HasMany
-    {
-        return $this->hasMany(Kelas::class, 'kampus_id');
-    }
-
-    // Relasi: 1 kampus → banyak mata kuliah
-    public function mataKuliah(): HasMany
-    {
-        return $this->hasMany(MataKuliah::class, 'kampus_id');
-    }
-
-    // Relasi: 1 kampus → banyak mahasiswa
-    public function mahasiswa(): HasMany
-    {
-        return $this->hasMany(Mahasiswa::class, 'kampus_id');
-    }
-
-    // Hitung total mahasiswa aktif
-    public function getTotalMahasiswaAktifAttribute(): int
-    {
-        return $this->mahasiswa()->where('status', 'aktif')->count();
-    }
+    public function kelas(): HasMany { return $this->hasMany(Kelas::class); }
+    public function mataKuliah(): HasMany { return $this->hasMany(MataKuliah::class); }
+    public function mahasiswa(): HasMany { return $this->hasMany(Mahasiswa::class); }
 }

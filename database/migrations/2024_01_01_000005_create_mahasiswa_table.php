@@ -1,13 +1,10 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    public function up(): void
-    {
+return new class extends Migration {
+    public function up(): void {
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kampus_id')->constrained('kampus')->cascadeOnDelete();
@@ -15,7 +12,7 @@ return new class extends Migration
             $table->string('nim', 20)->unique();
             $table->string('nama', 100);
             $table->enum('jenis_kelamin', ['L', 'P']);
-            $table->string('email', 100)->unique()->nullable();
+            $table->string('email', 100)->nullable()->unique();
             $table->string('telepon', 20)->nullable();
             $table->string('alamat')->nullable();
             $table->date('tanggal_lahir')->nullable();
@@ -24,9 +21,5 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('mahasiswa');
-    }
+    public function down(): void { Schema::dropIfExists('mahasiswa'); }
 };

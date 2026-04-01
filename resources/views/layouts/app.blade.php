@@ -1,274 +1,226 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sistem Penilaian') — ITBM & STAIN Majene</title>
-
-    {{-- Bootstrap 5 --}}
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    {{-- Bootstrap Icons --}}
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        :root {
-            --sidebar-w: 260px;
-            --topbar-h: 60px;
-            --color-primary: #1a4a7a;
-            --color-accent:  #e8a020;
-        }
-
-        body { background: #f4f6f9; font-size: 14px; }
-
-        /* ── Sidebar ───────────────────────────── */
-        #sidebar {
-            position: fixed; top: 0; left: 0;
-            width: var(--sidebar-w); height: 100vh;
-            background: var(--color-primary);
-            overflow-y: auto; z-index: 1000;
-            transition: transform .25s ease;
-        }
-        #sidebar .brand {
-            padding: 18px 20px 14px;
-            border-bottom: 1px solid rgba(255,255,255,.12);
-        }
-        #sidebar .brand h6 { color: #fff; font-weight: 700; margin: 0; font-size: 13px; }
-        #sidebar .brand small { color: rgba(255,255,255,.55); font-size: 11px; }
-
-        #sidebar .nav-label {
-            color: rgba(255,255,255,.4);
-            font-size: 10px; font-weight: 600;
-            letter-spacing: .08em; text-transform: uppercase;
-            padding: 14px 20px 4px;
-        }
-        #sidebar .nav-link {
-            color: rgba(255,255,255,.75);
-            padding: 9px 20px; display: flex; align-items: center; gap: 10px;
-            border-radius: 0; font-size: 13px;
-            transition: background .15s, color .15s;
-        }
-        #sidebar .nav-link:hover,
-        #sidebar .nav-link.active {
-            background: rgba(255,255,255,.1);
-            color: #fff;
-        }
-        #sidebar .nav-link.active { border-left: 3px solid var(--color-accent); }
-        #sidebar .nav-link i { font-size: 15px; width: 18px; text-align: center; }
-
-        /* ── Topbar ────────────────────────────── */
-        #topbar {
-            position: fixed; top: 0;
-            left: var(--sidebar-w); right: 0;
-            height: var(--topbar-h);
-            background: #fff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex; align-items: center;
-            padding: 0 24px; gap: 16px; z-index: 999;
-        }
-        #topbar .page-title { font-weight: 600; font-size: 15px; color: #1e293b; }
-        #topbar .user-badge {
-            margin-left: auto;
-            display: flex; align-items: center; gap: 8px;
-            font-size: 13px; color: #475569;
-        }
-        #topbar .avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: var(--color-primary);
-            color: #fff; font-size: 13px; font-weight: 600;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* ── Main Content ──────────────────────── */
-        #main {
-            margin-left: var(--sidebar-w);
-            padding-top: var(--topbar-h);
-            min-height: 100vh;
-        }
-        .content-wrap { padding: 24px; }
-
-        /* ── Cards ─────────────────────────────── */
-        .card { border: 1px solid #e2e8f0; border-radius: 10px; box-shadow: none; }
-        .card-header { background: #fff; border-bottom: 1px solid #e2e8f0; font-weight: 600; }
-
-        /* ── Stat Cards ─────────────────────────── */
-        .stat-card { border-radius: 10px; padding: 20px; color: #fff; }
-        .stat-card .stat-num { font-size: 28px; font-weight: 700; line-height: 1; }
-        .stat-card .stat-label { font-size: 12px; opacity: .85; margin-top: 4px; }
-        .stat-card .stat-icon { font-size: 36px; opacity: .3; }
-
-        /* ── Badge Nilai ─────────────────────────── */
-        .badge-A { background: #16a34a; color: #fff; }
-        .badge-B { background: #2563eb; color: #fff; }
-        .badge-C { background: #d97706; color: #fff; }
-        .badge-D { background: #ea580c; color: #fff; }
-        .badge-E { background: #dc2626; color: #fff; }
-
-        /* ── Tabel ──────────────────────────────── */
-        .table th { font-size: 12px; text-transform: uppercase;
-                    letter-spacing: .04em; color: #64748b; font-weight: 600; }
-        .table td { vertical-align: middle; }
-
-        /* ── Alert flash ────────────────────────── */
-        .alert { border-radius: 8px; font-size: 13px; }
-
-        /* ── Absensi status pills ───────────────── */
-        .pill-H { background:#dcfce7; color:#166534; }
-        .pill-T { background:#fef9c3; color:#854d0e; }
-        .pill-S { background:#dbeafe; color:#1e40af; }
-        .pill-I { background:#f1f5f9; color:#475569; }
-        .pill-A { background:#fee2e2; color:#991b1b; }
-        .status-pill { display:inline-block; padding:2px 8px; border-radius:20px;
-                        font-size:11px; font-weight:600; }
-
-        @media (max-width: 768px) {
-            #sidebar { transform: translateX(-100%); }
-            #sidebar.open { transform: translateX(0); }
-            #topbar, #main { left: 0; margin-left: 0; }
-        }
-    </style>
-    @stack('styles')
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>@yield('title','Beranda') — Sistem Penilaian</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+:root{--sb:256px;--tb:60px;--pri:#1a4a7a;--acc:#e8a020}
+body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif}
+/* SIDEBAR */
+#sb{position:fixed;top:0;left:0;width:var(--sb);height:100vh;background:var(--pri);overflow-y:auto;z-index:1050;transition:transform .25s}
+#sb .brand{padding:16px 20px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+#sb .brand-title{color:#fff;font-weight:700;font-size:14px;margin:0;line-height:1.3}
+#sb .brand-sub{color:rgba(255,255,255,.5);font-size:11px}
+#sb .nav-section{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:14px 20px 4px}
+#sb a.nl{display:flex;align-items:center;gap:10px;padding:9px 20px;color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;transition:background .15s,color .15s;border-left:3px solid transparent}
+#sb a.nl:hover{background:rgba(255,255,255,.08);color:#fff}
+#sb a.nl.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--acc)}
+#sb a.nl i{width:18px;text-align:center;font-size:15px}
+/* TOPBAR */
+#tb{position:fixed;top:0;left:var(--sb);right:0;height:var(--tb);background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 20px;gap:12px;z-index:1040}
+#tb .pg-title{font-weight:600;font-size:15px;color:#1e293b;flex:1}
+/* Kampus badge in topbar */
+.kampus-badge{display:flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;padding:4px 12px;font-size:12px;color:#1d4ed8;font-weight:500;white-space:nowrap}
+.kampus-badge i{font-size:13px}
+/* MAIN */
+#main{margin-left:var(--sb);padding-top:var(--tb);min-height:100vh}
+.cw{padding:24px}
+/* CARDS */
+.card{border:1px solid #e2e8f0;border-radius:10px;box-shadow:none}
+.card-header{background:#fff;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:13px;padding:12px 16px}
+/* STAT CARDS */
+.sc{border-radius:12px;padding:20px;color:#fff;position:relative;overflow:hidden}
+.sc-num{font-size:30px;font-weight:700;line-height:1}
+.sc-lbl{font-size:12px;opacity:.85;margin-top:5px}
+.sc-ico{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:42px;opacity:.2}
+/* BADGES NILAI */
+.badge-a{background:#16a34a!important;color:#fff}
+.badge-b{background:#2563eb!important;color:#fff}
+.badge-c{background:#d97706!important;color:#fff}
+.badge-d{background:#ea580c!important;color:#fff}
+.badge-e{background:#dc2626!important;color:#fff}
+/* TABLE */
+.table th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;font-weight:600;white-space:nowrap}
+.table td{vertical-align:middle}
+/* STATUS ABSENSI */
+.sp-H{background:#dcfce7;color:#166534}
+.sp-T{background:#fef9c3;color:#854d0e}
+.sp-S{background:#dbeafe;color:#1e40af}
+.sp-I{background:#f1f5f9;color:#475569}
+.sp-A{background:#fee2e2;color:#991b1b}
+.sp{display:inline-flex;align-items:center;justify-content:center;width:28px;height:22px;border-radius:4px;font-size:11px;font-weight:700}
+/* ALERTS */
+.alert{border-radius:8px;font-size:13px}
+/* FORMS */
+.form-label{font-weight:500;font-size:13px;color:#374151}
+.form-control,.form-select{border-radius:8px;font-size:14px}
+.form-control:focus,.form-select:focus{box-shadow:0 0 0 3px rgba(26,74,122,.12);border-color:#1a4a7a}
+/* BUTTONS */
+.btn{border-radius:7px;font-size:13px}
+.btn-primary{background:var(--pri);border-color:var(--pri)}
+.btn-primary:hover{background:#153d66;border-color:#153d66}
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sh h5{margin:0;font-size:16px;font-weight:600}
+/* MOBILE */
+@media(max-width:768px){
+  #sb{transform:translateX(-100%)}
+  #sb.open{transform:translateX(0)}
+  #tb,#main{left:0;margin-left:0}
+  #tb{left:0}
+}
+</style>
+@stack('styles')
 </head>
 <body>
 
-{{-- ═══ SIDEBAR ═══════════════════════════════════════════════ --}}
-<nav id="sidebar">
-    <div class="brand">
-        <h6><i class="bi bi-mortarboard-fill me-1"></i> Sistem Penilaian</h6>
-        <small>ITBM & STAIN Majene</small>
-    </div>
+{{-- SIDEBAR --}}
+<nav id="sb">
+  <div class="brand">
+    <p class="brand-title"><i class="bi bi-mortarboard-fill me-1"></i>Sistem Penilaian</p>
+    <p class="brand-sub mb-0">ITBM &amp; STAIN Majene</p>
+  </div>
 
-    <div class="nav-label">Menu Utama</div>
-    <a href="{{ route('dashboard') }}"
-       class="nav-link @active('dashboard')">
-        <i class="bi bi-speedometer2"></i> Dashboard
-    </a>
+  <div class="nav-section">Utama</div>
+  <a href="{{ route('dashboard') }}" class="nl {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a>
 
-    <div class="nav-label">Master Data</div>
-    <a href="{{ route('kampus.index') }}"
-       class="nav-link @active('kampus*')">
-        <i class="bi bi-building"></i> Kampus
-    </a>
-    <a href="{{ route('kelas.index') }}"
-       class="nav-link @active('kelas*')">
-        <i class="bi bi-door-open"></i> Kelas
-    </a>
-    <a href="{{ route('mata-kuliah.index') }}"
-       class="nav-link @active('mata-kuliah*')">
-        <i class="bi bi-book"></i> Mata Kuliah
-    </a>
-    <a href="{{ route('mahasiswa.index') }}"
-       class="nav-link @active('mahasiswa*')">
-        <i class="bi bi-people"></i> Mahasiswa
-    </a>
+  <div class="nav-section">Master Data</div>
+  <a href="{{ route('kampus.index') }}" class="nl {{ request()->routeIs('kampus*') ? 'active' : '' }}">
+    <i class="bi bi-building"></i> Kampus
+  </a>
+  <a href="{{ route('kelas.index') }}" class="nl {{ request()->routeIs('kelas*') ? 'active' : '' }}">
+    <i class="bi bi-door-open"></i> Kelas
+  </a>
+  <a href="{{ route('matakuliah.index') }}" class="nl {{ request()->routeIs('matakuliah*') ? 'active' : '' }}">
+    <i class="bi bi-book"></i> Mata Kuliah
+  </a>
+  <a href="{{ route('mahasiswa.index') }}" class="nl {{ request()->routeIs('mahasiswa*') ? 'active' : '' }}">
+    <i class="bi bi-people"></i> Mahasiswa
+  </a>
 
-    <div class="nav-label">Akademik</div>
-    <a href="{{ route('absensi.index',1) }}"
-       class="nav-link @active('absensi*')">
-        <i class="bi bi-calendar-check"></i> Absensi
-    </a>
-    <a href="{{ route('nilai.index',1) }}"
-       class="nav-link @active('nilai*')">
-        <i class="bi bi-clipboard-data"></i> Nilai
-    </a>
+  <div class="nav-section">Akademik</div>
+  <a href="{{ route('absensi.pilih') }}" class="nl {{ request()->routeIs('absensi*') ? 'active' : '' }}">
+    <i class="bi bi-calendar-check"></i> Absensi
+  </a>
+  <a href="{{ route('nilai.pilih') }}" class="nl {{ request()->routeIs('nilai*') ? 'active' : '' }}">
+    <i class="bi bi-clipboard-data"></i> Nilai
+  </a>
 
-    <div class="nav-label">Laporan</div>
-    <a href="{{ route('laporan.nilai-per-kelas') }}"
-       class="nav-link @active('laporan.nilai-per-kelas')">
-        <i class="bi bi-table"></i> Nilai per Kelas
-    </a>
-    <a href="{{ route('laporan.rekap-kampus') }}"
-       class="nav-link @active('laporan.rekap-kampus')">
-        <i class="bi bi-bar-chart-line"></i> Rekap Kampus
-    </a>
-    <a href="{{ route('laporan.transkrip') }}"
-       class="nav-link @active('laporan.transkrip')">
-        <i class="bi bi-file-earmark-text"></i> Transkrip
-    </a>
+  <div class="nav-section">Laporan</div>
+  <a href="{{ route('laporan.nilai-kelas') }}" class="nl {{ request()->routeIs('laporan.nilai-kelas') ? 'active' : '' }}">
+    <i class="bi bi-table"></i> Nilai per Kelas
+  </a>
+  <a href="{{ route('laporan.rekap') }}" class="nl {{ request()->routeIs('laporan.rekap') ? 'active' : '' }}">
+    <i class="bi bi-bar-chart-line"></i> Rekap Kampus
+  </a>
+  <a href="{{ route('laporan.transkrip') }}" class="nl {{ request()->routeIs('laporan.transkrip') ? 'active' : '' }}">
+    <i class="bi bi-file-earmark-text"></i> Transkrip
+  </a>
 
-    <div class="nav-label">Akun</div>
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start">
-            <i class="bi bi-box-arrow-left"></i> Keluar
-        </button>
-    </form>
+  <div class="nav-section">Akun</div>
+  <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit" class="nl border-0 bg-transparent w-100 text-start" style="cursor:pointer">
+      <i class="bi bi-box-arrow-left"></i> Keluar
+    </button>
+  </form>
 </nav>
 
-{{-- ═══ TOPBAR ═══════════════════════════════════════════════ --}}
-<header id="topbar">
-    <button class="btn btn-sm btn-light d-md-none" id="sidebarToggle">
-        <i class="bi bi-list"></i>
+{{-- TOPBAR --}}
+<header id="tb">
+  <button class="btn btn-sm btn-light d-lg-none me-1" id="sbt"><i class="bi bi-list fs-5"></i></button>
+  <span class="pg-title">@yield('page-title','Dashboard')</span>
+
+  {{-- Ganti Kampus dropdown --}}
+  @php $kampusAktif = App\Models\Kampus::find(session('kampus_id') ?? auth()->user()?->kampus_id); @endphp
+  <div class="dropdown">
+    <button class="kampus-badge dropdown-toggle border-0 bg-transparent" data-bs-toggle="dropdown">
+      <i class="bi bi-building"></i>
+      {{ $kampusAktif?->kode ?? 'Pilih Kampus' }}
     </button>
-    <span class="page-title">@yield('page-title', 'Dashboard')</span>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width:220px">
+      <li><h6 class="dropdown-header">Ganti Kampus</h6></li>
+      @foreach(App\Models\Kampus::all() as $k)
+      <li>
+        <form method="POST" action="{{ route('ganti-kampus') }}">
+          @csrf
+          <input type="hidden" name="kampus_id" value="{{ $k->id }}">
+          <button type="submit" class="dropdown-item d-flex align-items-center gap-2 {{ ($kampusAktif?->id == $k->id) ? 'active' : '' }}">
+            <i class="bi bi-building-check"></i>
+            <span>
+              <strong>{{ $k->kode }}</strong><br>
+              <small class="text-muted">{{ $k->nama }}</small>
+            </span>
+          </button>
+        </form>
+      </li>
+      @endforeach
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <a href="{{ route('kampus.create') }}" class="dropdown-item text-primary">
+          <i class="bi bi-plus-circle me-1"></i> Tambah Kampus Baru
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    {{-- Breadcrumb --}}
-    @hasSection('breadcrumb')
-    <nav aria-label="breadcrumb" class="d-none d-md-block">
-        <ol class="breadcrumb mb-0 small">
-            @yield('breadcrumb')
-        </ol>
-    </nav>
-    @endif
-
-    <div class="user-badge">
-        <div class="avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
-        <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
-    </div>
+  {{-- User --}}
+  <div class="dropdown">
+    <button class="d-flex align-items-center gap-2 border-0 bg-transparent dropdown-toggle" data-bs-toggle="dropdown">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">
+        {{ strtoupper(substr(auth()->user()->name,0,1)) }}
+      </div>
+      <span class="d-none d-md-inline text-dark small">{{ auth()->user()->name }}</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+      <li><h6 class="dropdown-header">{{ auth()->user()->email }}</h6></li>
+      <li><hr class="dropdown-divider"></li>
+      <li>
+        <form method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-left me-1"></i>Keluar</button>
+        </form>
+      </li>
+    </ul>
+  </div>
 </header>
 
-{{-- ═══ MAIN ═════════════════════════════════════════════════ --}}
+{{-- MAIN --}}
 <main id="main">
-    <div class="content-wrap">
-
-        {{-- Flash Messages --}}
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-1"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-1"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle me-1"></i>
-            <strong>Terdapat kesalahan:</strong>
-            <ul class="mb-0 mt-1">
-                @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        @endif
-
-        @yield('content')
+  <div class="cw">
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show py-2">
+      <i class="bi bi-check-circle me-1"></i>{{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    @endif
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show py-2">
+      <i class="bi bi-exclamation-circle me-1"></i>{{ session('error') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+    @if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show py-2">
+      <strong><i class="bi bi-exclamation-triangle me-1"></i>Kesalahan:</strong>
+      <ul class="mb-0 mt-1">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    @yield('content')
+  </div>
 </main>
 
-{{-- Bootstrap JS --}}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Sidebar mobile toggle
-    document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('open');
-    });
-
-    // Auto-highlight active nav link
-    document.querySelectorAll('#sidebar .nav-link').forEach(link => {
-        if (link.href && window.location.pathname.startsWith(new URL(link.href).pathname)) {
-            link.classList.add('active');
-        }
-    });
+document.getElementById('sbt')?.addEventListener('click',()=>document.getElementById('sb').classList.toggle('open'));
 </script>
 @stack('scripts')
 </body>

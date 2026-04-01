@@ -1,99 +1,26 @@
-<?php
-
-// ==========================================
-// Model: NilaiTeori
-// ==========================================
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+<?php namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class NilaiTeori extends Model
-{
-    use HasFactory;
-
+class NilaiTeori extends Model {
     protected $table = 'nilai_teori';
+    protected $fillable = ['mahasiswa_id','mata_kuliah_id','keaktifan','tugas','uts','uas','nilai_akhir_teori'];
+    protected $casts = ['keaktifan'=>'float','tugas'=>'float','uts'=>'float','uas'=>'float','nilai_akhir_teori'=>'float'];
 
-    protected $fillable = [
-        'mahasiswa_id',
-        'mata_kuliah_id',
-        'keaktifan',
-        'tugas',
-        'uts',
-        'uas',
-        'nilai_akhir_teori',
-    ];
+    public function mahasiswa()  { return $this->belongsTo(Mahasiswa::class); }
+    public function mataKuliah() { return $this->belongsTo(MataKuliah::class); }
 
-    protected $casts = [
-        'keaktifan'        => 'float',
-        'tugas'            => 'float',
-        'uts'              => 'float',
-        'uas'              => 'float',
-        'nilai_akhir_teori' => 'float',
-    ];
-
-    /**
-     * Bobot komponen teori:
-     * Keaktifan: 20%
-     * Tugas    : 20%
-     * UTS      : 25%
-     * UAS      : 35%
-     */
-    public const BOBOT = [
-        'keaktifan' => 0.20,
-        'tugas'     => 0.20,
-        'uts'       => 0.25,
-        'uas'       => 0.35,
-    ];
-
-    public function mahasiswa(): BelongsTo
-    {
-        return $this->belongsTo(Mahasiswa::class, 'mahasiswa_id');
+    // NA = keaktifan*0.20 + tugas*0.20 + uts*0.25 + uas*0.35
+    public function hitung(): float {
+        return round(($this->keaktifan*0.20)+($this->tugas*0.20)+($this->uts*0.25)+($this->uas*0.35), 2);
     }
 
-    public function mataKuliah(): BelongsTo
-    {
-        return $this->belongsTo(MataKuliah::class, 'mata_kuliah_id');
-    }
-
-    /**
-     * Hitung nilai akhir teori berdasarkan bobot
-     * NA_Teori = (keaktifan*0.20) + (tugas*0.20) + (uts*0.25) + (uas*0.35)
-     */
-    public function hitungNilaiAkhirTeori(): float
-    {
-        return round(
-            ($this->keaktifan * self::BOBOT['keaktifan']) +
-            ($this->tugas     * self::BOBOT['tugas']) +
-            ($this->uts       * self::BOBOT['uts']) +
-            ($this->uas       * self::BOBOT['uas']),
-            2
+    public static function simpan(array $d): self {
+        $inst = self::updateOrCreate(
+            ['mahasiswa_id'=>$d['mahasiswa_id'],'mata_kuliah_id'=>$d['mata_kuliah_id']],
+            ['keaktifan'=>$d['keaktifan']??0,'tugas'=>$d['tugas']??0,'uts'=>$d['uts']??0,'uas'=>$d['uas']??0]
         );
-    }
-
-    /**
-     * Simpan dan perbarui nilai akhir teori secara otomatis
-     */
-    public static function simpanDanHitung(array $data): self
-    {
-        $instance = self::updateOrCreate(
-            [
-                'mahasiswa_id'  => $data['mahasiswa_id'],
-                'mata_kuliah_id' => $data['mata_kuliah_id'],
-            ],
-            [
-                'keaktifan' => $data['keaktifan'] ?? 0,
-                'tugas'     => $data['tugas'] ?? 0,
-                'uts'       => $data['uts'] ?? 0,
-                'uas'       => $data['uas'] ?? 0,
-            ]
-        );
-
-        $instance->nilai_akhir_teori = $instance->hitungNilaiAkhirTeori();
-        $instance->save();
-
-        return $instance;
+        $inst->nilai_akhir_teori = $inst->hitung();
+        $inst->save();
+        return $inst;
     }
 }
-
