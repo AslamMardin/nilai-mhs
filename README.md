@@ -1,58 +1,244 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 Sistem Penilaian Mahasiswa — ITBM & STAIN Majene
+## Laravel 11 — Panduan Instalasi Lengkap
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+## Prasyarat
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP >= 8.2
+- Composer
+- MySQL / MariaDB
+- Node.js & NPM (opsional, jika pakai Vite)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 1. Buat Proyek Laravel Baru
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer create-project laravel/laravel sistem-penilaian
+cd sistem-penilaian
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 2. Konfigurasi Database (.env)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Edit file `.env`:
 
-## Code of Conduct
+```env
+APP_NAME="Sistem Penilaian"
+APP_URL=http://localhost:8000
+APP_LOCALE=id
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistem_penilaian
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Security Vulnerabilities
+# Timezone Indonesia
+APP_TIMEZONE=Asia/Makassar
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Buat database:
+```sql
+CREATE DATABASE sistem_penilaian CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 3. Pasang Autentikasi (Laravel Breeze)
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+npm install && npm run build
+```
+
+---
+
+## 4. Salin File Proyek Ini
+
+Salin file-file berikut ke struktur Laravel:
+
+```
+database/migrations/          ← semua file dari folder migrations/
+app/Models/                   ← Kampus.php, Kelas.php, MataKuliah.php,
+                                 Mahasiswa.php, Absensi.php, NilaiModels.php
+app/Http/Controllers/         ← DashboardController.php, NilaiController.php,
+                                 AbsensiController.php, LaporanController.php,
+                                 OtherControllers.php (pisah per class)
+database/seeders/             ← DatabaseSeeder.php
+routes/                       ← web.php
+resources/views/              ← seluruh folder views/
+```
+
+> **Catatan:** File `NilaiModels.php` dan `OtherControllers.php` berisi
+> beberapa class. Pisahkan menjadi file individual sesuai nama class-nya.
+
+---
+
+## 5. Jalankan Migrasi & Seeder
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Output seeder:
+```
+Seeder berhasil: 2 kampus, 5 kelas, 3 mata kuliah, 8 mahasiswa.
+```
+
+---
+
+## 6. Tambahkan Helper Blade `@active`
+
+Di `AppServiceProvider.php` dalam metode `boot()`:
+
+```php
+use Illuminate\Support\Facades\Blade;
+
+public function boot(): void
+{
+    Blade::directive('active', function ($expression) {
+        return "<?php echo request()->routeIs($expression) ? 'active' : ''; ?>";
+    });
+}
+```
+
+---
+
+## 7. Jalankan Aplikasi
+
+```bash
+php artisan serve
+```
+
+Buka: http://localhost:8000
+
+**Login default (dari seeder):**
+- Email: `admin@penilaian.ac.id`
+- Password: `password`
+
+---
+
+## 8. Paket Opsional
+
+### Export PDF (Laporan)
+```bash
+composer require barryvdh/laravel-dompdf
+```
+Aktifkan method `exportPdf()` di `LaporanController.php`.
+
+### Export Excel
+```bash
+composer require maatwebsite/excel
+```
+
+---
+
+## Struktur Database
+
+```
+kampus
+├── id, nama, kode, alamat, telepon
+
+kelas
+├── id, kampus_id*, nama, kode, semester, tahun_ajaran, wali_kelas
+
+mata_kuliah
+├── id, kampus_id*, kelas_id*, kode, nama, sks, jenis, dosen, total_pertemuan
+
+mahasiswa
+├── id, kampus_id*, kelas_id*, nim, nama, jenis_kelamin, email, status, ...
+
+pendaftaran_mahasiswa  ← pivot many-to-many
+├── id, mahasiswa_id*, mata_kuliah_id*, tahun_ajaran, semester, status
+
+absensi
+├── id, mahasiswa_id*, mata_kuliah_id*, pertemuan_ke, tanggal
+├── status: H(2)/T(1)/S(1)/I(0)/A(0)
+
+nilai_teori
+├── id, mahasiswa_id*, mata_kuliah_id*
+├── keaktifan(20%), tugas(20%), uts(25%), uas(35%), nilai_akhir_teori
+
+nilai_praktikum
+├── id, mahasiswa_id*, mata_kuliah_id*, nilai_praktikum(100%)
+
+nilai_akhir  ← hasil kalkulasi final
+├── id, mahasiswa_id*, mata_kuliah_id*
+├── nilai_teori, nilai_praktikum, nilai_akhir (50:50)
+├── huruf_mutu (A/B/C/D/E), persentase_kehadiran, poin_kehadiran
+└── status_kelulusan, keterangan_gagal
+```
+
+---
+
+## Logika Perhitungan
+
+### Nilai Teori
+```
+NA_Teori = (Keaktifan × 0.20) + (Tugas × 0.20) + (UTS × 0.25) + (UAS × 0.35)
+```
+
+### Nilai Praktikum
+```
+NA_Praktikum = nilai_praktikum (100%)
+```
+
+### Nilai Akhir (Teori + Praktikum)
+```
+Jenis "teori"           → NA = NA_Teori
+Jenis "praktikum"       → NA = NA_Praktikum
+Jenis "teori_praktikum" → NA = (NA_Teori × 0.50) + (NA_Praktikum × 0.50)
+```
+
+### Kehadiran
+```
+Bobot: H=2, T=1, S=1, I=0, A=0
+Poin Kehadiran   = Σ bobot status semua pertemuan
+Persentase       = (Poin / (total_pertemuan × 2)) × 100
+Syarat Lulus     ≥ 75%
+```
+
+### Status Kelulusan
+```
+TIDAK LULUS jika:
+  - Persentase kehadiran < 75%, ATAU
+  - Nilai akhir < 55 (huruf E)
+LULUS jika kedua syarat terpenuhi
+```
+
+### Konversi Huruf Mutu
+```
+≥ 85  → A
+75-84 → B
+65-74 → C
+55-64 → D
+< 55  → E
+```
+
+---
+
+## Rute Utama
+
+| Method | URL | Nama Route | Fungsi |
+|--------|-----|-----------|--------|
+| GET | /login | login | Halaman login |
+| POST | /login | login | Proses login |
+| GET | /dashboard | dashboard | Dashboard |
+| GET/POST | /kampus | kampus.* | CRUD Kampus |
+| GET/POST | /kelas | kelas.* | CRUD Kelas |
+| GET/POST | /mata-kuliah | mata-kuliah.* | CRUD Mata Kuliah |
+| GET/POST | /mahasiswa | mahasiswa.* | CRUD Mahasiswa |
+| GET | /absensi/{id} | absensi.index | Form absensi |
+| POST | /absensi/{id} | absensi.simpan | Simpan absensi |
+| GET | /absensi/{id}/rekap | absensi.rekap | Rekap kehadiran |
+| GET | /nilai/{id} | nilai.index | Rekap nilai |
+| GET/POST | /nilai/{id}/teori | nilai.form-teori | Input nilai teori |
+| GET/POST | /nilai/{id}/praktikum | nilai.form-praktikum | Input nilai praktikum |
+| GET | /laporan/nilai-per-kelas | laporan.nilai-per-kelas | Laporan per kelas |
+| GET | /laporan/rekap-kampus | laporan.rekap-kampus | Rekap kampus |
+| GET | /laporan/transkrip | laporan.transkrip | Transkrip mahasiswa |

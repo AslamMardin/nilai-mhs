@@ -2,152 +2,237 @@
 
 namespace Database\Seeders;
 
-use App\Models\Absensi;
-use App\Models\Enrollment;
-use App\Models\Institusi;
-use App\Models\Kelas;
-use App\Models\Mahasiswa;
-use App\Models\MataKuliah;
-use App\Models\Nilai;
-use App\Models\Pertemuan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::transaction(function () {
-            // ── 1. Institusi ────────────────────────────────────────────────
-            $itbm  = Institusi::create(['nama' => 'Institut Teknologi dan Bisnis Muhammadiyah', 'kode' => 'ITBM',  'alamat' => 'Jeneponto']);
-            $stain = Institusi::create(['nama' => 'Sekolah Tinggi Agama Islam Negeri Majene',   'kode' => 'STAIN', 'alamat' => 'Majene']);
+        // ── User Admin ──────────────────────────────────────────
+        DB::table('users')->insert([
+            'name'       => 'Administrator',
+            'email'      => 'admin@penilaian.ac.id',
+            'password'   => Hash::make('password123'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-            // ── 2. Mata Kuliah ───────────────────────────────────────────────
-            $mataKuliah = [
-                MataKuliah::create(['kode' => 'MK001', 'nama' => 'Algoritma & Pemrograman',   'sks' => 3, 'jenis' => 'teori_praktikum']),
-                MataKuliah::create(['kode' => 'MK002', 'nama' => 'Basis Data',                 'sks' => 3, 'jenis' => 'teori_praktikum']),
-                MataKuliah::create(['kode' => 'MK003', 'nama' => 'Pemrograman Web',            'sks' => 3, 'jenis' => 'teori_praktikum']),
-                MataKuliah::create(['kode' => 'MK004', 'nama' => 'Pendidikan Agama Islam',     'sks' => 2, 'jenis' => 'teori']),
-                MataKuliah::create(['kode' => 'MK005', 'nama' => 'Bahasa Indonesia',           'sks' => 2, 'jenis' => 'teori']),
-            ];
+        // ── Kampus ──────────────────────────────────────────────
+        $kampusItbm = DB::table('kampus')->insertGetId([
+            'nama'    => 'Institut Teknologi dan Bisnis Muhammadiyah',
+            'kode'    => 'ITBM',
+            'alamat'  => 'Jl. Poros Majene, Sulawesi Barat',
+            'telepon' => '0422-123456',
+        ]);
 
-            // ── 3. Kelas ─────────────────────────────────────────────────────
-            // ITBM: 3 kelas
-            $kelasITBM = [];
-            foreach (['A', 'B', 'C'] as $nama) {
-                $kelasITBM[$nama] = Kelas::create([
-                    'institusi_id'     => $itbm->id,
-                    'nama'             => "Kelas {$nama}",
-                    'kode'             => "ITBM-{$nama}-2024",
-                    'semester'         => 'genap',
-                    'tahun_akademik'   => 2024,
-                    'jumlah_pertemuan' => 16,
-                ]);
-            }
+        $kampusStain = DB::table('kampus')->insertGetId([
+            'nama'    => 'Sekolah Tinggi Agama Islam Negeri Majene',
+            'kode'    => 'STAIN',
+            'alamat'  => 'Jl. BPD, Majene, Sulawesi Barat',
+            'telepon' => '0422-654321',
+        ]);
 
-            // STAIN: 2 kelas
-            $kelasSTAIN = [];
-            foreach (['I', 'II'] as $nama) {
-                $kelasSTAIN[$nama] = Kelas::create([
-                    'institusi_id'     => $stain->id,
-                    'nama'             => "Kelas {$nama}",
-                    'kode'             => "STAIN-{$nama}-2024",
-                    'semester'         => 'genap',
-                    'tahun_akademik'   => 2024,
-                    'jumlah_pertemuan' => 16,
-                ]);
-            }
+        // ── Kelas ITBM (3 kelas) ────────────────────────────────
+        $kelasItbm1 = DB::table('kelas')->insertGetId([
+            'kampus_id'    => $kampusItbm,
+            'nama'         => 'Teknik Informatika A',
+            'kode'         => 'TI-A',
+            'semester'     => 'ganjil',
+            'tahun_ajaran' => 2024,
+            'wali_kelas'   => 'Dr. Ahmad Fauzi, M.T',
+        ]);
 
-            // ── 4. Mahasiswa ─────────────────────────────────────────────────
-            // ITBM: 5 mahasiswa per kelas = 15 total
-            $mahasiswaITBM = [];
-            foreach (['A', 'B', 'C'] as $kode) {
-                for ($i = 1; $i <= 5; $i++) {
-                    $nim = "ITBM{$kode}2024" . str_pad($i, 3, '0', STR_PAD_LEFT);
-                    $mahasiswaITBM[$kode][] = Mahasiswa::create([
-                        'institusi_id'  => $itbm->id,
-                        'nim'           => $nim,
-                        'nama'          => "Mahasiswa ITBM {$kode}{$i}",
-                        'jenis_kelamin' => $i % 2 === 0 ? 'P' : 'L',
-                        'status'        => 'aktif',
-                    ]);
-                }
-            }
+        $kelasItbm2 = DB::table('kelas')->insertGetId([
+            'kampus_id'    => $kampusItbm,
+            'nama'         => 'Teknik Informatika B',
+            'kode'         => 'TI-B',
+            'semester'     => 'ganjil',
+            'tahun_ajaran' => 2024,
+            'wali_kelas'   => 'Siti Rahmah, M.Kom',
+        ]);
 
-            // STAIN: 5 mahasiswa per kelas = 10 total
-            $mahasiswaSTAIN = [];
-            foreach (['I', 'II'] as $kode) {
-                for ($i = 1; $i <= 5; $i++) {
-                    $nim = "STAIN{$kode}2024" . str_pad($i, 3, '0', STR_PAD_LEFT);
-                    $mahasiswaSTAIN[$kode][] = Mahasiswa::create([
-                        'institusi_id'  => $stain->id,
-                        'nim'           => $nim,
-                        'nama'          => "Mahasiswa STAIN {$kode}-{$i}",
-                        'jenis_kelamin' => $i % 2 === 0 ? 'P' : 'L',
-                        'status'        => 'aktif',
-                    ]);
-                }
-            }
+        $kelasItbm3 = DB::table('kelas')->insertGetId([
+            'kampus_id'    => $kampusItbm,
+            'nama'         => 'Sistem Informasi A',
+            'kode'         => 'SI-A',
+            'semester'     => 'ganjil',
+            'tahun_ajaran' => 2024,
+            'wali_kelas'   => 'Hj. Fatimah, M.Si',
+        ]);
 
-            // ── 5. Enrollment + Pertemuan + Absensi + Nilai (contoh) ─────────
-            // Gunakan 1 mata kuliah per kelas agar seeder tidak terlalu berat
-            $this->seedKelas($kelasITBM['A'], $mataKuliah[0], $mahasiswaITBM['A']);
-            $this->seedKelas($kelasITBM['B'], $mataKuliah[1], $mahasiswaITBM['B']);
-            $this->seedKelas($kelasITBM['C'], $mataKuliah[2], $mahasiswaITBM['C']);
-            $this->seedKelas($kelasSTAIN['I'],  $mataKuliah[3], $mahasiswaSTAIN['I']);
-            $this->seedKelas($kelasSTAIN['II'], $mataKuliah[4], $mahasiswaSTAIN['II']);
-        });
-    }
+        // ── Kelas STAIN (2 kelas) ───────────────────────────────
+        $kelasStain1 = DB::table('kelas')->insertGetId([
+            'kampus_id'    => $kampusStain,
+            'nama'         => 'Pendidikan Agama Islam A',
+            'kode'         => 'PAI-A',
+            'semester'     => 'ganjil',
+            'tahun_ajaran' => 2024,
+            'wali_kelas'   => 'Ustadz Ridwan, Lc., M.A',
+        ]);
 
-    // ────────────────────────────────────────────────────────────────────────
-    private function seedKelas(Kelas $kelas, MataKuliah $mk, array $listMahasiswa): void
-    {
-        $statusAbsensi = ['H', 'H', 'H', 'H', 'T', 'S', 'I', 'A'];
+        $kelasStain2 = DB::table('kelas')->insertGetId([
+            'kampus_id'    => $kampusStain,
+            'nama'         => 'Ekonomi Syariah A',
+            'kode'         => 'ES-A',
+            'semester'     => 'ganjil',
+            'tahun_ajaran' => 2024,
+            'wali_kelas'   => 'Dr. Nur Hasanah, M.E',
+        ]);
 
-        // Buat 16 pertemuan
-        $pertemuan = [];
-        for ($ke = 1; $ke <= 16; $ke++) {
-            $pertemuan[] = Pertemuan::create([
-                'kelas_id'       => $kelas->id,
-                'mata_kuliah_id' => $mk->id,
-                'ke'             => $ke,
-                'tanggal'        => now()->subWeeks(16 - $ke),
-                'topik'          => "Pertemuan ke-{$ke}: Topik {$mk->nama}",
+        // ── Mata Kuliah ITBM ────────────────────────────────────
+        $mkAlgoritma = DB::table('mata_kuliah')->insertGetId([
+            'kampus_id'       => $kampusItbm,
+            'kelas_id'        => $kelasItbm1,
+            'kode'            => 'TI101',
+            'nama'            => 'Algoritma dan Pemrograman',
+            'sks'             => 3,
+            'jenis'           => 'teori_praktikum',
+            'dosen'           => 'Dr. Ahmad Fauzi, M.T',
+            'total_pertemuan' => 16,
+        ]);
+
+        $mkBasisData = DB::table('mata_kuliah')->insertGetId([
+            'kampus_id'       => $kampusItbm,
+            'kelas_id'        => $kelasItbm1,
+            'kode'            => 'TI102',
+            'nama'            => 'Basis Data',
+            'sks'             => 3,
+            'jenis'           => 'teori_praktikum',
+            'dosen'           => 'Siti Rahmah, M.Kom',
+            'total_pertemuan' => 16,
+        ]);
+
+        // Mata Kuliah STAIN
+        $mkFiqih = DB::table('mata_kuliah')->insertGetId([
+            'kampus_id'       => $kampusStain,
+            'kelas_id'        => $kelasStain1,
+            'kode'            => 'PAI201',
+            'nama'            => 'Fiqih Kontemporer',
+            'sks'             => 2,
+            'jenis'           => 'teori',
+            'dosen'           => 'Ustadz Ridwan, Lc., M.A',
+            'total_pertemuan' => 16,
+        ]);
+
+        // ── Mahasiswa ITBM - Kelas TI-A (5 mahasiswa) ──────────
+        $mahasiswaItbm = [];
+        $namaMahasiswaItbm = [
+            ['nim' => 'ITBM2024001', 'nama' => 'Andi Baso', 'jk' => 'L'],
+            ['nim' => 'ITBM2024002', 'nama' => 'Siti Aisyah', 'jk' => 'P'],
+            ['nim' => 'ITBM2024003', 'nama' => 'Muhammad Ridwan', 'jk' => 'L'],
+            ['nim' => 'ITBM2024004', 'nama' => 'Nurul Hikmah', 'jk' => 'P'],
+            ['nim' => 'ITBM2024005', 'nama' => 'Zulkifli', 'jk' => 'L'],
+        ];
+
+        foreach ($namaMahasiswaItbm as $mhs) {
+            $mahasiswaItbm[] = DB::table('mahasiswa')->insertGetId([
+                'kampus_id'     => $kampusItbm,
+                'kelas_id'      => $kelasItbm1,
+                'nim'           => $mhs['nim'],
+                'nama'          => $mhs['nama'],
+                'jenis_kelamin' => $mhs['jk'],
+                'email'         => strtolower(str_replace(' ', '.', $mhs['nama'])) . '@student.itbm.ac.id',
+                'status'        => 'aktif',
             ]);
         }
 
-        foreach ($listMahasiswa as $mhs) {
-            // Enrollment
-            $enrollment = Enrollment::create([
-                'mahasiswa_id'   => $mhs->id,
-                'kelas_id'       => $kelas->id,
-                'mata_kuliah_id' => $mk->id,
-                'tanggal_daftar' => now()->subMonths(4),
+        // ── Mahasiswa STAIN - Kelas PAI-A (3 mahasiswa) ─────────
+        $mahasiswaStain = [];
+        $namaMahasiswaStain = [
+            ['nim' => 'STAIN2024001', 'nama' => 'Ahmad Maulana', 'jk' => 'L'],
+            ['nim' => 'STAIN2024002', 'nama' => 'Rahma Fitri', 'jk' => 'P'],
+            ['nim' => 'STAIN2024003', 'nama' => 'Hamzah Al-Rasyid', 'jk' => 'L'],
+        ];
+
+        foreach ($namaMahasiswaStain as $mhs) {
+            $mahasiswaStain[] = DB::table('mahasiswa')->insertGetId([
+                'kampus_id'     => $kampusStain,
+                'kelas_id'      => $kelasStain1,
+                'nim'           => $mhs['nim'],
+                'nama'          => $mhs['nama'],
+                'jenis_kelamin' => $mhs['jk'],
+                'email'         => strtolower(str_replace(' ', '.', $mhs['nama'])) . '@student.stain.ac.id',
+                'status'        => 'aktif',
+            ]);
+        }
+
+        // ── Pendaftaran: Mahasiswa ITBM ke 2 mata kuliah ─────────
+        foreach ($mahasiswaItbm as $mhsId) {
+            foreach ([$mkAlgoritma, $mkBasisData] as $mkId) {
+                DB::table('pendaftaran_mahasiswa')->insert([
+                    'mahasiswa_id'   => $mhsId,
+                    'mata_kuliah_id' => $mkId,
+                    'tahun_ajaran'   => 2024,
+                    'semester'       => 'ganjil',
+                    'status'         => 'aktif',
+                ]);
+            }
+        }
+
+        // ── Pendaftaran: Mahasiswa STAIN ke 1 mata kuliah ─────────
+        foreach ($mahasiswaStain as $mhsId) {
+            DB::table('pendaftaran_mahasiswa')->insert([
+                'mahasiswa_id'   => $mhsId,
+                'mata_kuliah_id' => $mkFiqih,
+                'tahun_ajaran'   => 2024,
+                'semester'       => 'ganjil',
                 'status'         => 'aktif',
             ]);
+        }
 
-            // Absensi (acak tapi lebih banyak Hadir)
-            foreach ($pertemuan as $p) {
-                $status = $statusAbsensi[array_rand($statusAbsensi)];
-                Absensi::create([
-                    'enrollment_id' => $enrollment->id,
-                    'pertemuan_id'  => $p->id,
-                    'status'        => $status,
-                ]);
+        // ── Absensi: 16 pertemuan untuk mahasiswa ITBM ──────────
+        $statusSample = ['H', 'H', 'H', 'T', 'H', 'H', 'S', 'H', 'H', 'H', 'H', 'I', 'H', 'H', 'H', 'A'];
+
+        foreach ($mahasiswaItbm as $idx => $mhsId) {
+            foreach ([$mkAlgoritma] as $mkId) {
+                for ($p = 1; $p <= 16; $p++) {
+                    // Variasikan status agar berbeda tiap mahasiswa
+                    $statusIdx = ($p + $idx) % count($statusSample);
+                    DB::table('absensi')->insert([
+                        'mahasiswa_id'   => $mhsId,
+                        'mata_kuliah_id' => $mkId,
+                        'pertemuan_ke'   => $p,
+                        'tanggal'        => Carbon::now()->subWeeks(16 - $p)->toDateString(),
+                        'status'         => $statusSample[$statusIdx],
+                    ]);
+                }
             }
+        }
 
-            // Nilai komponen
-            $nilai = Nilai::create([
-                'enrollment_id'   => $enrollment->id,
-                'keaktifan'       => $mk->hasTeori() ? rand(60, 95) : null,
-                'tugas'           => $mk->hasTeori() ? rand(60, 95) : null,
-                'uts'             => $mk->hasTeori() ? rand(55, 90) : null,
-                'uas'             => $mk->hasTeori() ? rand(55, 90) : null,
-                'nilai_praktikum' => $mk->hasPraktikum() ? rand(60, 95) : null,
+        // ── Nilai Teori: Mata Kuliah Algoritma (ITBM) ───────────
+        $nilaiSample = [
+            [80, 85, 78, 82],
+            [90, 92, 88, 91],
+            [70, 72, 65, 68],
+            [85, 88, 80, 84],
+            [75, 78, 72, 76],
+        ];
+
+        foreach ($mahasiswaItbm as $idx => $mhsId) {
+            $n = $nilaiSample[$idx];
+            $naTeori = round(($n[0]*0.20) + ($n[1]*0.20) + ($n[2]*0.25) + ($n[3]*0.35), 2);
+
+            DB::table('nilai_teori')->insert([
+                'mahasiswa_id'     => $mhsId,
+                'mata_kuliah_id'   => $mkAlgoritma,
+                'keaktifan'        => $n[0],
+                'tugas'            => $n[1],
+                'uts'              => $n[2],
+                'uas'              => $n[3],
+                'nilai_akhir_teori' => $naTeori,
             ]);
 
-            // Hitung otomatis
-            $nilai->kalkulasiDanSimpan();
+            // Nilai Praktikum
+            DB::table('nilai_praktikum')->insert([
+                'mahasiswa_id'   => $mhsId,
+                'mata_kuliah_id' => $mkAlgoritma,
+                'nilai_praktikum' => $n[0] + rand(-5, 5),
+            ]);
         }
+
+        $this->command->info('Seeder berhasil: 2 kampus, 5 kelas, 3 mata kuliah, 8 mahasiswa.');
     }
 }
