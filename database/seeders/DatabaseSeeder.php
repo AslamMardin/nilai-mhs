@@ -15,6 +15,136 @@ class DatabaseSeeder extends Seeder {
             ['name'=>'Admin','email'=>'admin@gmail.com','password'=>Hash::make('password'),'role'=>'admin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
           
         ]);
+      // ── Kelas Sesuai Database Kamu (Genap 2026) ──
+
+// STAIN
+$pai4 = DB::table('kelas')->insertGetId([
+    'kampus_id' => $stain,
+    'nama' => 'PAI 4',
+    'kode' => 'TP4',
+    'semester' => 'genap',
+    'tahun_ajaran' => 2026,
+    'wali_kelas' => 'Darwis',
+    'created_at' => '2026-04-02 13:12:46',
+    'updated_at' => '2026-04-02 13:14:11',
+]);
+
+$pai1 = DB::table('kelas')->insertGetId([
+    'kampus_id' => $stain,
+    'nama' => 'PAI1',
+    'kode' => 'TP1',
+    'semester' => 'genap',
+    'tahun_ajaran' => 2026,
+    'wali_kelas' => 'Darwis',
+    'created_at' => '2026-04-02 13:13:12',
+    'updated_at' => '2026-04-02 13:14:19',
+]);
+
+// ITBM
+$k23a6 = DB::table('kelas')->insertGetId([
+    'kampus_id' => $itbm,
+    'nama' => 'K23-A6',
+    'kode' => 'K-A6',
+    'semester' => 'genap',
+    'tahun_ajaran' => 2026,
+    'wali_kelas' => 'Rahmi',
+    'created_at' => '2026-04-02 15:13:50',
+    'updated_at' => '2026-04-02 15:13:50',
+]);
+
+$b23b6 = DB::table('kelas')->insertGetId([
+    'kampus_id' => $itbm,
+    'nama' => 'B23.B6',
+    'kode' => 'B-B6',
+    'semester' => 'genap',
+    'tahun_ajaran' => 2026,
+    'wali_kelas' => 'Rahmi',
+    'created_at' => '2026-04-02 15:14:29',
+    'updated_at' => '2026-04-02 15:14:29',
+]);
+
+$b23a6 = DB::table('kelas')->insertGetId([
+    'kampus_id' => $itbm,
+    'nama' => 'B23.A6',
+    'kode' => 'B-A6',
+    'semester' => 'genap',
+    'tahun_ajaran' => 2026,
+    'wali_kelas' => 'Rahmi',
+    'created_at' => '2026-04-02 15:14:57',
+    'updated_at' => '2026-04-02 15:14:57',
+]);
+
+// ── Mata Kuliah Sesuai Database 2026 ──
+
+// STAIN - TP1
+$mkTIK1 = DB::table('mata_kuliah')->insertGetId([
+    'kampus_id' => $stain,
+    'kelas_id' => $pai1,
+    'kode' => 'TIK-1',
+    'nama' => 'Teknologi Informasi dan Komunikasi TP1',
+    'sks' => 2,
+    'jenis' => 'teori_praktikum',
+    'dosen' => 'Ust. Darwis Kaprodi',
+    'total_pertemuan' => 16,
+    'created_at' => '2026-04-02 15:52:22',
+    'updated_at' => '2026-04-02 15:53:00',
+]);
+
+// STAIN - TP4
+$mkTIK4 = DB::table('mata_kuliah')->insertGetId([
+    'kampus_id' => $stain,
+    'kelas_id' => $pai4,
+    'kode' => 'TIK-4',
+    'nama' => 'Teknologi Informasi dan Komunikasi TP4',
+    'sks' => 2,
+    'jenis' => 'teori_praktikum',
+    'dosen' => 'Ust. Darwis Kaprodi',
+    'total_pertemuan' => 16,
+    'created_at' => '2026-04-02 15:52:53',
+    'updated_at' => '2026-04-02 15:52:53',
+]);
+
+// ITBM - K23-A6
+$mkK23A6 = DB::table('mata_kuliah')->insertGetId([
+    'kampus_id' => $itbm,
+    'kelas_id' => $k23a6,
+    'kode' => 'K23-A6',
+    'nama' => 'Business Geospatial Information K-A6',
+    'sks' => 3,
+    'jenis' => 'teori_praktikum',
+    'dosen' => 'Bu Rahmi',
+    'total_pertemuan' => 16,
+    'created_at' => '2026-04-02 16:02:47',
+    'updated_at' => '2026-04-02 16:03:11',
+]);
+
+// ITBM - B23-B6
+$mkB23B6 = DB::table('mata_kuliah')->insertGetId([
+    'kampus_id' => $itbm,
+    'kelas_id' => $b23b6,
+    'kode' => 'B23-B6',
+    'nama' => 'BUSINESS GEOSPATIAL INFORMATION B-B6',
+    'sks' => 3,
+    'jenis' => 'teori_praktikum',
+    'dosen' => 'Bu Rahmi',
+    'total_pertemuan' => 16,
+    'created_at' => '2026-04-02 16:04:45',
+    'updated_at' => '2026-04-02 16:05:39',
+]);
+
+// ITBM - B23-A6
+$mkB23A6 = DB::table('mata_kuliah')->insertGetId([
+    'kampus_id' => $itbm,
+    'kelas_id' => $b23a6,
+    'kode' => 'B23-A6',
+    'nama' => 'BUSINESS GEOSPATIAL INFORMATION B-A6',
+    'sks' => 3,
+    'jenis' => 'teori_praktikum',
+    'dosen' => 'Bu Rahmi',
+    'total_pertemuan' => 16,
+    'created_at' => '2026-04-02 16:05:27',
+    'updated_at' => '2026-04-02 16:05:46',
+]);
 
         // ── Kelas ITBM (3) ──
         $ti_a  = DB::table('kelas')->insertGetId(['kampus_id'=>$itbm,'nama'=>'Teknik Informatika A','kode'=>'TI-A','semester'=>'ganjil','tahun_ajaran'=>2024,'wali_kelas'=>'Dr. Ahmad Fauzi, M.T','created_at'=>now(),'updated_at'=>now()]);

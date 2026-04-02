@@ -25,15 +25,31 @@
           Download Template
         </a>
 
-        <div class="alert alert-warning small">
-    Kampus aktif ID: <b>{{ session('kampus_id') }}</b>
-</div>
 
         {{-- Form upload --}}
         <form action="{{ route('mahasiswa.import.process') }}" 
       method="POST" 
       enctype="multipart/form-data">
           @csrf
+          <div class="mb-3">
+  <label>Kampus</label>
+  <select name="kampus_id" class="form-select" required>
+    <option value="">-- Pilih Kampus --</option>
+    @foreach($kampusList as $k)
+      <option value="{{ $k->id }}">{{ $k->nama ?? $k->kode }}</option>
+    @endforeach
+  </select>
+</div>
+
+<div class="mb-3">
+  <label>Kelas</label>
+  <select name="kelas_id" class="form-select" required>
+    <option value="">-- Pilih Kelas --</option>
+    @foreach($kelasList as $kls)
+      <option value="{{ $kls->id }}">{{ $kls->nama ?? $kls->kode }} ({{$kls->mahasiswa_count}})</option>
+    @endforeach
+  </select>
+</div>
 
           <div class="mb-3">
             <label>Upload File Excel</label>

@@ -1,7 +1,8 @@
 <?php namespace App\Http\Controllers;
-use App\Models\MataKuliah;
 use App\Models\Kampus;
 use App\Models\Kelas;
+use App\Models\Mahasiswa;
+use App\Models\MataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,4 +65,90 @@ class MataKuliahController extends Controller {
         $matakuliah->delete();
         return redirect()->route('matakuliah.index')->with('success','Mata kuliah dihapus.');
     }
+
+    public function daftar(Request $request, $id)
+{
+    $mk = MataKuliah::findOrFail($id);
+
+    $mahasiswa = Mahasiswa::with(['kampus','kelas'])
+        ->when($request->search, fn($q,$s)=>
+            $q->where('nama','like',"%$s%")
+              ->orWhere('nim','like',"%$s%")
+        )
+        ->when($request->kampus_id, fn($q,$k)=>$q->where('kampus_id',$k))
+        ->when($request->kelas_id, fn($q,$k)=>$q->where('kelas_id',$k))
+        ->paginate(100)->withQueryString();
+
+    $kampusList = Kampus::all();
+    $kelasList  = Kelas::all();
+
+    return view('matakuliah.daftar', compact('mk','mahasiswa','kampusList','kelasList'));
+}
+
+public function storeDaftar(Request $request, $id)
+{
+    $request->validate([
+        'ids' => 'required|array',
+        'ids.*' => 'exists:mahasiswa,id',
+        'tahun_ajaran' => 'required|integer',
+        'semester' => 'required|in:ganjil,genap',
+    ]);
+
+    $mk = MataKuliah::findOrFail($id);
+
+    foreach ($request->ids as $mhsId) {
+
+        $mahasiswa = Mahasiswa::find($mhsId);
+
+        $mahasiswa->mataKuliah()->syncWithoutDetaching([
+            $mk->id => [
+                'tahun_ajaran' => $request->tahun_ajaran,
+                'semester' => $request->semester,
+                'status' => 'aktif',
+            ]
+        ]);
+    }
+
+    return redirect()->route('matakuliah.index')->with('success',
+    count($request->ids) . " mahasiswa berhasil didaftarkan ke mata kuliah {$mk->nama} ({$request->semester} {$request->tahun_ajaran})"
+);
+}
+
+public function peserta(Request $request, $id)
+{
+    $mk = MataKuliah::findOrFail($id);
+
+    $mahasiswa = $mk->mahasiswa()
+        ->when($request->search, fn($q) =>
+            $q->where('nama', 'like', "%{$request->search}%")
+              ->orWhere('nim', 'like', "%{$request->search}%")
+        )
+        ->when($request->kelas_id, fn($q) =>
+            $q->where('kelas_id', $request->kelas_id)
+        )
+        ->when($request->kampus_id, fn($q) =>
+            $q->where('kampus_id', $request->kampus_id)
+        )
+        ->paginate(30)
+        ->withQueryString();
+
+    $kelasList = Kelas::all();
+    $kampusList = Kampus::all();
+
+    return view('matakuliah.peserta', compact('mk','mahasiswa','kelasList','kampusList'));
+}
+
+public function removeMahasiswa(Request $request)
+{
+    $request->validate([
+        'mahasiswa_id' => 'required',
+        'mata_kuliah_id' => 'required',
+    ]);
+
+    $mhs = Mahasiswa::findOrFail($request->mahasiswa_id);
+
+    $mhs->mataKuliah()->detach($request->mata_kuliah_id);
+
+    return back()->with('success', 'Mahasiswa berhasil dihapus dari mata kuliah');
+}
 }

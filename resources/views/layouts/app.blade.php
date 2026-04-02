@@ -123,13 +123,15 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
     <i class="bi bi-file-earmark-text"></i> Transkrip
   </a>
 
-  <div class="nav-section">Akun</div>
-  <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit" class="nl border-0 bg-transparent w-100 text-start" style="cursor:pointer">
-      <i class="bi bi-box-arrow-left"></i> Keluar
-    </button>
-  </form>
+  
+
+  <div class="nav-section">Pengaturan</div>
+    <a href="{{ route('backup.index') }}" class="nl {{ request()->routeIs('backup.index') ? 'active' : '' }}">
+    <i class="bi bi-file-earmark-text"></i> Database
+  </a>
+    <a href="{{ route('password.edit') }}" class="nl {{ request()->routeIs('password.edit') ? 'active' : '' }}">
+    <i class="bi bi-file-earmark-text"></i> Akun
+  </a>
 </nav>
 
 {{-- TOPBAR --}}

@@ -2,38 +2,50 @@
 
 namespace App\Imports;
 
-use App\Models\Kelas;
 use App\Models\Mahasiswa;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class MahasiswaImport implements ToModel, WithHeadingRow
 {
+    protected $kampusId;
+    protected $kelasId;
+
+    public $total = 0;
+    public $success = 0;
+    public $skipped = 0;
+    public $duplicate = 0;
+
+    public function __construct($kampusId, $kelasId)
+    {
+        $this->kampusId = $kampusId;
+        $this->kelasId = $kelasId;
+    }
+
     public function model(array $row)
     {
-        // skip kalau kosong
+        $this->total++;
+
+        // ❌ skip kosong
         if (empty($row['nim']) || empty($row['nama'])) {
+            $this->skipped++;
             return null;
         }
 
-        // 🔥 skip kalau NIM sudah ada
+        // ❌ skip duplikat
         $exists = Mahasiswa::where('nim', $row['nim'])->exists();
         if ($exists) {
+            $this->duplicate++;
             return null;
         }
 
-        $kelas = Kelas::first();
-
-        // 🔥 kalau tidak ada kelas → skip
-        if (!$kelas) {
-            return null;
-        }
+        $this->success++;
 
         return new Mahasiswa([
-            'kampus_id' => session('kampus_id'),
-            'kelas_id' => $kelas->id,
-            'nim' => $row['nim'],
-            'nama' => $row['nama'],
+            'kampus_id' => $this->kampusId,
+            'kelas_id' => $this->kelasId,
+            'nim' => trim($row['nim']),
+            'nama' => trim($row['nama']),
             'jenis_kelamin' => strtoupper($row['jenis_kelamin'] ?? ''),
             'email' => $row['email'] ?? null,
             'telepon' => $row['telepon'] ?? null,

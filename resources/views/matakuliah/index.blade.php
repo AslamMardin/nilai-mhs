@@ -66,6 +66,15 @@
                 @csrf @method('DELETE')
                 <button class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
               </form>
+              <a href="{{ route('matakuliah.peserta', $mk->id) }}" 
+   class="btn btn-sm btn-outline-dark py-0 px-2" 
+   title="Lihat Peserta">
+   <i class="bi bi-people"></i>
+</a>
+              <a href="{{ route('matakuliah.daftar', $mk->id) }}" 
+   class="btn btn-sm btn-outline-success py-0 px-2" title="Daftarkan Mahasiswa">
+   <i class="bi bi-person-plus"></i>
+</a>
             </div>
           </td>
         </tr>

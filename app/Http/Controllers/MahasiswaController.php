@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MahasiswaExport;
-use App\Exports\MahasiswaTemplateExport;
 use App\Imports\MahasiswaImport;
 use App\Models\Kampus;
 use App\Models\Kelas;
@@ -22,7 +21,7 @@ class MahasiswaController extends Controller
             ->when($request->kampus_id ?? $kampusId, fn($q, $k) => $q->where('kampus_id', $k))
             ->when($request->kelas_id, fn($q, $k) => $q->where('kelas_id', $k))
             ->when($request->search, fn($q, $s) => $q->where(fn($q2) => $q2->where('nama', 'like', "%$s%")->orWhere('nim', 'like', "%$s%")))
-            ->orderBy('nim')->paginate(20)->withQueryString();
+            ->orderBy('nim')->paginate(50)->withQueryString();
         $kampusList = Kampus::all();
         $kelasList  = Kelas::when($request->kampus_id ?? $kampusId, fn($q, $k) => $q->where('kampus_id', $k))->get();
         return view('mahasiswa.index', compact('mahasiswa', 'kampusList', 'kelasList')
@@ -58,6 +57,16 @@ class MahasiswaController extends Controller
         $mahasiswa->delete();
         return redirect()->route('mahasiswa.index')->with('success', 'Mahasiswa dihapus.');
     }
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->ids;
+
+    if ($ids) {
+        Mahasiswa::whereIn('id', $ids)->delete();
+    }
+
+    return redirect()->back()->with('success', 'Data berhasil dihapus!');
+}
     public function formDaftar(Mahasiswa $mahasiswa)
     {
         $mataKuliah = MataKuliah::where('kampus_id', $mahasiswa->kampus_id)->with('kelas')->get();
@@ -75,8 +84,9 @@ class MahasiswaController extends Controller
 
     public function formImport()
     {
-        
-        return view('mahasiswa.import');
+        $kampusList = Kampus::all();
+        $kelasList = Kelas::withCount('mahasiswa')->get();
+        return view('mahasiswa.import', compact('kelasList', 'kampusList'));
     }
 
     public function downloadTemplate()
@@ -86,22 +96,26 @@ class MahasiswaController extends Controller
 
 
 
+
 public function import(Request $request)
 {
     $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv'
+        'file' => 'required|mimes:xlsx,xls,csv',
+        'kampus_id' => 'required',
+        'kelas_id' => 'required',
     ]);
 
-  
+    // 🔥 tangkap object import
+    $import = new MahasiswaImport($request->kampus_id, $request->kelas_id);
 
-        Excel::import(
-            new MahasiswaImport(session('kampus_id')),
-            $request->file('file')
-        );
+    Excel::import($import, $request->file('file'));
 
-        return redirect()->route('mahasiswa.index')
-            ->with('success', 'Import berhasil');
-
-   
+    return redirect()->route('mahasiswa.index')->with('success',
+        "Import selesai: 
+        Total {$import->total}, 
+        Berhasil {$import->success}, 
+        Duplikat {$import->duplicate}, 
+        Kosong {$import->skipped}"
+    );
 }
 }
