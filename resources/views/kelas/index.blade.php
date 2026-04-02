@@ -3,7 +3,7 @@
 @section('page-title','Master Data · Kelas')
 @section('content')
 <div class="sh">
-  <h5><i class="bi bi-door-open text-primary me-2"></i>Daftar Kelas</h5>
+  <h5><i class="bi bi-door-open text-primary me-2"></i>Daftar Kelas {{session('kampus_id') }}</h5>
   <a href="{{ route('kelas.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Tambah Kelas</a>
 </div>
 @foreach($kelasList as $kampusId => $kelasGrup)

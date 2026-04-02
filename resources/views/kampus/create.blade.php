@@ -11,12 +11,12 @@
           @csrf
           <div class="mb-3">
             <label class="form-label">Nama Kampus <span class="text-danger">*</span></label>
-            <input type="text" name="nama" class="form-control @error('nama')is-invalid@enderror" value="{{ old('nama') }}" placeholder="Institut Teknologi..." required>
+            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Institut Teknologi..." required>
             @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="mb-3">
             <label class="form-label">Kode <span class="text-danger">*</span></label>
-            <input type="text" name="kode" class="form-control @error('kode')is-invalid@enderror" value="{{ old('kode') }}" placeholder="ITBM" style="text-transform:uppercase" required>
+            <input type="text" name="kode" class="form-control @error('kode') is-invalid @enderror" value="{{ old('kode') }}" placeholder="ITBM" style="text-transform:uppercase" required>
             @error('kode')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="mb-3">

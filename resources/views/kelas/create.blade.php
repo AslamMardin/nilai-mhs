@@ -11,7 +11,7 @@
           @csrf
           <div class="mb-3">
             <label class="form-label">Kampus <span class="text-danger">*</span></label>
-            <select name="kampus_id" class="form-select @error('kampus_id')is-invalid@enderror" required>
+            <select name="kampus_id" class="form-select @error('kampus_id') is-invalid @enderror" required>
               <option value="">-- Pilih Kampus --</option>
               @foreach($kampusList as $k)
               <option value="{{ $k->id }}" {{ old('kampus_id',session('kampus_id'))==$k->id?'selected':'' }}>{{ $k->kode }} — {{ $k->nama }}</option>
@@ -21,25 +21,25 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Nama Kelas <span class="text-danger">*</span></label>
-            <input type="text" name="nama" class="form-control @error('nama')is-invalid@enderror" value="{{ old('nama') }}" placeholder="Teknik Informatika A" required>
+            <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Teknik Informatika A" required>
             @error('nama')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="mb-3">
             <label class="form-label">Kode Kelas <span class="text-danger">*</span></label>
-            <input type="text" name="kode" class="form-control @error('kode')is-invalid@enderror" value="{{ old('kode') }}" placeholder="TI-A" required>
+            <input type="text" name="kode" class="form-control @error('kode') is-invalid @enderror" value="{{ old('kode') }}" placeholder="TI-A" required>
             @error('kode')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="row g-3 mb-3">
             <div class="col-6">
               <label class="form-label">Semester <span class="text-danger">*</span></label>
-              <select name="semester" class="form-select @error('semester')is-invalid@enderror" required>
+              <select name="semester" class="form-select @error('semester') is-invalid @enderror" required>
                 <option value="ganjil" {{ old('semester')=='ganjil'?'selected':'' }}>Ganjil</option>
                 <option value="genap" {{ old('semester')=='genap'?'selected':'' }}>Genap</option>
               </select>
             </div>
             <div class="col-6">
               <label class="form-label">Tahun Ajaran <span class="text-danger">*</span></label>
-              <input type="number" name="tahun_ajaran" class="form-control @error('tahun_ajaran')is-invalid@enderror" value="{{ old('tahun_ajaran',date('Y')) }}" min="2000" max="2099" required>
+              <input type="number" name="tahun_ajaran" class="form-control @error('tahun_ajaran') is-invalid @enderror" value="{{ old('tahun_ajaran',date('Y')) }}" min="2000" max="2099" required>
             </div>
           </div>
           <div class="mb-4">

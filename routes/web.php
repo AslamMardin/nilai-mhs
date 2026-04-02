@@ -25,12 +25,28 @@ Route::middleware('auth')->group(function() {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Master data
-    Route::resource('kampus',      KampusController::class)->except(['show']);
-    Route::resource('kelas',       KelasController::class);
-    Route::resource('matakuliah',  MataKuliahController::class)->except(['show']);
-    Route::resource('mahasiswa',   MahasiswaController::class);
+Route::resource('kampus',      KampusController::class)->except(['show'])->parameters(['kampus' => 'kampus']);
+    Route::resource('kelas',       KelasController::class)->parameters(['kelas' => 'kelas']);
+    Route::resource('matakuliah',  MataKuliahController::class)->except(['show'])->parameters(['matakuliah' => 'matakuliah']);
+ 
+//  mahasiswa
+Route::get('/mahasiswa/import', [MahasiswaController::class, 'formImport'])
+    ->name('mahasiswa.import');
+      Route::post('/mahasiswa/import', [MahasiswaController::class, 'import'])
+    ->name('mahasiswa.import.process');
+    
+    Route::get('/mahasiswa/template', [MahasiswaController::class, 'downloadTemplate'])
+    ->name('mahasiswa.template');
+    
+    
+  
+    
+    
+    
     Route::get('/mahasiswa/{mahasiswa}/daftar-matkul',  [MahasiswaController::class, 'formDaftar'])->name('mahasiswa.form-daftar');
     Route::post('/mahasiswa/{mahasiswa}/daftar-matkul', [MahasiswaController::class, 'simpanDaftar'])->name('mahasiswa.simpan-daftar');
+    Route::resource('mahasiswa',   MahasiswaController::class)->parameters(['mahasiswa' => 'mahasiswa']);
+  
 
     // Absensi
     Route::get('/absensi',                    [AbsensiController::class, 'pilih'])->name('absensi.pilih');

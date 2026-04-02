@@ -2,9 +2,16 @@
 @section('title','Mahasiswa')
 @section('page-title','Master Data · Mahasiswa')
 @section('content')
+
 <div class="sh">
   <h5><i class="bi bi-people text-primary me-2"></i>Daftar Mahasiswa</h5>
-  <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Tambah</a>
+  <div class="btn-group">
+
+    <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Tambah</a>
+    <a href="{{ route('mahasiswa.import') }}" class="btn btn-success btn-sm">
+    <i class="bi bi-upload me-1"></i>Import Data
+</a>
+  </div>
 </div>
 
 {{-- Filter --}}

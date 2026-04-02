@@ -103,7 +103,7 @@
                         required>
                 </div>
 
-                {{-- Kampus
+                Kampus
                 @if (isset($kampusList) && count($kampusList) > 0)
                     <div class="mb-3">
                         <small class="text-muted">Pilih Kampus (opsional)</small>
@@ -120,7 +120,7 @@
                             </label>
                         @endforeach
                     </div>
-                @endif --}}
+                @endif
 
                 <div class="form-check mb-3">
                     <input type="checkbox" name="remember" class="form-check-input">
