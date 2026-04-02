@@ -82,7 +82,7 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
 <nav id="sb">
   <div class="brand">
     <p class="brand-title"><i class="bi bi-mortarboard-fill me-1"></i>Sistem Penilaian</p>
-    <p class="brand-sub mb-0">ITBM &amp; STAIN Majene</p>
+    <p class="brand-sub mb-0">Aslam Mardin, S.Kom., M.Kom., Gr.</p>
   </div>
 
   <div class="nav-section">Utama</div>

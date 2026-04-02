@@ -79,7 +79,6 @@
             </div>
 
             <h4 class="text-center fw-bold">Sistem Penilaian</h4>
-            <p class="text-center text-muted small mb-4">ITBM & STAIN Majene</p>
 
             {{-- Error --}}
             @if (!empty($errors) && $errors->any())
@@ -103,24 +102,24 @@
                         required>
                 </div>
 
-                Kampus
-                @if (isset($kampusList) && count($kampusList) > 0)
-                    <div class="mb-3">
-                        <small class="text-muted">Pilih Kampus (opsional)</small>
+               <div class="mb-3">
+    <label class="form-label">Kampus</label>
 
-                        @foreach ($kampusList as $k)
-                            <label class="kampus-card w-100 mb-2">
-                                <input type="radio" name="kampus_id" value="{{ $k->id }}">
-                                <div>
-                                    <div>{{ $k->kode }}</div>
-                                    <small>
-                                        {{ \Illuminate\Support\Str::limit($k->nama, 28) }}
-                                    </small>
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-                @endif
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-building"></i>
+        </span>
+
+        <select name="kampus_id" class="form-select">
+            <option value="">-- Pilih Kampus --</option>
+            @foreach ($kampusList as $k)
+                <option value="{{ $k->id }}">
+                    {{ $k->kode }} - {{ $k->nama }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+</div>
 
                 <div class="form-check mb-3">
                     <input type="checkbox" name="remember" class="form-check-input">

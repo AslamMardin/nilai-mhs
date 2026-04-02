@@ -11,9 +11,9 @@ class DatabaseSeeder extends Seeder {
 
         // ── Users ──
         DB::table('users')->insert([
-            ['name'=>'Super Admin','email'=>'admin@penilaian.ac.id','password'=>Hash::make('password'),'role'=>'superadmin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
-            ['name'=>'Admin ITBM','email'=>'admin@itbm.ac.id','password'=>Hash::make('password'),'role'=>'admin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
-            ['name'=>'Admin STAIN','email'=>'admin@stain.ac.id','password'=>Hash::make('password'),'role'=>'admin','kampus_id'=>$stain,'created_at'=>now(),'updated_at'=>now()],
+            ['name'=>'Aslam Mardin','email'=>'aslam11mardin@gmail.com','password'=>Hash::make('password'),'role'=>'superadmin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
+            ['name'=>'Admin','email'=>'admin@gmail.com','password'=>Hash::make('password'),'role'=>'admin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
+          
         ]);
 
         // ── Kelas ITBM (3) ──
@@ -94,9 +94,8 @@ class DatabaseSeeder extends Seeder {
 
         $this->command->info('✅ Seeder OK: 2 kampus, 5 kelas, 5 matkul, 8 mahasiswa, data lengkap.');
         $this->command->table(['Email','Password','Kampus'],[
-            ['admin@penilaian.ac.id','password','ITBM (superadmin)'],
-            ['admin@itbm.ac.id','password','ITBM'],
-            ['admin@stain.ac.id','password','STAIN'],
+            ['aslam11mardin@gmail.com','password','ITBM (superadmin)'],
+            ['admin@gmail.com','password','ITBM'],
         ]);
     }
 }
