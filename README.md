@@ -1,8 +1,135 @@
-# 📚 Sistem Penilaian Mahasiswa — ITBM & STAIN Majene
-## Laravel 11 — Panduan Instalasi Lengkap
+
+---
+# 🎓 Sistem Penilaian Mahasiswa
+
+Aplikasi berbasis **Laravel** untuk mengelola data mahasiswa, nilai, absensi, dan laporan akademik secara terstruktur dan modern.
 
 ---
 
+## ✨ Fitur Utama
+
+### 👨‍🎓 Manajemen Mahasiswa
+- Data mahasiswa per kampus & kelas
+- Pencarian berdasarkan NIM / Nama
+- Status mahasiswa (aktif / nonaktif)
+
+### 🏫 Kampus & Kelas
+- Multi kampus (bisa ganti kampus aktif)
+- Relasi kelas per kampus
+- Filter dinamis berdasarkan kampus
+
+### 📚 Mata Kuliah
+- Mata kuliah per kelas
+- Jenis:
+  - Teori
+  - Praktikum
+  - Teori + Praktikum
+
+---
+
+## 📊 Sistem Penilaian
+
+### 📝 Nilai Teori
+- Keaktifan (20%)
+- Tugas (20%)
+- UTS (25%)
+- UAS (35%)
+
+### 🔧 Nilai Praktikum
+- Nilai praktikum (100%)
+
+### 🧮 Perhitungan Nilai Akhir
+- Teori → nilai teori
+- Praktikum → nilai praktikum
+- Gabungan → (Teori 50% + Praktikum 50%)
+
+### 🎯 Syarat Kelulusan
+- Kehadiran ≥ **75%**
+- Nilai akhir ≥ **55**
+
+---
+
+## 📅 Absensi
+- Sistem kehadiran per pertemuan
+- Perhitungan:
+  - Poin kehadiran
+  - Persentase kehadiran
+- Otomatis mempengaruhi kelulusan
+
+---
+
+## 📈 Dashboard
+
+Menampilkan:
+- Total mahasiswa
+- Total mata kuliah
+- Total kelas
+- Persentase kelulusan
+- Distribusi nilai (A–E)
+- Rekap per kelas
+- Ranking mahasiswa 🏆
+
+---
+
+## 🏆 Ranking Mahasiswa
+- Berdasarkan rata-rata nilai akhir
+- Top mahasiswa terbaik kampus
+- Highlight ranking 1
+
+---
+
+## 📑 Laporan
+
+### 📊 Nilai per Kelas
+- Rekap nilai semua mahasiswa
+- Rata-rata per mahasiswa
+- Export:
+  - Excel
+  - PDF
+
+### 📄 Transkrip Nilai
+- Data lengkap per mahasiswa
+- Nilai tiap mata kuliah
+- Total SKS & rata-rata
+- Export:
+  - Excel
+  - PDF
+
+### 📈 Rekap Mata Kuliah
+- Distribusi nilai huruf
+- Statistik kelulusan
+
+---
+
+## 📤 Export Data
+- Export ke **Excel**
+- Export ke **PDF**
+- Loading indicator saat download
+
+---
+
+## ⚙️ Teknologi
+
+- Laravel
+- Blade Template
+- Bootstrap 5
+- MySQL
+- Laravel Excel (opsional)
+- DomPDF (PDF export)
+
+---
+
+## 🚀 Instalasi
+
+```bash
+git clone https://github.com/username/nama-project.git
+cd nama-project
+composer install
+cp .env.example .env
+php artisan key:generate
+
+
+---
 ## Prasyarat
 
 - PHP >= 8.2
@@ -242,3 +369,7 @@ LULUS jika kedua syarat terpenuhi
 | GET | /laporan/nilai-per-kelas | laporan.nilai-per-kelas | Laporan per kelas |
 | GET | /laporan/rekap-kampus | laporan.rekap-kampus | Rekap kampus |
 | GET | /laporan/transkrip | laporan.transkrip | Transkrip mahasiswa |
+
+
+
+
