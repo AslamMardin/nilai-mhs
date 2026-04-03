@@ -4,6 +4,12 @@
 @section('content')
 
 {{-- Header --}}
+<div class="alert alert-warning py-2 mb-3" style="font-size:13px">
+  <i class="bi bi-exclamation-triangle me-1"></i>
+  <strong>Perhatian:</strong> Jika Anda melakukan perubahan pada <b>absensi</b>, 
+  maka hasil kelulusan <b>tidak otomatis diperbarui</b>.  
+  Silakan lakukan <b>simpan ulang nilai (teori/praktikum)</b> agar status nilai akhir diperbarui.
+</div>
 <div class="card mb-3">
   <div class="card-body py-2">
     <div class="d-flex flex-wrap align-items-center gap-3">
@@ -16,6 +22,7 @@
         </div>
       </div>
       <div class="d-flex gap-2 flex-wrap">
+        
         @if($mataKuliah->hasTeori())
         <a href="{{ route('nilai.form-teori',$mataKuliah->id) }}" class="btn btn-sm btn-primary"><i class="bi bi-pencil-square me-1"></i>Input Teori</a>
         @endif
@@ -28,6 +35,7 @@
     </div>
   </div>
 </div>
+
 
 {{-- Info bobot --}}
 <div class="alert alert-light border py-2 mb-3" style="font-size:12px">

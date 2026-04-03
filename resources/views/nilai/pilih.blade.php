@@ -2,8 +2,15 @@
 @section('title','Nilai')
 @section('page-title','Akademik · Nilai')
 @section('content')
+
 <div class="sh">
   <h5><i class="bi bi-clipboard-data text-primary me-2"></i>Pilih Mata Kuliah — Nilai</h5>
+</div>
+<div class="alert alert-warning py-2 mb-3 small">
+ 
+  <i class="bi bi-lightbulb me-1"></i>
+  <strong>Saran:</strong> Lakukan input <b>absensi terlebih dahulu</b>, kemudian lanjutkan ke 
+  <b>penilaian teori/praktikum</b> agar hasil nilai akhir akurat.
 </div>
 <div class="row g-3">
   @forelse($mataKuliahList as $mk)
