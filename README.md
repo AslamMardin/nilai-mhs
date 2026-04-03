@@ -110,7 +110,7 @@ Menampilkan:
 
 ## ⚙️ Teknologi
 
-- Laravel
+- Laravel 13
 - Blade Template
 - Bootstrap 5
 - MySQL
