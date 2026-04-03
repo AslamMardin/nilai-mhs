@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\NilaiKelasExport;
 use App\Models\{Kampus, Kelas, MataKuliah, Mahasiswa, NilaiAkhir};
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {
@@ -69,4 +72,39 @@ class LaporanController extends Controller
         $distribusiHuruf = $rekap->whereNotNull('huruf_mutu')->groupBy('huruf_mutu')->map->count()->toArray();
         return view('laporan.rekap-mk', compact('mataKuliah', 'rekap', 'distribusiHuruf'));
     }
+
+    public function exportNilaiKelasExcel($kelasId)
+    {
+        $kelas = \App\Models\Kelas::with(['mahasiswa', 'mataKuliah'])->findOrFail($kelasId);
+
+        // 🔒 keamanan kampus
+        if ($kelas->kampus_id != session('kampus_id')) {
+            return redirect()->route('laporan.nilai-kelas');
+        }
+
+        return Excel::download(
+            new NilaiKelasExport($kelas),
+            'Nilai-Kelas-' . $kelas->nama . '.xlsx'
+        );
+    }
+
+    public function exportNilaiKelasPdf($kelasId)
+    {
+        $kelas = Kelas::with(['mahasiswa', 'mataKuliah', 'kampus'])
+            ->findOrFail($kelasId);
+
+        // 🔒 validasi kampus
+        if ($kelas->kampus_id != session('kampus_id')) {
+            return redirect()->route('laporan.nilai-kelas');
+        }
+
+        $pdf = Pdf::loadView('laporan.pdf.nilai-kelas', [
+            'kelas' => $kelas
+        ])->setPaper('a4', 'landscape');
+
+        // return $pdf->download('Nilai-Kelas-' . $kelas->nama . '.pdf');
+
+        return $pdf->stream('Nilai-Kelas-' . $kelas->nama . '.pdf');
+    }
+    
 }

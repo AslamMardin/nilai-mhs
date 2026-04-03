@@ -52,6 +52,34 @@ class DashboardController extends Controller
         $kampusAktif = $kampusId ? Kampus::find($kampusId) : null;
 $semuaKampus = Kampus::all();
 
+$rekapKelas = $kelasList->map(function ($kls) {
+
+    $nilai = NilaiAkhir::whereHas('mahasiswa', function ($q) use ($kls) {
+        $q->where('kelas_id', $kls->id);
+    });
+
+    $lulus = (clone $nilai)->where('status_kelulusan', 'lulus')->count();
+    $tidak = (clone $nilai)->where('status_kelulusan', 'tidak_lulus')->count();
+
+    $total = $lulus + $tidak;
+
+    return [
+        'kelas_id'  => $kls->id,
+        'pct_lulus' => $total > 0 ? round(($lulus / $total) * 100) : 0,
+    ];
+});
+
+
+$rankingMahasiswa = Mahasiswa::where('kampus_id', $kampusId)
+    ->select('mahasiswa.*')
+    ->selectSub(function ($q) {
+        $q->from('nilai_akhir')
+          ->selectRaw('AVG(nilai_akhir)')
+          ->whereColumn('mahasiswa_id', 'mahasiswa.id');
+    }, 'rata_nilai')
+    ->orderByDesc('rata_nilai')
+    ->take(5) // ambil top 5
+    ->get();
 
 return view('dashboard.index', compact(
     'kampusAktif',
@@ -63,7 +91,9 @@ return view('dashboard.index', compact(
     'distribusi', // tetap ini
     'statLulus',
     'mataKuliahList',
-    'kelasList'
+    'kelasList',
+    'rekapKelas',
+    'rankingMahasiswa'
 ));
     }
 }

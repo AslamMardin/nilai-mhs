@@ -2,7 +2,7 @@
 @section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('content')
-@php use Illuminate\Support\Str; @endphp
+    @php use Illuminate\Support\Str; @endphp
 
     {{-- Hero Info Kampus --}}
     <div class="d-flex align-items-center gap-3 mb-4 p-3 rounded-3"
@@ -113,8 +113,45 @@
             </div>
         </div>
 
+        {{-- rangking --}}
+        <div class="col-lg-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between">
+                    Ranking Mahasiswa
+                </div>
+                <div class="card-body p-2">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            @foreach ($rankingMahasiswa as $i => $mhs)
+                                <tr>
+                                    <td style="width:40px" class="text-center">
+                                        @if ($i == 0)
+                                            🥇
+                                        @elseif($i == 1)
+                                            🥈
+                                        @elseif($i == 2)
+                                            🥉
+                                        @else
+                                            {{ $i + 1 }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="fw-500">{{ $mhs->nama }}</div>
+                                        <small class="text-muted">{{ $mhs->nim }}</small>
+                                    </td>
+                                    <td class="text-end fw-700 text-primary">
+                                        {{ number_format($mhs->rata_nilai ?? 0, 2) }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         {{-- Rekap Kelas --}}
-        <div class="col-lg-8">
+        <div class="col-lg-4">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between">
                     <span><i class="bi bi-door-open text-primary me-1"></i>Rekap Kelas</span>
@@ -126,7 +163,6 @@
                             <tr>
                                 <th class="ps-3">Kelas</th>
                                 <th class="text-center">Mahasiswa</th>
-                                <th class="text-center">Matkul</th>
                                 <th class="text-center">% Lulus</th>
                                 <th></th>
                             </tr>
@@ -140,13 +176,17 @@
                                             {{ $kls->semester }} {{ $kls->tahun_ajaran }}</div>
                                     </td>
                                     <td class="text-center">{{ $kls->mahasiswa_count }}</td>
-                                    <td class="text-center">{{ $kls->mata_kuliah_count }}</td>
                                     <td class="text-center">
                                         {{-- @php $r=$rekapKelas->firstWhere(fn($x)=>$x['kelas']->id==$kls->id); @endphp --}}
-                                        @php $r = null; @endphp
+                                        @php
+                                            $r = $rekapKelas->firstWhere('kelas_id', $kls->id);
+                                        @endphp
                                         @if ($r)
                                             <span
-                                                class="badge {{ $r['pct_lulus'] >= 75 ? 'bg-success' : 'bg-warning text-dark' }}">{{ $r['pct_lulus'] }}%</span>
+                                                class="badge 
+        {{ $r['pct_lulus'] >= 80 ? 'bg-success' : ($r['pct_lulus'] >= 60 ? 'bg-warning text-dark' : 'bg-danger') }}">
+                                                {{ $r['pct_lulus'] }}%
+                                            </span>
                                         @else
                                             <span class="badge bg-secondary">—</span>
                                         @endif
@@ -166,6 +206,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 
     {{-- Mata Kuliah Terbaru --}}

@@ -17,11 +17,25 @@
         </select>
       </div>
       @if($kelasId)
-      <div class="col-md-2">
-        <button onclick="window.print()" type="button" class="btn btn-outline-secondary w-100">
-          <i class="bi bi-printer me-1"></i>Cetak
-        </button>
+      <div class="col-md-8">
+        <div class="btn-group">
+
+          <button onclick="window.print()" type="button" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i>Cetak
+          </button>
+          <a href="{{ route('laporan.nilai-kelas.excel', $kelasId) }}" 
+   class="btn btn-success"
+   onclick="showLoading()">
+  <i class="bi bi-file-earmark-excel"></i> Export Excel
+</a>
+<a href="{{ route('laporan.nilai-kelas.pdf', $kelasId) }}" 
+   target="_blank"
+   class="btn btn-danger">
+  <i class="bi bi-file-earmark-pdf"></i> Export PDF
+</a>
       </div>
+      </div>
+      
       @endif
     </form>
   </div>

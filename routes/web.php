@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{ AuthController, DashboardController, KampusController, KelasController, MataKuliahController, MahasiswaController, AbsensiController, NilaiController, LaporanController };
+use App\Http\Controllers\{AuthController, DashboardController, KampusController, KelasController, MataKuliahController, MahasiswaController, AbsensiController, NilaiController, LaporanController};
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -88,20 +88,31 @@ Route::middleware('auth')->group(function () {
         Route::get('/rekap',             [LaporanController::class, 'rekap'])->name('rekap');
         Route::get('/transkrip',         [LaporanController::class, 'transkrip'])->name('transkrip');
         Route::get('/rekap-mk/{mataKuliah}', [LaporanController::class, 'rekapMk'])->name('rekap-mk');
+        //    nilai
+        Route::get(
+            '/nilai-kelas/excel/{kelas}',
+            [LaporanController::class, 'exportNilaiKelasExcel']
+        )->name('nilai-kelas.excel');
+        Route::get(
+            '/nilai-kelas/pdf/{kelas}',
+            [LaporanController::class, 'exportNilaiKelasPdf']
+        )->name('nilai-kelas.pdf');
     });
+
+
 
     // pengaturan
     Route::prefix('backup')->group(function () {
-    Route::get('/', [BackupController::class, 'index'])->name('backup.index');
-    Route::post('/run', [BackupController::class, 'run'])->name('backup.run');
-    Route::get('/download/{file}', [BackupController::class, 'download'])->name('backup.download');
-    Route::delete('/delete/{file}', [BackupController::class, 'delete'])->name('backup.delete');
+        Route::get('/', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('/run', [BackupController::class, 'run'])->name('backup.run');
+        Route::get('/download/{file}', [BackupController::class, 'download'])->name('backup.download');
+        Route::delete('/delete/{file}', [BackupController::class, 'delete'])->name('backup.delete');
 
-    // profile
-    Route::get('/ganti-password', [ProfileController::class, 'editPassword'])
-        ->name('password.edit');
+        // profile
+        Route::get('/ganti-password', [ProfileController::class, 'editPassword'])
+            ->name('password.edit');
 
-    Route::post('/ganti-password', [ProfileController::class, 'updatePassword'])
-        ->name('password.update');
-});
+        Route::post('/ganti-password', [ProfileController::class, 'updatePassword'])
+            ->name('password.update');
+    });
 });
