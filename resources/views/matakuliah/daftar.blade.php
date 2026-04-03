@@ -8,7 +8,7 @@
 <div class="sh">
   <h5>
     <i class="bi bi-person-plus text-success me-2"></i>
-    {{ $mk->nama }}
+    {{ $mk->nama . " - Kelas : " .$mk->kode }}
   </h5>
 </div>
 
@@ -17,23 +17,13 @@
   <div class="card-body py-2">
     <form method="GET" class="row g-2 align-items-end">
 
-      <div class="col-md-3">
-        <label class="form-label mb-1 small">Kampus</label>
-        <select name="kampus_id" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="">Semua Kampus</option>
-          @foreach($kampusList as $k)
-            <option value="{{ $k->id }}" {{ request('kampus_id')==$k->id?'selected':'' }}>
-              {{ $k->kode }}
-            </option>
-          @endforeach
-        </select>
-      </div>
+     
 
       <div class="col-md-3">
-        <label class="form-label mb-1 small">Kelas</label>
+        <label class="form-label mb-1 small">Kelas ({{$kelasList->kelas_count}})</label>
         <select name="kelas_id" class="form-select form-select-sm" onchange="this.form.submit()">
           <option value="">Semua Kelas</option>
-          @foreach($kelasList as $kls)
+          @foreach($kelasList->kelas as $kls)
             <option value="{{ $kls->id }}" {{ request('kelas_id')==$kls->id?'selected':'' }}>
               {{ $kls->kode }}
             </option>

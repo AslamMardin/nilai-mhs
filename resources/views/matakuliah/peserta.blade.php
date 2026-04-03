@@ -10,24 +10,11 @@
     <div class="card mb-3">
   <div class="card-body py-2">
     <form method="GET" class="row g-2 align-items-end">
-
-      <div class="col-md-3">
-        <label class="form-label small">Kampus</label>
-        <select name="kampus_id" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="">Semua</option>
-          @foreach($kampusList as $k)
-            <option value="{{ $k->id }}" {{ request('kampus_id')==$k->id?'selected':'' }}>
-              {{ $k->kode }}
-            </option>
-          @endforeach
-        </select>
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label small">Kelas</label>
+          <div class="col-md-3">
+        <label class="form-label small">Kelas </label>
         <select name="kelas_id" class="form-select form-select-sm" onchange="this.form.submit()">
           <option value="">Semua</option>
-          @foreach($kelasList as $kls)
+          @foreach($kelasList->kelas as $kls)
             <option value="{{ $kls->id }}" {{ request('kelas_id')==$kls->id?'selected':'' }}>
               {{ $kls->nama }}
             </option>

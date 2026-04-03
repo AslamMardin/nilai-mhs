@@ -24,7 +24,15 @@ class MahasiswaController extends Controller
             ->orderBy('nim')->paginate(50)->withQueryString();
         $kampusList = Kampus::all();
         $kelasList  = Kelas::when($request->kampus_id ?? $kampusId, fn($q, $k) => $q->where('kampus_id', $k))->get();
-        return view('mahasiswa.index', compact('mahasiswa', 'kampusList', 'kelasList')
+
+        $totalMahasiswa = Mahasiswa::when($request->kampus_id ?? $kampusId, function ($q, $k) {
+        $q->where('kampus_id', $k);
+    })
+    ->when($request->kelas_id, function ($q, $k) {
+        $q->where('kelas_id', $k);
+    })
+    ->count();
+        return view('mahasiswa.index', compact('mahasiswa', 'kampusList', 'kelasList', 'totalMahasiswa')
             + ['kampusId' => $request->kampus_id ?? $kampusId, 'kelasId' => $request->kelas_id, 'search' => $request->search]);
     }
     public function create()
@@ -82,12 +90,18 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa.show', $mahasiswa->id)->with('success', 'Pendaftaran diperbarui.');
     }
 
-    public function formImport()
-    {
-        $kampusList = Kampus::all();
-        $kelasList = Kelas::withCount('mahasiswa')->get();
-        return view('mahasiswa.import', compact('kelasList', 'kampusList'));
-    }
+   public function formImport()
+{
+    $idKampus = session('kampus_id');
+
+    $kampusID = Kampus::with([
+        'kelas' => function ($q) {
+            $q->withCount('mahasiswa'); // 🔥 ini penting
+        }
+    ])->find($idKampus);
+
+    return view('mahasiswa.import', compact('kampusID'));
+}
 
     public function downloadTemplate()
     {

@@ -32,20 +32,17 @@
       enctype="multipart/form-data">
           @csrf
           <div class="mb-3">
-  <label>Kampus</label>
-  <select name="kampus_id" class="form-select" required>
-    <option value="">-- Pilih Kampus --</option>
-    @foreach($kampusList as $k)
-      <option value="{{ $k->id }}">{{ $k->nama ?? $k->kode }}</option>
-    @endforeach
-  </select>
+  <input type="hidden" name="kampus_id" value="{{$kampusID->id}}">
+  <div class="alert alert-warning">
+    <span>Kampus : {{$kampusID->nama}} </span>
+  </div>
 </div>
 
 <div class="mb-3">
   <label>Kelas</label>
   <select name="kelas_id" class="form-select" required>
     <option value="">-- Pilih Kelas --</option>
-    @foreach($kelasList as $kls)
+    @foreach($kampusID->kelas as $kls)
       <option value="{{ $kls->id }}">{{ $kls->nama ?? $kls->kode }} ({{$kls->mahasiswa_count}})</option>
     @endforeach
   </select>

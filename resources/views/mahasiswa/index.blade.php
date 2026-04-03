@@ -4,7 +4,13 @@
 @section('content')
 
     <div class="sh">
-        <h5><i class="bi bi-people text-primary me-2"></i>Daftar Mahasiswa</h5>
+        <h5>
+  <i class="bi bi-people text-primary me-2"></i>
+  Daftar Mahasiswa 
+  <span class="badge bg-primary ms-2">
+    {{ $totalMahasiswa }}
+  </span>
+</h5>
         <div class="btn-group">
 
             <a href="{{ route('mahasiswa.create') }}" class="btn btn-primary btn-sm"><i
@@ -19,7 +25,7 @@
     <div class="card mb-3">
         <div class="card-body py-2">
             <form method="GET" class="row g-2 align-items-end">
-                <div class="col-md-3">
+                {{-- <div class="col-md-3">
                     <label class="form-label mb-1 small">Kampus</label>
                     <select name="kampus_id" class="form-select form-select-sm" onchange="this.form.submit()">
                         <option value="">Semua Kampus</option>
@@ -29,7 +35,7 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
                 <div class="col-md-3">
                     <label class="form-label mb-1 small">Kelas</label>
                     <select name="kelas_id" class="form-select form-select-sm" onchange="this.form.submit()">

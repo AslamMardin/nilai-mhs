@@ -68,6 +68,7 @@ class MataKuliahController extends Controller {
 
     public function daftar(Request $request, $id)
 {
+   
     $mk = MataKuliah::findOrFail($id);
 
     $mahasiswa = Mahasiswa::with(['kampus','kelas'])
@@ -75,14 +76,12 @@ class MataKuliahController extends Controller {
             $q->where('nama','like',"%$s%")
               ->orWhere('nim','like',"%$s%")
         )
-        ->when($request->kampus_id, fn($q,$k)=>$q->where('kampus_id',$k))
         ->when($request->kelas_id, fn($q,$k)=>$q->where('kelas_id',$k))
         ->paginate(100)->withQueryString();
 
-    $kampusList = Kampus::all();
-    $kelasList  = Kelas::all();
+    $kelasList  = Kampus::withCount('kelas')->find(session('kampus_id'));
 
-    return view('matakuliah.daftar', compact('mk','mahasiswa','kampusList','kelasList'));
+    return view('matakuliah.daftar', compact('mk','mahasiswa','kelasList'));
 }
 
 public function storeDaftar(Request $request, $id)
@@ -126,16 +125,12 @@ public function peserta(Request $request, $id)
         ->when($request->kelas_id, fn($q) =>
             $q->where('kelas_id', $request->kelas_id)
         )
-        ->when($request->kampus_id, fn($q) =>
-            $q->where('kampus_id', $request->kampus_id)
-        )
         ->paginate(30)
         ->withQueryString();
 
-    $kelasList = Kelas::all();
-    $kampusList = Kampus::all();
+    $kelasList = Kampus::withCount('kelas')->find(session('kampus_id'));
 
-    return view('matakuliah.peserta', compact('mk','mahasiswa','kelasList','kampusList'));
+    return view('matakuliah.peserta', compact('mk','mahasiswa','kelasList',));
 }
 
 public function removeMahasiswa(Request $request)
