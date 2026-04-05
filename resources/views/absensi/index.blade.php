@@ -143,8 +143,18 @@
           <tr>
             <th class="text-start ps-2" style="min-width:130px">Mahasiswa</th>
             @for($p=1;$p<=$mataKuliah->total_pertemuan;$p++)
-            <th style="width:36px">{{ $p }}</th>
-            @endfor
+<th style="width:65px">
+  <div class="fw-600">{{ $p }}</div>
+
+  @if(isset($tanggalPertemuan[$p]))
+    <div class="text-muted" style="font-size:10px">
+      {{ \Carbon\Carbon::parse($tanggalPertemuan[$p])->format('d/m') }}
+    </div>
+  @else
+    <div class="text-danger" style="font-size:10px">-</div>
+  @endif
+</th>
+@endfor
             <th style="width:60px">%</th>
           </tr>
         </thead>

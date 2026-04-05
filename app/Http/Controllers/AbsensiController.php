@@ -28,7 +28,12 @@ class AbsensiController extends Controller {
                 'lolos' => Absensi::hitungPersen($mhs->id, $mataKuliah->id, $mataKuliah->total_pertemuan) >= 75,
             ]
         ]);
-        return view('absensi.index', compact('mataKuliah','existingAbsensi','rekapKehadiran'));
+        $tanggalPertemuan = Absensi::where('mata_kuliah_id', $mataKuliah->id)
+    ->select('pertemuan_ke', 'tanggal')
+    ->distinct()
+    ->orderBy('pertemuan_ke')
+    ->pluck('tanggal', 'pertemuan_ke');
+        return view('absensi.index', compact('mataKuliah','existingAbsensi','rekapKehadiran', 'tanggalPertemuan'));
     }
 
     public function simpan(Request $request, MataKuliah $mataKuliah) {
@@ -51,15 +56,54 @@ class AbsensiController extends Controller {
             ->with('success',"Absensi pertemuan ke-{$request->pertemuan_ke} berhasil disimpan.");
     }
 
-    public function rekap(MataKuliah $mataKuliah) {
-        $mataKuliah->load(['kampus','kelas','mahasiswa']);
-        $rekap = $mataKuliah->mahasiswa->map(function($mhs) use ($mataKuliah) {
-            $absensiList = Absensi::where('mahasiswa_id',$mhs->id)->where('mata_kuliah_id',$mataKuliah->id)->orderBy('pertemuan_ke')->get()->keyBy('pertemuan_ke');
-            $poin   = $absensiList->sum(fn($a)=>Absensi::BOBOT[$a->status]??0);
-            $persen = Absensi::hitungPersen($mhs->id,$mataKuliah->id,$mataKuliah->total_pertemuan);
-            $hitung = collect(array_keys(Absensi::LABEL))->mapWithKeys(fn($s)=>[$s=>$absensiList->where('status',$s)->count()])->toArray();
-            return ['mahasiswa'=>$mhs,'absensi'=>$absensiList,'poin'=>$poin,'persen'=>$persen,'lolos'=>$persen>=75,'hitung'=>$hitung];
-        });
-        return view('absensi.rekap', compact('mataKuliah','rekap'));
-    }
+   public function rekap(MataKuliah $mataKuliah)
+{
+    $mataKuliah->load(['kampus','kelas','mahasiswa']);
+
+    // 🔥 Ambil semua absensi SEKALI (hindari query berulang)
+    $allAbsensi = Absensi::where('mata_kuliah_id', $mataKuliah->id)
+        ->get()
+        ->groupBy('mahasiswa_id');
+
+    // 🔥 Ambil tanggal per pertemuan
+    $tanggalPertemuan = Absensi::where('mata_kuliah_id', $mataKuliah->id)
+        ->select('pertemuan_ke', 'tanggal')
+        ->distinct()
+        ->orderBy('pertemuan_ke')
+        ->pluck('tanggal', 'pertemuan_ke');
+
+    // 🔥 Rekap data mahasiswa
+    $rekap = $mataKuliah->mahasiswa->map(function($mhs) use ($mataKuliah, $allAbsensi) {
+
+        $absensiList = ($allAbsensi[$mhs->id] ?? collect())
+            ->keyBy('pertemuan_ke');
+
+        $poin = $absensiList->sum(fn($a) => Absensi::BOBOT[$a->status] ?? 0);
+
+        $persen = $mataKuliah->total_pertemuan > 0
+            ? round(($poin / ($mataKuliah->total_pertemuan * 2)) * 100, 1)
+            : 0;
+
+        $hitung = collect(array_keys(Absensi::LABEL))
+            ->mapWithKeys(fn($s) => [
+                $s => $absensiList->where('status', $s)->count()
+            ])
+            ->toArray();
+
+        return [
+            'mahasiswa' => $mhs,
+            'absensi'   => $absensiList,
+            'poin'      => $poin,
+            'persen'    => $persen,
+            'lolos'     => $persen >= 75,
+            'hitung'    => $hitung,
+        ];
+    });
+
+    return view('absensi.rekap', compact(
+        'mataKuliah',
+        'rekap',
+        'tanggalPertemuan' // 🔥 kirim ke view
+    ));
+}
 }
