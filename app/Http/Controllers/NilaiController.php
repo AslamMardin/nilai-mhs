@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 use App\Models\{Absensi,MataKuliah,NilaiTeori,NilaiPraktikum,NilaiAkhir};
+use App\Models\BobotNilai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth,DB};
 
@@ -13,19 +14,21 @@ class NilaiController extends Controller {
 
     public function index(MataKuliah $mataKuliah) {
         $mataKuliah->load(['kampus','kelas']);
+        $bobot = BobotNilai::first();
         $mahasiswaList = $mataKuliah->mahasiswa()->with([
             'nilaiTeori'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiPraktikum' => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiAkhir'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
         ])->get();
-        return view('nilai.index', compact('mataKuliah','mahasiswaList'));
+        return view('nilai.index', compact('mataKuliah','mahasiswaList', 'bobot'));
     }
 
     public function formTeori(MataKuliah $mataKuliah) {
         abort_unless($mataKuliah->hasTeori(), 403, 'Mata kuliah ini tidak memiliki komponen teori.');
+        $bobot = BobotNilai::first();
         $mataKuliah->load(['kampus','kelas','mahasiswa']);
         $nilaiTeoriData = NilaiTeori::where('mata_kuliah_id',$mataKuliah->id)->get()->keyBy('mahasiswa_id');
-        return view('nilai.form-teori', compact('mataKuliah','nilaiTeoriData'));
+        return view('nilai.form-teori', compact('mataKuliah','nilaiTeoriData', 'bobot'));
     }
 
     public function simpanTeori(Request $request, MataKuliah $mataKuliah) {

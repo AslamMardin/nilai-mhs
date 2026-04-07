@@ -8,41 +8,51 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    public function editPassword()
-    {
-        return view('profile.ganti-password');
+    public function edit()
+{
+    return view('profile.edit', [
+        'user' => auth()->user()
+    ]);
+}
+
+public function update(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'namalengkap' => 'nullable|string|max:255',
+        'email' => 'required|email'
+    ]);
+    // dd($request->all());
+    $user = auth()->user();
+    $user->update($request->only('name','namalengkap','email'));
+
+    return back()->with('success', 'Profil berhasil diperbarui');
+}
+
+  
+
+public function editPassword()
+{
+    return view('profile.password');
+}
+
+public function updatePassword(Request $request)
+{
+    $request->validate([
+        'current_password' => 'required',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = auth()->user();
+
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Password lama salah']);
     }
 
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password_lama' => ['required'],
-            'password_baru' => ['required', 'min:6', 'confirmed'],
-        ],[
-            'confirmed' => 'Confirmasi Password Baru tidak sama',
-            'min' => 'Password baru minimal 6 Huruf'
-        ]);
+    $user->update([
+        'password' => Hash::make($request->password)
+    ]);
 
-        $user = Auth::user();
-
-        // Cek password lama
-        if (!Hash::check($request->password_lama, $user->password)) {
-            return back()->with('error', 'Password lama tidak sesuai!');
-        }
-
-        // Cegah password baru sama dengan lama
-        if (Hash::check($request->password_baru, $user->password)) {
-            return back()->with('error', 'Password baru tidak boleh sama dengan password lama!');
-        }
-
-        // Update password
-        $user->update([
-            'password' => Hash::make($request->password_baru)
-        ]);
-
-        // Optional: Logout paksa setelah ganti password
-        Auth::logout();
-
-        return redirect('/login')->with('success', 'Password berhasil diganti. Silakan login kembali.');
-    }
+    return back()->with('success', 'Password berhasil diganti');
+}
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\{AuthController, DashboardController, KampusController, KelasController, MataKuliahController, MahasiswaController, AbsensiController, NilaiController, LaporanController};
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BobotNilaiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -108,11 +109,24 @@ Route::middleware('auth')->group(function () {
         Route::get('/download/{file}', [BackupController::class, 'download'])->name('backup.download');
         Route::delete('/delete/{file}', [BackupController::class, 'delete'])->name('backup.delete');
 
-        // profile
-        Route::get('/ganti-password', [ProfileController::class, 'editPassword'])
-            ->name('password.edit');
 
-        Route::post('/ganti-password', [ProfileController::class, 'updatePassword'])
-            ->name('password.update');
+        // bobot
+        Route::get('/bobot-nilai', [BobotNilaiController::class, 'index'])->name('bobot.index');
+Route::post('/bobot-nilai', [BobotNilaiController::class, 'update'])->name('bobot.update');
+    
+
+// PROFILE
+Route::get('/profile', [ProfileController::class, 'edit'])
+    ->name('profile.edit');
+
+Route::put('/profile', [ProfileController::class, 'update'])
+    ->name('profile.update');
+
+// PASSWORD
+Route::get('/ganti-password', [ProfileController::class, 'editPassword'])
+    ->name('password.edit');
+
+Route::put('/ganti-password', [ProfileController::class, 'updatePassword'])
+    ->name('password.update');
     });
 });

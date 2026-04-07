@@ -1,4 +1,5 @@
 <?php namespace App\Models;
+use App\Models\BobotNilai;
 use Illuminate\Database\Eloquent\Model;
 
 class NilaiTeori extends Model {
@@ -10,9 +11,21 @@ class NilaiTeori extends Model {
     public function mataKuliah() { return $this->belongsTo(MataKuliah::class); }
 
     // NA = keaktifan*0.20 + tugas*0.20 + uts*0.25 + uas*0.35
-    public function hitung(): float {
-        return round(($this->keaktifan*0.20)+($this->tugas*0.20)+($this->uts*0.25)+($this->uas*0.35), 2);
-    }
+    // public function hitung(): float {
+    //     return round(($this->keaktifan*0.20)+($this->tugas*0.20)+($this->uts*0.25)+($this->uas*0.35), 2);
+    // }
+
+
+public function hitung(): float {
+    $bobot = BobotNilai::first();
+
+    return round(
+        ($this->keaktifan * (($bobot->keaktifan ?? 20)/100)) +
+        ($this->tugas     * (($bobot->tugas ?? 20)/100)) +
+        ($this->uts       * (($bobot->uts ?? 25)/100)) +
+        ($this->uas       * (($bobot->uas ?? 35)/100)),
+    2);
+}
 
     public static function simpan(array $d): self {
         $inst = self::updateOrCreate(

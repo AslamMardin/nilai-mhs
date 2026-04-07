@@ -82,7 +82,9 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
 <nav id="sb">
   <div class="brand">
     <p class="brand-title"><i class="bi bi-mortarboard-fill me-1"></i>Sistem Penilaian</p>
-    <p class="brand-sub mb-0">Aslam Mardin, S.Kom., M.Kom., Gr.</p>
+    <p class="brand-sub mb-0">
+  {{ auth()->user()->namalengkap ?? auth()->user()->name }}
+</p>
   </div>
 
   <div class="nav-section">Utama</div>
@@ -129,9 +131,16 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
     <a href="{{ route('backup.index') }}" class="nl {{ request()->routeIs('backup.index') ? 'active' : '' }}">
     <i class="bi bi-file-earmark-text"></i> Database
   </a>
-    <a href="{{ route('password.edit') }}" class="nl {{ request()->routeIs('password.edit') ? 'active' : '' }}">
-    <i class="bi bi-file-earmark-text"></i> Akun
+  <a href="{{ route('bobot.index') }}" class="nl {{ request()->routeIs('bobot.index') ? 'active' : '' }}">
+    <i class="bi bi-sliders me-1"></i> Bobot Nilai
   </a>
+    <a href="{{ route('profile.edit') }}" class="nl {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+  <i class="bi bi-person"></i> Edit Profil
+</a>
+
+<a href="{{ route('password.edit') }}" class="nl {{ request()->routeIs('password.*') ? 'active' : '' }}">
+  <i class="bi bi-lock"></i> Ganti Password
+</a>
 </nav>
 
 {{-- TOPBAR --}}

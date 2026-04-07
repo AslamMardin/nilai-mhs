@@ -39,9 +39,13 @@
 
 {{-- Info bobot --}}
 <div class="alert alert-light border py-2 mb-3" style="font-size:12px">
-  @if($mataKuliah->hasTeori())
-  <strong>Bobot Teori:</strong> Keaktifan 20% + Tugas 20% + UTS 25% + UAS 35%
-  @endif
+  @if($mataKuliah->hasTeori() && $bobot)
+<strong>Bobot Teori:</strong> 
+Keaktifan {{ $bobot->keaktifan }}% + 
+Tugas {{ $bobot->tugas }}% + 
+UTS {{ $bobot->uts }}% + 
+UAS {{ $bobot->uas }}%
+@endif
   @if($mataKuliah->jenis=='teori_praktikum')
   &nbsp;|&nbsp; <strong>Nilai Akhir:</strong> Teori 50% + Praktikum 50%
   @elseif($mataKuliah->jenis=='praktikum')

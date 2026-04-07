@@ -5,16 +5,37 @@ use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder {
     public function run(): void {
+
+     $this->call([
+        BobotNilaiSeeder::class,
+    ]);
         // ── Kampus ──
         $itbm  = DB::table('kampus')->insertGetId(['nama'=>'Institut Teknologi dan Bisnis Muhammadiyah Majene','kode'=>'ITBM','alamat'=>'Jl. Poros Majene, Sulawesi Barat','telepon'=>'0422-12345','created_at'=>now(),'updated_at'=>now()]);
         $stain = DB::table('kampus')->insertGetId(['nama'=>'Sekolah Tinggi Agama Islam Negeri Majene','kode'=>'STAIN','alamat'=>'Jl. BPD, Majene, Sulawesi Barat','telepon'=>'0422-67890','created_at'=>now(),'updated_at'=>now()]);
 
         // ── Users ──
-        DB::table('users')->insert([
-            ['name'=>'Aslam Mardin','email'=>'aslam11mardin@gmail.com','password'=>Hash::make('password'),'role'=>'superadmin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
-            ['name'=>'Admin','email'=>'admin@gmail.com','password'=>Hash::make('password'),'role'=>'admin','kampus_id'=>$itbm,'created_at'=>now(),'updated_at'=>now()],
-          
-        ]);
+     DB::table('users')->insert([
+    [
+        'name'         => 'Aslam Mardin',
+        'namalengkap'  => 'Aslam Mardin, S.Kom., M.Kom., Gr.',
+        'email'        => 'aslam11mardin@gmail.com',
+        'password'     => Hash::make('password'),
+        'role'         => 'superadmin',
+        'kampus_id'    => $itbm,
+        'created_at'   => now(),
+        'updated_at'   => now()
+    ],
+    [
+        'name'         => 'Admin',
+        'namalengkap'  => 'Admin',
+        'email'        => 'admin@gmail.com',
+        'password'     => Hash::make('password'),
+        'role'         => 'admin',
+        'kampus_id'    => $itbm,
+        'created_at'   => now(),
+        'updated_at'   => now()
+    ],
+]);
       // ── Kelas Sesuai Database Kamu (Genap 2026) ──
 
 // STAIN
