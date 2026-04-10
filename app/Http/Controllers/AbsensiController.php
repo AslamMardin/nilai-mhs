@@ -33,6 +33,7 @@ class AbsensiController extends Controller {
     ->distinct()
     ->orderBy('pertemuan_ke')
     ->pluck('tanggal', 'pertemuan_ke');
+
         return view('absensi.index', compact('mataKuliah','existingAbsensi','rekapKehadiran', 'tanggalPertemuan'));
     }
 
