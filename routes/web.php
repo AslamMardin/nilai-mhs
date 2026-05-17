@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/nilai',                              [NilaiController::class, 'pilih'])->name('nilai.pilih');
     Route::get('/nilai/{mataKuliah}',                 [NilaiController::class, 'index'])->name('nilai.index');
     Route::get('/nilai/{mataKuliah}/teori',           [NilaiController::class, 'formTeori'])->name('nilai.form-teori');
+    Route::get('/nilai/{mataKuliah}/teori/excel',     [NilaiController::class, 'exportTeoriExcel'])->name('nilai.teori.excel');
     Route::post('/nilai/{mataKuliah}/teori',          [NilaiController::class, 'simpanTeori'])->name('nilai.simpan-teori');
     Route::get('/nilai/{mataKuliah}/praktikum',       [NilaiController::class, 'formPraktikum'])->name('nilai.form-praktikum');
     Route::post('/nilai/{mataKuliah}/praktikum',      [NilaiController::class, 'simpanPraktikum'])->name('nilai.simpan-praktikum');

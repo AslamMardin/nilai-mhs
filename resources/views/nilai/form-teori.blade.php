@@ -28,12 +28,16 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <span><i class="bi bi-pencil-square text-primary me-1"></i>Form Input Nilai Teori</span>
             <div class="d-flex gap-2">
+                <a href="{{ route('nilai.teori.excel', $mataKuliah->id) }}" class="btn btn-sm btn-success">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Export Excel
+                    </a>
                 <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-fill-sample">Isi Contoh</button>
             </div>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ route('nilai.simpan-teori', $mataKuliah->id) }}" id="form-teori">
                 @csrf
+               
                 <div class="table-responsive">
                     <table class="table table-bordered align-middle" id="tbl-teori">
                         <thead class="table-light">
@@ -84,7 +88,7 @@
                                                 ][$field] }}"
                                                 min="0" max="100" step="0.01"
                                                 value="{{ old("nilai.{$idx}.{$field}", $ex?->$field ?? '') }}"
-                                                placeholder="0" required>
+                                                placeholder="0">
                                         </td>
                                     @endforeach
                                     <td class="text-center">

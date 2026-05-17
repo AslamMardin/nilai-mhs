@@ -1,8 +1,10 @@
 <?php namespace App\Http\Controllers;
+use App\Exports\NilaiTeoriExport;
 use App\Models\{Absensi,MataKuliah,NilaiTeori,NilaiPraktikum,NilaiAkhir};
 use App\Models\BobotNilai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth,DB};
+use Maatwebsite\Excel\Facades\Excel;
 
 class NilaiController extends Controller {
     public function pilih() {
@@ -32,14 +34,39 @@ class NilaiController extends Controller {
     }
 
     public function simpanTeori(Request $request, MataKuliah $mataKuliah) {
-        $request->validate(['nilai'=>'required|array','nilai.*.mahasiswa_id'=>'required|exists:mahasiswa,id','nilai.*.keaktifan'=>'required|numeric|min:0|max:100','nilai.*.tugas'=>'required|numeric|min:0|max:100','nilai.*.uts'=>'required|numeric|min:0|max:100','nilai.*.uas'=>'required|numeric|min:0|max:100']);
+        $request->validate([
+            'nilai' => 'required|array',
+            'nilai.*.mahasiswa_id' => 'required|exists:mahasiswa,id',
+            'nilai.*.keaktifan' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.tugas' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.uts' => 'nullable|numeric|min:0|max:100',
+            'nilai.*.uas' => 'nullable|numeric|min:0|max:100',
+        ]);
+
         DB::transaction(function() use ($request, $mataKuliah) {
             foreach ($request->nilai as $d) {
-                NilaiTeori::simpan(['mahasiswa_id'=>$d['mahasiswa_id'],'mata_kuliah_id'=>$mataKuliah->id,'keaktifan'=>$d['keaktifan'],'tugas'=>$d['tugas'],'uts'=>$d['uts'],'uas'=>$d['uas']]);
+                NilaiTeori::simpan([
+                    'mahasiswa_id' => $d['mahasiswa_id'],
+                    'mata_kuliah_id' => $mataKuliah->id,
+                    'keaktifan' => $d['keaktifan'] ?? 0,
+                    'tugas' => $d['tugas'] ?? 0,
+                    'uts' => $d['uts'] ?? 0,
+                    'uas' => $d['uas'] ?? 0,
+                ]);
                 $this->hitungNilaiAkhir($d['mahasiswa_id'], $mataKuliah->id);
             }
         });
         return redirect()->route('nilai.index',$mataKuliah->id)->with('success','Nilai teori berhasil disimpan.');
+    }
+
+    public function exportTeoriExcel(MataKuliah $mataKuliah)
+    {
+        abort_unless($mataKuliah->hasTeori(), 403, 'Mata kuliah ini tidak memiliki komponen teori.');
+
+        return Excel::download(
+            new NilaiTeoriExport($mataKuliah),
+            'Nilai-Teori-' . $mataKuliah->kode . '.xlsx'
+        );
     }
 
     public function formPraktikum(MataKuliah $mataKuliah) {
