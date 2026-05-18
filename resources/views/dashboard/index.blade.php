@@ -137,7 +137,7 @@
                                     </td>
                                     <td>
                                         <div class="fw-500">{{ $mhs->nama }}</div>
-                                        <small class="text-muted">{{ $mhs->nim }}</small>
+                                        <small class="text-muted">{{ $mhs->nim }} - {{ $mhs->kelas->nama }}</small>
                                     </td>
                                     <td class="text-end fw-700 text-primary">
                                         {{ number_format($mhs->rata_nilai ?? 0, 2) }}
