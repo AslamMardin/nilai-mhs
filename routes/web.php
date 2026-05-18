@@ -78,9 +78,15 @@ Route::middleware('auth')->group(function () {
     // Nilai
     Route::get('/nilai',                              [NilaiController::class, 'pilih'])->name('nilai.pilih');
     Route::get('/nilai/{mataKuliah}',                 [NilaiController::class, 'index'])->name('nilai.index');
+    Route::get('/nilai/{mataKuliah}/excel',           [NilaiController::class, 'exportExcel'])->name('nilai.excel');
+    Route::get('/nilai/{mataKuliah}/pdf',             [NilaiController::class, 'exportPdf'])->name('nilai.pdf');
     Route::get('/nilai/{mataKuliah}/teori',           [NilaiController::class, 'formTeori'])->name('nilai.form-teori');
     Route::get('/nilai/{mataKuliah}/teori/excel',     [NilaiController::class, 'exportTeoriExcel'])->name('nilai.teori.excel');
     Route::post('/nilai/{mataKuliah}/teori',          [NilaiController::class, 'simpanTeori'])->name('nilai.simpan-teori');
+    Route::get('/nilai/{mataKuliah}/keaktifan',       [NilaiController::class, 'formKeaktifan'])->name('nilai.form-keaktifan');
+    Route::post('/nilai/{mataKuliah}/keaktifan',      [NilaiController::class, 'simpanKeaktifan'])->name('nilai.simpan-keaktifan');
+    Route::get('/nilai/{mataKuliah}/tugas',           [NilaiController::class, 'formTugas'])->name('nilai.form-tugas');
+    Route::post('/nilai/{mataKuliah}/tugas',          [NilaiController::class, 'simpanTugas'])->name('nilai.simpan-tugas');
     Route::get('/nilai/{mataKuliah}/praktikum',       [NilaiController::class, 'formPraktikum'])->name('nilai.form-praktikum');
     Route::post('/nilai/{mataKuliah}/praktikum',      [NilaiController::class, 'simpanPraktikum'])->name('nilai.simpan-praktikum');
 

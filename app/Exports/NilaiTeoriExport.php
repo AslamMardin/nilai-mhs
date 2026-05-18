@@ -6,8 +6,9 @@ use App\Models\NilaiTeori;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize
+class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, WithTitle
 {
     protected $mataKuliah;
 
@@ -51,5 +52,11 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize
     public function headings(): array
     {
         return ['No', 'NIM', 'Nama', 'Keaktifan', 'Tugas', 'UTS', 'UAS', 'NA Teori'];
+    }
+
+    public function title(): string
+    {
+        $title = preg_replace('/[^a-zA-Z0-9_\s]/', '', $this->mataKuliah->kode ?? 'Teori');
+        return substr('Teori ' . $title, 0, 31);
     }
 }
