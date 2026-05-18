@@ -106,7 +106,13 @@ class NilaiController extends Controller {
         abort_unless($mataKuliah->hasTeori(), 403, 'Mata kuliah ini tidak memiliki komponen teori.');
         $mataKuliah->load(['kampus','kelas','mahasiswa']);
         $keaktifanData = NilaiKeaktifanDetail::where('mata_kuliah_id',$mataKuliah->id)->get()->groupBy('mahasiswa_id');
-        return view('nilai.form-keaktifan', compact('mataKuliah','keaktifanData'));
+        
+        // Ambil data absensi mahasiswa pada mata kuliah ini
+        $absensiData = Absensi::where('mata_kuliah_id', $mataKuliah->id)
+            ->get()
+            ->keyBy(fn($a) => "{$a->mahasiswa_id}_{$a->pertemuan_ke}");
+
+        return view('nilai.form-keaktifan', compact('mataKuliah','keaktifanData', 'absensiData'));
     }
 
     public function simpanKeaktifan(Request $request, MataKuliah $mataKuliah) {

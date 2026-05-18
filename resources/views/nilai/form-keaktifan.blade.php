@@ -61,23 +61,49 @@
                                         <div class="text-muted" style="font-size: 11px;">{{ $mhs->nim }}</div>
                                     </td>
                                     @for($i = 1; $i <= $jumlahPertemuan; $i++)
-                                        @php
-                                            $skor = $ex->has($i) ? $ex[$i]->skor : '';
-                                            $indikator = $ex->has($i) ? $ex[$i]->indikator : [];
-                                            $totalSkor += (float) $skor;
-                                        @endphp
-                                        <td class="p-0 align-middle">
-                                            <div class="w-100 h-100 d-flex align-items-center justify-content-center cell-keaktifan"
-                                                 data-mhs="{{ $mhs->nama }}" data-idx="{{ $idx }}" data-p="{{ $i }}"
-                                                 style="cursor: pointer; min-height: 35px;">
-                                                
-                                                <span class="score-display badge {{ $skor > 0 ? 'bg-success' : 'bg-light text-dark border' }}">
-                                                    {{ $skor !== '' ? $skor : '—' }}
-                                                </span>
-                                                <input type="hidden" name="nilai[{{ $idx }}][pertemuan][{{ $i }}][skor]" class="input-skor" value="{{ $skor }}">
-                                                <input type="hidden" name="nilai[{{ $idx }}][pertemuan][{{ $i }}][indikator]" class="input-indikator" value="{{ json_encode($indikator) }}">
-                                            </div>
-                                        </td>
+                                         @php
+                                             $key = "{$mhs->id}_{$i}";
+                                             $absen = $absensiData[$key] ?? null;
+                                             $isLocked = $absen && in_array($absen->status, ['A', 'S', 'I']);
+
+                                             $skor = ($ex->has($i) && !$isLocked) ? $ex[$i]->skor : '';
+                                             $indikator = ($ex->has($i) && !$isLocked) ? $ex[$i]->indikator : [];
+                                             $totalSkor += (float) $skor;
+                                         @endphp
+                                         <td class="p-0 align-middle {{ $isLocked ? 'bg-light' : '' }}">
+                                             <div class="w-100 h-100 d-flex align-items-center justify-content-center cell-keaktifan"
+                                                  data-mhs="{{ $mhs->nama }}" data-idx="{{ $idx }}" data-p="{{ $i }}"
+                                                  {!! $isLocked ? 'data-disabled="true"' : '' !!}
+                                                  style="{{ $isLocked ? '' : 'cursor: pointer;' }} min-height: 35px;">
+                                                 
+                                                 @if ($isLocked)
+                                                     @php
+                                                         $badgeClass = match($absen->status) {
+                                                             'A' => 'bg-danger-subtle text-danger border border-danger-subtle',
+                                                             'S' => 'bg-info-subtle text-info border border-info-subtle',
+                                                             'I' => 'bg-secondary-subtle text-secondary border border-secondary-subtle',
+                                                             default => 'bg-light text-dark'
+                                                         };
+                                                         $statusLabel = match($absen->status) {
+                                                             'A' => 'Alpa',
+                                                             'S' => 'Sakit',
+                                                             'I' => 'Izin',
+                                                             default => ''
+                                                         };
+                                                     @endphp
+                                                     <span class="badge {{ $badgeClass }}" style="font-size: 10px;" title="Tidak bisa diisi karena {{ $statusLabel }}">
+                                                         {{ $statusLabel }}
+                                                     </span>
+                                                 @else
+                                                     <span class="score-display badge {{ $skor > 0 ? 'bg-success' : 'bg-light text-dark border' }}">
+                                                         {{ $skor !== '' ? $skor : '—' }}
+                                                     </span>
+                                                 @endif
+                                                 
+                                                 <input type="hidden" name="nilai[{{ $idx }}][pertemuan][{{ $i }}][skor]" class="input-skor" value="{{ $skor }}">
+                                                 <input type="hidden" name="nilai[{{ $idx }}][pertemuan][{{ $i }}][indikator]" class="input-indikator" value="{{ json_encode($indikator) }}">
+                                             </div>
+                                         </td>
                                     @endfor
                                     <td class="fw-700 bg-light">
                                         <span class="rata-rata text-primary" style="font-size: 14px;">
@@ -195,6 +221,9 @@
         // Buka modal saat sel di-klik
         document.querySelectorAll('.cell-keaktifan').forEach(cell => {
             cell.addEventListener('click', function() {
+                // Cegah membuka modal jika sel berstatus disabled
+                if (this.dataset.disabled === 'true') return;
+
                 currentCell = this;
                 const mhs = this.dataset.mhs;
                 const p = this.dataset.p;
@@ -282,6 +311,9 @@
                 let changed = false;
 
                 cells.forEach(cell => {
+                    // Abaikan sel yang berstatus disabled (Alpa/Sakit/Izin)
+                    if (cell.dataset.disabled === 'true') return;
+
                     const inputSkor = cell.querySelector('.input-skor');
                     const inputIndikator = cell.querySelector('.input-indikator');
                     const badge = cell.querySelector('.score-display');
