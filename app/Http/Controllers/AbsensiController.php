@@ -53,7 +53,7 @@ class AbsensiController extends Controller {
                 );
             }
         });
-        return redirect()->route('absensi.index',$mataKuliah->id)
+        return redirect()->route('absensi.index', ['mataKuliah' => $mataKuliah->id, 'pertemuan' => $request->pertemuan_ke])
             ->with('success',"Absensi pertemuan ke-{$request->pertemuan_ke} berhasil disimpan.");
     }
 

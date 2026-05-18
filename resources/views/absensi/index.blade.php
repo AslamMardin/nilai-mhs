@@ -49,13 +49,19 @@
               <label class="form-label">Pertemuan Ke-</label>
               <select name="pertemuan_ke" class="form-select" id="sel-pertemuan">
                 @for($i=1;$i<=$mataKuliah->total_pertemuan;$i++)
-                <option value="{{ $i }}" {{ old('pertemuan_ke',1)==$i?'selected':'' }}>Pertemuan {{ $i }}</option>
+                <option value="{{ $i }}" {{ old('pertemuan_ke', request('pertemuan', 1)) == $i ? 'selected' : '' }}>Pertemuan {{ $i }}</option>
                 @endfor
               </select>
             </div>
             <div class="col-sm-4">
               <label class="form-label">Tanggal</label>
-              <input type="date" name="tanggal" class="form-control" value="{{ old('tanggal',date('Y-m-d')) }}">
+              @php
+                  $pilihPertemuan = old('pertemuan_ke', request('pertemuan', 1));
+                  $defaultTanggal = isset($tanggalPertemuan[$pilihPertemuan]) 
+                                    ? \Carbon\Carbon::parse($tanggalPertemuan[$pilihPertemuan])->format('Y-m-d') 
+                                    : date('Y-m-d');
+              @endphp
+              <input type="date" name="tanggal" class="form-control" value="{{ old('tanggal', $defaultTanggal) }}">
             </div>
             <div class="col-sm-4 d-flex align-items-end">
               <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save me-1"></i>Simpan</button>
@@ -70,7 +76,7 @@
               <tbody>
                 @foreach($mataKuliah->mahasiswa as $idx => $mhs)
                 @php
-                  $pertemuan = old('pertemuan_ke',1);
+                  $pertemuan = old('pertemuan_ke', request('pertemuan', 1));
                   $existing  = $existingAbsensi["{$mhs->id}_{$pertemuan}"] ?? null;
                 @endphp
                 <input type="hidden" name="absensi[{{ $idx }}][mahasiswa_id]" value="{{ $mhs->id }}">
@@ -186,17 +192,9 @@
 document.getElementById('btn-all-h')?.addEventListener('click',()=>{
   document.querySelectorAll('input[type=radio][value=H]').forEach(r=>r.checked=true);
 });
-// Update existing absensi when pertemuan changes
+// Memuat ulang halaman untuk mengambil data pertemuan yang dipilih dari server
 document.getElementById('sel-pertemuan')?.addEventListener('change', function() {
-  const p = this.value;
-  const existing = @json($existingAbsensi->mapWithKeys(fn($v,$k)=>[$k=>$v->status??null]));
-  document.querySelectorAll('[id^="s"]').forEach(r => {
-    const parts = r.id.split('_');
-    const mhsId = parts[0].replace('s','');
-    const key = `${mhsId}_${p}`;
-    if (existing[key] && r.value === existing[key]) r.checked = true;
-    else if (!existing[key] && r.value === 'H') r.checked = true;
-  });
+  window.location.href = "?pertemuan=" + this.value;
 });
 </script>
 @endpush
