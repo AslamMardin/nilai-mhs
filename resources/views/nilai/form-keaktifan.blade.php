@@ -2,6 +2,19 @@
 @section('title', 'Input Nilai Keaktifan Detail')
 @section('page-title', 'Nilai · Input Keaktifan')
 @section('content')
+    <style>
+        .table-responsive {
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+        .table-responsive table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 9;
+            background-color: #f8f9fa !important;
+            box-shadow: inset 0 -1px 0 #dee2e6, inset 0 1px 0 #dee2e6;
+        }
+    </style>
     <div class="card mb-3">
         <div class="card-body py-2 d-flex align-items-center gap-3">
             <div class="flex-grow-1">
