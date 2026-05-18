@@ -1,375 +1,164 @@
+# 🎓 Nilai-Mhs: Sistem Penilaian & Akademik Terpadu
 
----
-# 🎓 Sistem Penilaian Mahasiswa
-
-Aplikasi berbasis **Laravel** untuk mengelola data mahasiswa, nilai, absensi, dan laporan akademik secara terstruktur dan modern.
-
----
-
-## ✨ Fitur Utama
-
-### 👨‍🎓 Manajemen Mahasiswa
-- Data mahasiswa per kampus & kelas
-- Pencarian berdasarkan NIM / Nama
-- Status mahasiswa (aktif / nonaktif)
-
-### 🏫 Kampus & Kelas
-- Multi kampus (bisa ganti kampus aktif)
-- Relasi kelas per kampus
-- Filter dinamis berdasarkan kampus
-
-### 📚 Mata Kuliah
-- Mata kuliah per kelas
-- Jenis:
-  - Teori
-  - Praktikum
-  - Teori + Praktikum
+Aplikasi berbasis **Laravel** untuk mengelola data akademik secara komprehensif, mulai dari data mahasiswa, absensi harian, hingga kalkulasi otomatis nilai akhir dan pencetakan laporan.
 
 ---
 
-## 📊 Sistem Penilaian
-
-### 📝 Nilai Teori
-- Keaktifan (20%)
-- Tugas (20%)
-- UTS (25%)
-- UAS (35%)
-
-### 🔧 Nilai Praktikum
-- Nilai praktikum (100%)
-
-### 🧮 Perhitungan Nilai Akhir
-- Teori → nilai teori
-- Praktikum → nilai praktikum
-- Gabungan → (Teori 50% + Praktikum 50%)
-
-### 🎯 Syarat Kelulusan
-- Kehadiran ≥ **75%**
-- Nilai akhir ≥ **55**
+## 🚀 Sekilas Aplikasi
+**Nilai-Mhs** dirancang untuk memudahkan dosen dan pengelola kampus dalam:
+- Mengelola data master (Kampus, Kelas, Mata Kuliah, Mahasiswa).
+- Menginput absensi harian secara efisien dengan riwayat per pertemuan.
+- Menghitung nilai secara transparan dengan rincian komponen Keaktifan (via *Checklist*), Tugas (Dinamis), UTS, dan UAS.
+- Mengelola penilaian praktikum secara terpisah.
+- Mengekspor data dalam format PDF dan Excel.
 
 ---
 
-## 📅 Absensi
-- Sistem kehadiran per pertemuan
-- Perhitungan:
-  - Poin kehadiran
-  - Persentase kehadiran
-- Otomatis mempengaruhi kelulusan
+## 📸 Tampilan Aplikasi (Screenshots)
+
+Berikut adalah beberapa pratinjau antarmuka aplikasi:
+
+### 1. Halaman Login
+![Login](ss/login.png)
+*Halaman autentikasi sistem.*
+
+### 2. Dashboard Utama
+![Dashboard](ss/dashboard.png)
+*Gambaran statistik kampus, jumlah mahasiswa, dan tingkat kelulusan.*
+
+### 3. Manajemen Master Data
+![Daftar Kelas](ss/daftar%20kelas.png)
+*Halaman manajemen kelas perkuliahan.*
+
+![Daftar Mahasiswa](ss/daftar%20mahasiswa.png)
+*Halaman manajemen daftar mahasiswa per kampus.*
+
+### 4. Form Input Absensi Harian
+![Absensi](ss/absensi.png)
+*Tampilan form absensi per pertemuan.*
+
+### 5. Modul Penilaian
+![Checklist Keaktifan](ss/input%20nilai%20keaktifan.png)
+*Form Keaktifan dengan sistem Checklist interaktif.*
+
+![Input Tugas](ss/input%20nilai%20tugas.png)
+*Penambahan dan pengisian kolom tugas secara dinamis.*
+
+![Input Teori](ss/input%20teori.png)
+*Form untuk menginput nilai ujian (UTS/UAS).*
+
+### 6. Rekapitulasi & Laporan
+![Rekap Nilai](ss/rekap%20nilai%20matakuliah.png)
+*Tabel rekapitulasi nilai akhir mahasiswa dan kehadiran.*
+
+![Rekap Mata Kuliah](ss/rekap%20matakuliah.png)
+*Statistik nilai dan distribusi huruf mutu suatu mata kuliah.*
+
+![Rekap Keseluruhan](ss/rekap%20nilai.png)
+*Halaman laporan rekap keseluruhan.*
+
+![Laporan PDF](ss/laporan%20pdf.png)
+*Hasil ekspor dokumen ke format PDF.*
+
+### 7. Pengaturan Sistem
+![Setting Nilai Bobot](ss/setting%20nilai%20bobot.png)
+*Halaman untuk mengatur persentase bobot tiap komponen nilai.*
+
+![Backup Data](ss/backup%20data.png)
+*Fitur backup dan pemulihan database sistem.*
+
+![Monitor](ss/monitor.png)
+*Monitoring penggunaan resource server.*
+
+### 8. Pengaturan Akun
+![Ubah Profile](ss/ubah%20profile.png)
+*Halaman pengaturan data profil pengguna.*
+
+![Ubah Password](ss/ubah%20password.png)
+*Halaman pergantian kata sandi yang aman.*
 
 ---
 
-## 📈 Dashboard
+## 🔄 Alur Kerja (Workflow) Sistem
 
-Menampilkan:
-- Total mahasiswa
-- Total mata kuliah
-- Total kelas
-- Persentase kelulusan
-- Distribusi nilai (A–E)
-- Rekap per kelas
-- Ranking mahasiswa 🏆
+1. **Pengaturan Master Data (Admin/Kaprodi):**
+   - Menambahkan data **Kampus** dan **Kelas**.
+   - Menambahkan data **Mata Kuliah** beserta detail bobot (Teori/Praktikum) dan jumlah pertemuannya.
+   - Memasukkan data **Mahasiswa** ke dalam kelas.
 
----
+2. **Manajemen Kelas (KRS/Pendaftaran):**
+   - Mendaftarkan mahasiswa ke mata kuliah tertentu agar mereka masuk ke dalam daftar absensi dan penilaian.
 
-## 🏆 Ranking Mahasiswa
-- Berdasarkan rata-rata nilai akhir
-- Top mahasiswa terbaik kampus
-- Highlight ranking 1
+3. **Operasional Harian (Dosen):**
+   - **Absensi:** Dosen masuk ke menu Absensi, memilih pertemuan, dan mencatat status kehadiran mahasiswa. Keterangan spesifik (Sakit, Izin) dapat dicantumkan.
+   - **Keaktifan:** Dosen masuk ke form Keaktifan, lalu mengklik sel mahasiswa untuk mencentang indikator keaktifan. Sistem mencegah skor melebihi batas maksimal (100).
+   - **Tugas:** Dosen bebas menambahkan kolom-kolom tugas spesifik dan mengisi skornya. Sistem otomatis membagi rata-ratanya.
 
----
+4. **Ujian & Penilaian Akhir (Akhir Semester):**
+   - Dosen menginput nilai akhir UTS dan UAS di form **Input Teori**.
+   - Sistem secara cerdas menggabungkan semua nilai berdasarkan bobot yang ditetapkan pada master data (misal: Keaktifan 20%, Tugas 20%, UTS 25%, UAS 35%).
+   - Sistem memeriksa syarat kehadiran minimal (standar ≥ 75%). Jika di bawah itu, mahasiswa otomatis dinyatakan **Tidak Lulus** secara sistem.
 
-## 📑 Laporan
-
-### 📊 Nilai per Kelas
-- Rekap nilai semua mahasiswa
-- Rata-rata per mahasiswa
-- Export:
-  - Excel
-  - PDF
-
-### 📄 Transkrip Nilai
-- Data lengkap per mahasiswa
-- Nilai tiap mata kuliah
-- Total SKS & rata-rata
-- Export:
-  - Excel
-  - PDF
-
-### 📈 Rekap Mata Kuliah
-- Distribusi nilai huruf
-- Statistik kelulusan
+5. **Pelaporan (Laporan & Cetak):**
+   - Angka desimal nilai akhir terkonversi secara otomatis ke Huruf Mutu (A, B, C, D, E).
+   - Pengelola mencetak Laporan Rekap Nilai Mata Kuliah atau mendistribusikan berkas dalam wujud Excel (XLSX) maupun PDF.
 
 ---
 
-## 📤 Export Data
-- Export ke **Excel**
-- Export ke **PDF**
-- Loading indicator saat download
+## ⚙️ Syarat Sistem & Instalasi
 
----
-
-## ⚙️ Teknologi
-
-- Laravel 13
-- Blade Template
-- Bootstrap 5
-- MySQL
-- Laravel Excel (opsional)
-- DomPDF (PDF export)
-
----
-
-## 🚀 Instalasi
-
-```bash
-git clone https://github.com/username/nama-project.git
-cd nama-project
-composer install
-cp .env.example .env
-php artisan key:generate
-
-
----
-## Prasyarat
-
+### Prasyarat
 - PHP >= 8.2
 - Composer
 - MySQL / MariaDB
-- Node.js & NPM (opsional, jika pakai Vite)
+- Node.js & NPM (Opsional, untuk aset Vite)
+
+### Langkah-langkah Instalasi
+
+1. **Kloning Repositori**
+   ```bash
+   git clone https://github.com/username/nilai-mhs.git
+   cd nilai-mhs
+   ```
+
+2. **Instalasi Dependensi**
+   ```bash
+   composer install
+   npm install && npm run build
+   ```
+
+3. **Konfigurasi Lingkungan (Environment)**
+   Salin file konfigurasi bawaan dan sesuaikan kredensial database Anda:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   *Buka file `.env` lalu sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` Anda.*
+
+4. **Migrasi Database & Seeding**
+   Siapkan struktur tabel dan data *dummy* awal dengan menjalankan perintah berikut:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+
+5. **Jalankan Aplikasi**
+   ```bash
+   php artisan serve
+   ```
+   Aplikasi dapat diakses di: `http://localhost:8000`
+
+### Akun Login Default
+- **Email:** `aslam11mardin@gmail.com`
+- **Password:** `password`
+
+*(Catatan: Sesuaikan kembali email ini jika Anda memodifikasi file DatabaseSeeder)*
 
 ---
 
-## 1. Buat Proyek Laravel Baru
-
-```bash
-composer create-project laravel/laravel sistem-penilaian
-cd sistem-penilaian
-```
-
----
-
-## 2. Konfigurasi Database (.env)
-
-Edit file `.env`:
-
-```env
-APP_NAME="Sistem Penilaian"
-APP_URL=http://localhost:8000
-APP_LOCALE=id
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=sistem_penilaian
-DB_USERNAME=root
-DB_PASSWORD=
-
-# Timezone Indonesia
-APP_TIMEZONE=Asia/Makassar
-```
-
-Buat database:
-```sql
-CREATE DATABASE sistem_penilaian CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
----
-
-## 3. Pasang Autentikasi (Laravel Breeze)
-
-```bash
-composer require laravel/breeze --dev
-php artisan breeze:install blade
-npm install && npm run build
-```
-
----
-
-## 4. Salin File Proyek Ini
-
-Salin file-file berikut ke struktur Laravel:
-
-```
-database/migrations/          ← semua file dari folder migrations/
-app/Models/                   ← Kampus.php, Kelas.php, MataKuliah.php,
-                                 Mahasiswa.php, Absensi.php, NilaiModels.php
-app/Http/Controllers/         ← DashboardController.php, NilaiController.php,
-                                 AbsensiController.php, LaporanController.php,
-                                 OtherControllers.php (pisah per class)
-database/seeders/             ← DatabaseSeeder.php
-routes/                       ← web.php
-resources/views/              ← seluruh folder views/
-```
-
-> **Catatan:** File `NilaiModels.php` dan `OtherControllers.php` berisi
-> beberapa class. Pisahkan menjadi file individual sesuai nama class-nya.
-
----
-
-## 5. Jalankan Migrasi & Seeder
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-Output seeder:
-```
-Seeder berhasil: 2 kampus, 5 kelas, 3 mata kuliah, 8 mahasiswa.
-```
-
----
-
-## 6. Tambahkan Helper Blade `@active`
-
-Di `AppServiceProvider.php` dalam metode `boot()`:
-
-```php
-use Illuminate\Support\Facades\Blade;
-
-public function boot(): void
-{
-    Blade::directive('active', function ($expression) {
-        return "<?php echo request()->routeIs($expression) ? 'active' : ''; ?>";
-    });
-}
-```
-
----
-
-## 7. Jalankan Aplikasi
-
-```bash
-php artisan serve
-```
-
-Buka: http://localhost:8000
-
-**Login default (dari seeder):**
-- Email: `admin@penilaian.ac.id`
-- Password: `password`
-
----
-
-## 8. Paket Opsional
-
-### Export PDF (Laporan)
-```bash
-composer require barryvdh/laravel-dompdf
-```
-Aktifkan method `exportPdf()` di `LaporanController.php`.
-
-### Export Excel
-```bash
-composer require maatwebsite/excel
-```
-
----
-
-## Struktur Database
-
-```
-kampus
-├── id, nama, kode, alamat, telepon
-
-kelas
-├── id, kampus_id*, nama, kode, semester, tahun_ajaran, wali_kelas
-
-mata_kuliah
-├── id, kampus_id*, kelas_id*, kode, nama, sks, jenis, dosen, total_pertemuan
-
-mahasiswa
-├── id, kampus_id*, kelas_id*, nim, nama, jenis_kelamin, email, status, ...
-
-pendaftaran_mahasiswa  ← pivot many-to-many
-├── id, mahasiswa_id*, mata_kuliah_id*, tahun_ajaran, semester, status
-
-absensi
-├── id, mahasiswa_id*, mata_kuliah_id*, pertemuan_ke, tanggal
-├── status: H(2)/T(1)/S(1)/I(0)/A(0)
-
-nilai_teori
-├── id, mahasiswa_id*, mata_kuliah_id*
-├── keaktifan(20%), tugas(20%), uts(25%), uas(35%), nilai_akhir_teori
-
-nilai_praktikum
-├── id, mahasiswa_id*, mata_kuliah_id*, nilai_praktikum(100%)
-
-nilai_akhir  ← hasil kalkulasi final
-├── id, mahasiswa_id*, mata_kuliah_id*
-├── nilai_teori, nilai_praktikum, nilai_akhir (50:50)
-├── huruf_mutu (A/B/C/D/E), persentase_kehadiran, poin_kehadiran
-└── status_kelulusan, keterangan_gagal
-```
-
----
-
-## Logika Perhitungan
-
-### Nilai Teori
-```
-NA_Teori = (Keaktifan × 0.20) + (Tugas × 0.20) + (UTS × 0.25) + (UAS × 0.35)
-```
-
-### Nilai Praktikum
-```
-NA_Praktikum = nilai_praktikum (100%)
-```
-
-### Nilai Akhir (Teori + Praktikum)
-```
-Jenis "teori"           → NA = NA_Teori
-Jenis "praktikum"       → NA = NA_Praktikum
-Jenis "teori_praktikum" → NA = (NA_Teori × 0.50) + (NA_Praktikum × 0.50)
-```
-
-### Kehadiran
-```
-Bobot: H=2, T=1, S=1, I=0, A=0
-Poin Kehadiran   = Σ bobot status semua pertemuan
-Persentase       = (Poin / (total_pertemuan × 2)) × 100
-Syarat Lulus     ≥ 75%
-```
-
-### Status Kelulusan
-```
-TIDAK LULUS jika:
-  - Persentase kehadiran < 75%, ATAU
-  - Nilai akhir < 55 (huruf E)
-LULUS jika kedua syarat terpenuhi
-```
-
-### Konversi Huruf Mutu
-```
-≥ 85  → A
-75-84 → B
-65-74 → C
-55-64 → D
-< 55  → E
-```
-
----
-
-## Rute Utama
-
-| Method | URL | Nama Route | Fungsi |
-|--------|-----|-----------|--------|
-| GET | /login | login | Halaman login |
-| POST | /login | login | Proses login |
-| GET | /dashboard | dashboard | Dashboard |
-| GET/POST | /kampus | kampus.* | CRUD Kampus |
-| GET/POST | /kelas | kelas.* | CRUD Kelas |
-| GET/POST | /mata-kuliah | mata-kuliah.* | CRUD Mata Kuliah |
-| GET/POST | /mahasiswa | mahasiswa.* | CRUD Mahasiswa |
-| GET | /absensi/{id} | absensi.index | Form absensi |
-| POST | /absensi/{id} | absensi.simpan | Simpan absensi |
-| GET | /absensi/{id}/rekap | absensi.rekap | Rekap kehadiran |
-| GET | /nilai/{id} | nilai.index | Rekap nilai |
-| GET/POST | /nilai/{id}/teori | nilai.form-teori | Input nilai teori |
-| GET/POST | /nilai/{id}/praktikum | nilai.form-praktikum | Input nilai praktikum |
-| GET | /laporan/nilai-per-kelas | laporan.nilai-per-kelas | Laporan per kelas |
-| GET | /laporan/rekap-kampus | laporan.rekap-kampus | Rekap kampus |
-| GET | /laporan/transkrip | laporan.transkrip | Transkrip mahasiswa |
-
-
-
-
+## 🛠 Teknologi yang Digunakan
+- **Backend:** Laravel 11+, PHP 8.2+
+- **Frontend:** Blade Templating, Bootstrap 5, Vanilla JavaScript
+- **Database:** MySQL
+- **Library Ekspor:**
+  - `barryvdh/laravel-dompdf` (PDF)
+  - `maatwebsite/excel` (Excel)
