@@ -70,30 +70,60 @@ $rekapKelas = $kelasList->map(function ($kls) {
 });
 
 
-$rankingMahasiswa = Mahasiswa::where('kampus_id', $kampusId)
-    ->select('mahasiswa.*')
-    ->selectSub(function ($q) {
-        $q->from('nilai_akhir')
-          ->selectRaw('AVG(nilai_akhir)')
-          ->whereColumn('mahasiswa_id', 'mahasiswa.id');
-    }, 'rata_nilai')
-    ->orderByDesc('rata_nilai')
-    ->take(5) // ambil top 5
-    ->get();
+        // Ranking Mahasiswa Global (Semua)
+        $rankingMahasiswa = Mahasiswa::where('kampus_id', $kampusId)
+            ->select('mahasiswa.*')
+            ->selectSub(function ($q) {
+                $q->from('nilai_akhir')
+                  ->selectRaw('AVG(nilai_akhir)')
+                  ->whereColumn('mahasiswa_id', 'mahasiswa.id');
+            }, 'rata_nilai')
+            ->orderByDesc('rata_nilai')
+            ->take(10)
+            ->get();
 
-return view('dashboard.index', compact(
-    'kampusAktif',
-    'semuaKampus',
-    'totalMahasiswa',
-    'totalMataKuliah',
-    'totalKelas',
-    'persenLulus',
-    'distribusi', // tetap ini
-    'statLulus',
-    'mataKuliahList',
-    'kelasList',
-    'rekapKelas',
-    'rankingMahasiswa'
-));
+        // Ranking Mahasiswa per Kelas
+        $rankingPerKelas = [];
+        foreach ($kelasList as $kls) {
+            $rankingPerKelas[$kls->id] = Mahasiswa::where('kelas_id', $kls->id)
+                ->select('mahasiswa.*')
+                ->selectSub(function ($q) {
+                    $q->from('nilai_akhir')
+                      ->selectRaw('AVG(nilai_akhir)')
+                      ->whereColumn('mahasiswa_id', 'mahasiswa.id');
+                }, 'rata_nilai')
+                ->orderByDesc('rata_nilai')
+                ->take(10)
+                ->get();
+        }
+
+        // Mahasiswa Berisiko (Kehadiran < 75% atau Nilai Akhir < 55)
+        $mahasiswaBerisiko = NilaiAkhir::with(['mahasiswa.kelas', 'mataKuliah'])
+            ->whereHas('mahasiswa', fn($q) => $q->where('kampus_id', $kampusId))
+            ->where(function($q) {
+                $q->where('status_kelulusan', 'tidak_lulus')
+                  ->orWhere('persentase_kehadiran', '<', 75.0)
+                  ->orWhere('nilai_akhir', '<', 55);
+            })
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('dashboard.index', compact(
+            'kampusAktif',
+            'semuaKampus',
+            'totalMahasiswa',
+            'totalMataKuliah',
+            'totalKelas',
+            'persenLulus',
+            'distribusi',
+            'statLulus',
+            'mataKuliahList',
+            'kelasList',
+            'rekapKelas',
+            'rankingMahasiswa',
+            'rankingPerKelas',
+            'mahasiswaBerisiko'
+        ));
     }
 }
