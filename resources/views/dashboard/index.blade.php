@@ -224,7 +224,8 @@
                                         <div class="flex-grow-1">
                                             <div class="progress" style="height:9px;border-radius:6px">
                                                 <div class="progress-bar"
-                                                    style="width:{{ $pct }}%;background:{{ $col }}"></div>
+                                                    style="width:{{ $pct }}%;background:{{ $col }}">
+                                                </div>
                                             </div>
                                         </div>
                                         <span class="text-muted"
@@ -258,7 +259,8 @@
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-door-open text-primary me-1"></i>Rekap Kelas</span>
-                            <a href="{{ route('kelas.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+ Tambah</a>
+                            <a href="{{ route('kelas.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+
+                                Tambah</a>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -279,7 +281,8 @@
                                                     <div class="text-muted" style="font-size:11px">{{ $kls->kode }} ·
                                                         {{ $kls->semester }} {{ $kls->tahun_ajaran }}</div>
                                                 </td>
-                                                <td class="text-center align-middle small">{{ $kls->mahasiswa_count }}</td>
+                                                <td class="text-center align-middle small">{{ $kls->mahasiswa_count }}
+                                                </td>
                                                 <td class="text-center align-middle">
                                                     @php
                                                         $r = $rekapKelas->firstWhere('kelas_id', $kls->id);
@@ -301,7 +304,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted py-3">Belum ada kelas.</td>
+                                                <td colspan="4" class="text-center text-muted py-3">Belum ada kelas.
+                                                </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -309,6 +313,32 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            {{-- Daftar Kampus --}}
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-building text-primary me-1"></i>Daftar Kampus diampuh</span>
+                    <span class="badge bg-primary rounded-pill">{{ $semuaKampus->count() }}</span>
+                </div>
+                <div class="card-body p-2">
+                    @foreach ($semuaKampus as $kmp)
+                        <div
+                            class="d-flex align-items-center justify-content-between p-2 {{ !$loop->last ? 'border-bottom' : '' }}">
+                            <div class="d-flex align-items-center gap-2">
+                                <div
+                                    style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;background:{{ $kampusAktif?->id == $kmp->id ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'linear-gradient(135deg, #94a3b8, #64748b)' }}">
+                                    {{ strtoupper(substr($kmp->kode, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="font-size: 13px;">{{ $kmp->kode }}</div>
+                                    <div class="text-muted" style="font-size: 11px;">{{ $kmp->nama }}</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
@@ -379,19 +409,30 @@
         <div class="col-lg-4 d-flex flex-column gap-3">
             {{-- Kalender Jadwal Mengajar --}}
             <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
+                <div
+                    class="card-header bg-white border-bottom-0 pt-3 pb-0 d-flex justify-content-between align-items-center">
                     <h6 class="mb-0 fw-bold"><i class="bi bi-calendar3 text-primary me-2"></i>Jadwal Mengajar</h6>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-sm btn-link p-0 text-muted" id="btn-prev-month"><i class="bi bi-chevron-left"></i></button>
+                        <button class="btn btn-sm btn-link p-0 text-muted" id="btn-prev-month"><i
+                                class="bi bi-chevron-left"></i></button>
                         <span class="fw-bold" style="font-size:13px;" id="calendar-month-year">...</span>
-                        <button class="btn btn-sm btn-link p-0 text-muted" id="btn-next-month"><i class="bi bi-chevron-right"></i></button>
+                        <button class="btn btn-sm btn-link p-0 text-muted" id="btn-next-month"><i
+                                class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
                 <div class="card-body pt-2 pb-3">
-                    <div class="d-grid text-center text-muted fw-bold mb-2" style="grid-template-columns: repeat(7, 1fr); font-size: 11px;">
-                        <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+                    <div class="d-grid text-center text-muted fw-bold mb-2"
+                        style="grid-template-columns: repeat(7, 1fr); font-size: 11px;">
+                        <div>Min</div>
+                        <div>Sen</div>
+                        <div>Sel</div>
+                        <div>Rab</div>
+                        <div>Kam</div>
+                        <div>Jum</div>
+                        <div>Sab</div>
                     </div>
-                    <div class="d-grid text-center gap-1" id="calendar-grid" style="grid-template-columns: repeat(7, 1fr); font-size: 13px;">
+                    <div class="d-grid text-center gap-1" id="calendar-grid"
+                        style="grid-template-columns: repeat(7, 1fr); font-size: 13px;">
                         <!-- JS generated dates -->
                     </div>
                     <hr class="my-2 text-muted">
@@ -400,6 +441,8 @@
                     </div>
                 </div>
             </div>
+
+
 
             {{-- Ranking Mahasiswa (Nav Tabs per Kelas) --}}
             <div class="card shadow-sm">
@@ -511,106 +554,135 @@
     </div>
 @endsection
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEvents = @json($calendarEvents ?? []);
-    
-    // Group events by date
-    const eventsByDate = {};
-    calendarEvents.forEach(ev => {
-        if(!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
-        eventsByDate[ev.date].push(ev);
-    });
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEvents = @json($calendarEvents ?? []);
 
-    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    let currentDate = new Date();
+            // Group events by date
+            const eventsByDate = {};
+            calendarEvents.forEach(ev => {
+                if (!eventsByDate[ev.date]) eventsByDate[ev.date] = [];
+                eventsByDate[ev.date].push(ev);
+            });
 
-    const renderCalendar = () => {
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        
-        document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
-        
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        
-        const grid = document.getElementById('calendar-grid');
-        grid.innerHTML = '';
-        
-        for(let i = 0; i < firstDay; i++) {
-            const empty = document.createElement('div');
-            grid.appendChild(empty);
-        }
-        
-        // Handle timezone issues by constructing date string manually from local parts
-        const todayObj = new Date();
-        const todayStr = `${todayObj.getFullYear()}-${String(todayObj.getMonth()+1).padStart(2,'0')}-${String(todayObj.getDate()).padStart(2,'0')}`;
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus",
+                "September", "Oktober", "November", "Desember"
+            ];
+            let currentDate = new Date();
 
-        for(let i = 1; i <= daysInMonth; i++) {
-            const cell = document.createElement('div');
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-            
-            cell.textContent = i;
-            cell.style.padding = '4px 0';
-            cell.style.borderRadius = '50%';
-            cell.style.cursor = 'pointer';
-            cell.style.position = 'relative';
-            
-            if(dateStr === todayStr) {
-                cell.className = 'bg-primary text-white fw-bold';
-            }
-            
-            const hasEvents = eventsByDate[dateStr];
-            if(hasEvents) {
-                if(dateStr !== todayStr) cell.classList.add('fw-bold', 'text-primary');
-                
-                const dot = document.createElement('div');
-                dot.style.position = 'absolute';
-                dot.style.bottom = '2px';
-                dot.style.left = '50%';
-                dot.style.transform = 'translateX(-50%)';
-                dot.style.width = '4px';
-                dot.style.height = '4px';
-                dot.style.borderRadius = '50%';
-                dot.style.backgroundColor = dateStr === todayStr ? '#fff' : '#0d6efd';
-                cell.appendChild(dot);
-            }
+            const renderCalendar = () => {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
 
-            cell.addEventListener('click', () => {
-                const details = document.getElementById('calendar-details');
-                if(!hasEvents) {
-                    details.innerHTML = `<em>Tidak ada jadwal pada ${i} ${monthNames[month]} ${year}.</em>`;
-                    return;
+                document.getElementById('calendar-month-year').textContent = `${monthNames[month]} ${year}`;
+
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                const grid = document.getElementById('calendar-grid');
+                grid.innerHTML = '';
+
+                for (let i = 0; i < firstDay; i++) {
+                    const empty = document.createElement('div');
+                    grid.appendChild(empty);
                 }
-                
-                let html = `<div class="fw-bold mb-2 text-dark border-bottom pb-1">Jadwal: ${i} ${monthNames[month]} ${year}</div>`;
-                hasEvents.forEach(ev => {
-                    html += `<div class="d-flex align-items-start mb-2">
+
+                // Handle timezone issues by constructing date string manually from local parts
+                const todayObj = new Date();
+                const todayStr =
+                    `${todayObj.getFullYear()}-${String(todayObj.getMonth()+1).padStart(2,'0')}-${String(todayObj.getDate()).padStart(2,'0')}`;
+
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const cell = document.createElement('div');
+                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+
+                    cell.textContent = i;
+                    cell.style.padding = '4px 0';
+                    cell.style.borderRadius = '50%';
+                    cell.style.cursor = 'pointer';
+                    cell.style.position = 'relative';
+
+                    if (dateStr === todayStr) {
+                        cell.className = 'bg-primary text-white fw-bold';
+                    }
+
+                    const hasEvents = eventsByDate[dateStr];
+                    if (hasEvents) {
+                        if (dateStr !== todayStr) cell.classList.add('fw-bold', 'text-primary');
+
+                        const dot = document.createElement('div');
+                        dot.style.position = 'absolute';
+                        dot.style.bottom = '2px';
+                        dot.style.left = '50%';
+                        dot.style.transform = 'translateX(-50%)';
+                        dot.style.width = '4px';
+                        dot.style.height = '4px';
+                        dot.style.borderRadius = '50%';
+                        dot.style.backgroundColor = dateStr === todayStr ? '#fff' : '#0d6efd';
+                        cell.appendChild(dot);
+                    }
+
+                    cell.addEventListener('click', () => {
+                        const details = document.getElementById('calendar-details');
+                        if (!hasEvents) {
+                            details.innerHTML =
+                                `<em>Tidak ada jadwal pada ${i} ${monthNames[month]} ${year}.</em>`;
+                            return;
+                        }
+
+                        let html =
+                            `<div class="fw-bold mb-2 text-dark border-bottom pb-1">Jadwal: ${i} ${monthNames[month]} ${year}</div>`;
+                        hasEvents.forEach(ev => {
+                            html += `<div class="d-flex align-items-start mb-2">
                                 <i class="bi bi-clock me-2 text-primary" style="margin-top: 2px;"></i>
                                 <div style="line-height: 1.2;">
                                     <div class="fw-bold text-dark" style="font-size: 12px;">${ev.time || 'Waktu belum diatur'}</div>
                                     <div class="text-secondary" style="font-size: 11px;">${ev.title} (Pertemuan ${ev.pertemuan})</div>
                                 </div>
                              </div>`;
-                });
-                details.innerHTML = html;
+                        });
+                        details.innerHTML = html;
+                    });
+
+                    grid.appendChild(cell);
+                }
+
+                // Auto-show today's schedule
+                const details = document.getElementById('calendar-details');
+                const todayEvents = eventsByDate[todayStr];
+                const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const todayDayName = dayNames[todayObj.getDay()];
+
+                if (todayEvents && year === todayObj.getFullYear() && month === todayObj.getMonth()) {
+                    let html =
+                        `<div class="fw-bold mb-2 text-dark border-bottom pb-1">📅 Jadwal Hari Ini (${todayDayName}, ${todayObj.getDate()} ${monthNames[month]} ${year})</div>`;
+                    todayEvents.forEach(ev => {
+                        html += `<div class="d-flex align-items-start mb-2">
+                            <i class="bi bi-clock me-2 text-primary" style="margin-top: 2px;"></i>
+                            <div style="line-height: 1.2;">
+                                <div class="fw-bold text-dark" style="font-size: 12px;">${ev.time || 'Waktu belum diatur'}</div>
+                                <div class="text-secondary" style="font-size: 11px;">${ev.title} (Pertemuan ${ev.pertemuan})</div>
+                            </div>
+                         </div>`;
+                    });
+                    details.innerHTML = html;
+                } else if (year === todayObj.getFullYear() && month === todayObj.getMonth()) {
+                    details.innerHTML =
+                        `<div class="text-center py-2"><i class="bi bi-check-circle text-success me-1"></i><em>Tidak ada jadwal mengajar hari ini. Selamat beristirahat!</em></div>`;
+                }
+            };
+
+            renderCalendar();
+
+            document.getElementById('btn-prev-month').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
             });
-            
-            grid.appendChild(cell);
-        }
-    };
 
-    renderCalendar();
-
-    document.getElementById('btn-prev-month').addEventListener('click', () => {
-        currentDate.setMonth(currentDate.getMonth() - 1);
-        renderCalendar();
-    });
-    
-    document.getElementById('btn-next-month').addEventListener('click', () => {
-        currentDate.setMonth(currentDate.getMonth() + 1);
-        renderCalendar();
-    });
-});
-</script>
+            document.getElementById('btn-next-month').addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+        });
+    </script>
 @endpush
