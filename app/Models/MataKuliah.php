@@ -3,7 +3,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MataKuliah extends Model {
     protected $table = 'mata_kuliah';
-    protected $fillable = ['kampus_id','kelas_id','kode','nama','sks','jenis','dosen','total_pertemuan'];
+    protected $fillable = ['kampus_id','kelas_id','kode','nama','sks','jenis','dosen','total_pertemuan','tanggal_mulai','jam_mulai','jam_selesai'];
 
     public function kampus() { return $this->belongsTo(Kampus::class); }
     public function kelas()  { return $this->belongsTo(Kelas::class); }

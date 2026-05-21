@@ -97,17 +97,30 @@ $rekapKelas = $kelasList->map(function ($kls) {
                 ->get();
         }
 
-        // Mahasiswa Berisiko (Kehadiran < 75% atau Nilai Akhir < 55)
-        $mahasiswaBerisiko = NilaiAkhir::with(['mahasiswa.kelas', 'mataKuliah'])
-            ->whereHas('mahasiswa', fn($q) => $q->where('kampus_id', $kampusId))
-            ->where(function($q) {
-                $q->where('status_kelulusan', 'tidak_lulus')
-                  ->orWhere('persentase_kehadiran', '<', 75.0)
-                  ->orWhere('nilai_akhir', '<', 55);
-            })
-            ->latest()
-            ->take(10)
+
+
+        // Generate Calendar Events
+        $allMataKuliah = MataKuliah::with('kelas')
+            ->where('kampus_id', $kampusId)
+            ->whereNotNull('tanggal_mulai')
             ->get();
+        
+        $calendarEvents = [];
+        foreach ($allMataKuliah as $mk) {
+            $startDate = \Carbon\Carbon::parse($mk->tanggal_mulai);
+            $totalPertemuan = $mk->total_pertemuan ?? 14;
+            
+            for ($i = 0; $i < $totalPertemuan; $i++) {
+                $currentDate = $startDate->copy()->addWeeks($i);
+                $calendarEvents[] = [
+                    'date' => $currentDate->format('Y-m-d'),
+                    'title' => $mk->nama . ' (' . $mk->kelas->nama . ')',
+                    'time' => ($mk->jam_mulai ? substr($mk->jam_mulai, 0, 5) : '') . 
+                              ($mk->jam_selesai ? ' - ' . substr($mk->jam_selesai, 0, 5) : ''),
+                    'pertemuan' => $i + 1
+                ];
+            }
+        }
 
         return view('dashboard.index', compact(
             'kampusAktif',
@@ -123,7 +136,7 @@ $rekapKelas = $kelasList->map(function ($kls) {
             'rekapKelas',
             'rankingMahasiswa',
             'rankingPerKelas',
-            'mahasiswaBerisiko'
+            'calendarEvents'
         ));
     }
 }

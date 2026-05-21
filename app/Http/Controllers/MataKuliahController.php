@@ -35,9 +35,12 @@ class MataKuliahController extends Controller {
             'sks'             => 'required|integer|min:1|max:6',
             'jenis'           => 'required|in:teori,praktikum,teori_praktikum',
             'total_pertemuan' => 'required|integer|min:1|max:16',
+            'tanggal_mulai'   => 'nullable|date',
+            'jam_mulai'       => 'nullable|date_format:H:i',
+            'jam_selesai'     => 'nullable|date_format:H:i',
             'dosen'           => 'nullable|max:100',
         ]);
-        MataKuliah::create($request->only('kampus_id','kelas_id','kode','nama','sks','jenis','total_pertemuan','dosen'));
+        MataKuliah::create($request->only('kampus_id','kelas_id','kode','nama','sks','jenis','total_pertemuan','tanggal_mulai','jam_mulai','jam_selesai','dosen'));
         return redirect()->route('matakuliah.index')->with('success','Mata kuliah berhasil ditambahkan.');
     }
     public function edit(MataKuliah $matakuliah) {
@@ -56,9 +59,12 @@ class MataKuliahController extends Controller {
             'sks'             => 'required|integer|min:1|max:6',
             'jenis'           => 'required|in:teori,praktikum,teori_praktikum',
             'total_pertemuan' => 'required|integer|min:1|max:16',
+            'tanggal_mulai'   => 'nullable|date',
+            'jam_mulai'       => 'nullable|date_format:H:i',
+            'jam_selesai'     => 'nullable|date_format:H:i',
             'dosen'           => 'nullable|max:100',
         ]);
-        $matakuliah->update($request->only('kampus_id','kelas_id','kode','nama','sks','jenis','total_pertemuan','dosen'));
+        $matakuliah->update($request->only('kampus_id','kelas_id','kode','nama','sks','jenis','total_pertemuan','tanggal_mulai','jam_mulai','jam_selesai','dosen'));
         return redirect()->route('matakuliah.index')->with('success','Mata kuliah diperbarui.');
     }
     public function destroy(MataKuliah $matakuliah) {

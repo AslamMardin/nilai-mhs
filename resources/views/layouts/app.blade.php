@@ -181,6 +181,47 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
     </ul>
   </div>
 
+  {{-- Mahasiswa Berisiko Alert --}}
+  @if(isset($mahasiswaBerisiko) && $mahasiswaBerisiko->count() > 0)
+  <div class="dropdown me-2">
+    <button class="btn btn-sm btn-light border-0 position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="width: 34px; height: 34px; border-radius: 50%;">
+      <i class="bi bi-bell-fill text-danger"></i>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 9px; margin-left: -5px;">
+        {{ $mahasiswaBerisiko->count() }}
+      </span>
+    </button>
+    <div class="dropdown-menu dropdown-menu-end shadow border-danger-subtle p-0" style="width: 340px; max-height: 400px; overflow-y: auto;">
+        <div class="bg-danger-subtle text-danger fw-bold p-2 px-3 border-bottom d-flex justify-content-between align-items-center" style="position: sticky; top: 0; z-index: 10;">
+            <span><i class="bi bi-exclamation-triangle-fill me-1"></i>Mahasiswa Berisiko</span>
+        </div>
+        <div class="p-2">
+            @foreach ($mahasiswaBerisiko as $risk)
+                <div class="d-flex align-items-center justify-content-between p-2 mb-1 border-bottom">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-dark" style="font-size: 13px;">{{ $risk->mahasiswa->nama }}</div>
+                        <small class="text-muted" style="font-size: 11px;">
+                            {{ $risk->mahasiswa->nim }} · {{ $risk->mahasiswa->kelas->nama }}
+                        </small>
+                        <div class="small text-secondary" style="font-size: 11px;">
+                            <i class="bi bi-book me-1"></i>{{ $risk->mataKuliah->nama }}
+                        </div>
+                    </div>
+                    <div class="text-end ms-2">
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 10px;">
+                            {{ $risk->keterangan_gagal ?? 'Gagal' }}
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+  </div>
+  @else
+  <button class="btn btn-sm btn-light border-0 me-2" style="width: 34px; height: 34px; border-radius: 50%;" title="Semua Mahasiswa Aman" disabled>
+      <i class="bi bi-bell text-muted"></i>
+  </button>
+  @endif
+
   {{-- User --}}
   <div class="dropdown">
     <button class="d-flex align-items-center gap-2 border-0 bg-transparent dropdown-toggle" data-bs-toggle="dropdown">

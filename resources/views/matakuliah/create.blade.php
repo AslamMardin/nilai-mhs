@@ -63,6 +63,20 @@
               <input type="number" name="total_pertemuan" class="form-control" value="{{ old('total_pertemuan',16) }}" min="1" max="16">
             </div>
           </div>
+          <div class="row g-3 mb-3">
+            <div class="col-4">
+              <label class="form-label">Tanggal Mulai Kuliah</label>
+              <input type="date" name="tanggal_mulai" class="form-control" value="{{ old('tanggal_mulai') }}">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Jam Mulai</label>
+              <input type="time" name="jam_mulai" class="form-control" value="{{ old('jam_mulai') }}">
+            </div>
+            <div class="col-4">
+              <label class="form-label">Jam Selesai</label>
+              <input type="time" name="jam_selesai" class="form-control" value="{{ old('jam_selesai') }}">
+            </div>
+          </div>
           <div class="mb-4">
             <label class="form-label">Nama Dosen</label>
             <input type="text" name="dosen" class="form-control" value="{{ old('dosen') }}" placeholder="Dr. ...">
