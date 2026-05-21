@@ -198,60 +198,187 @@
         </div>
     </div>
 
-    {{-- Row Widget Utama --}}
-    <div class="row g-3 mb-4">
-        {{-- Distribusi Huruf Mutu --}}
-        <div class="col-lg-4">
-            <div class="card ">
-                <div class="card-header d-flex align-items-center gap-1">
-                    <i class="bi bi-pie-chart text-success me-1"></i>Distribusi Huruf Mutu
-                </div>
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <div>
-                        @foreach (['A' => ['success', '#16a34a'], 'B' => ['primary', '#2563eb'], 'C' => ['warning', '#d97706'], 'D' => ['orange', '#ea580c'], 'E' => ['danger', '#dc2626']] as $h => [$cls, $col])
-                            @php
-                                $jml = $distribusi[$h] ?? 0;
-                                $tot = max(1, array_sum($distribusi));
-                                $pct = round(($jml / $tot) * 100);
-                            @endphp
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <span class="badge badge-{{ strtolower($h) }} px-2"
-                                    style="width:26px">{{ $h }}</span>
-                                <div class="flex-grow-1">
-                                    <div class="progress" style="height:9px;border-radius:6px">
-                                        <div class="progress-bar"
-                                            style="width:{{ $pct }}%;background:{{ $col }}"></div>
+    {{-- Dashboard Grid Utama --}}
+    <div class="row g-3">
+        {{-- KIRI: Selebihnya --}}
+        <div class="col-lg-8 d-flex flex-column gap-3">
+            {{-- Distribusi Huruf Mutu & Rekap Kelas --}}
+            <div class="row g-3">
+                {{-- Distribusi Huruf Mutu --}}
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header d-flex align-items-center gap-1">
+                            <i class="bi bi-pie-chart text-success me-1"></i>Distribusi Huruf Mutu
+                        </div>
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div>
+                                @foreach (['A' => ['success', '#16a34a'], 'B' => ['primary', '#2563eb'], 'C' => ['warning', '#d97706'], 'D' => ['orange', '#ea580c'], 'E' => ['danger', '#dc2626']] as $h => [$cls, $col])
+                                    @php
+                                        $jml = $distribusi[$h] ?? 0;
+                                        $tot = max(1, array_sum($distribusi));
+                                        $pct = round(($jml / $tot) * 100);
+                                    @endphp
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="badge badge-{{ strtolower($h) }} px-2"
+                                            style="width:26px">{{ $h }}</span>
+                                        <div class="flex-grow-1">
+                                            <div class="progress" style="height:9px;border-radius:6px">
+                                                <div class="progress-bar"
+                                                    style="width:{{ $pct }}%;background:{{ $col }}"></div>
+                                            </div>
+                                        </div>
+                                        <span class="text-muted"
+                                            style="font-size:11px;width:40px;text-align:right">{{ $jml }}</span>
                                     </div>
-                                </div>
-                                <span class="text-muted"
-                                    style="font-size:11px;width:40px;text-align:right">{{ $jml }}</span>
+                                @endforeach
                             </div>
-                        @endforeach
-                    </div>
-                    <div>
-                        <hr class="my-3">
-                        <div class="row text-center g-2">
-                            <div class="col-6">
-                                <div class="rounded-2 p-2" style="background:#f0fdf4">
-                                    <div class="fw-700 text-success fs-5">{{ $statLulus['lulus'] }}</div>
-                                    <div class="text-muted" style="font-size:11px">Lulus</div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="rounded-2 p-2" style="background:#fff1f2">
-                                    <div class="fw-700 text-danger fs-5">{{ $statLulus['tidak_lulus'] }}</div>
-                                    <div class="text-muted" style="font-size:11px">Tidak Lulus</div>
+                            <div>
+                                <hr class="my-3">
+                                <div class="row text-center g-2">
+                                    <div class="col-6">
+                                        <div class="rounded-2 p-2" style="background:#f0fdf4">
+                                            <div class="fw-700 text-success fs-5">{{ $statLulus['lulus'] }}</div>
+                                            <div class="text-muted" style="font-size:11px">Lulus</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="rounded-2 p-2" style="background:#fff1f2">
+                                            <div class="fw-700 text-danger fs-5">{{ $statLulus['tidak_lulus'] }}</div>
+                                            <div class="text-muted" style="font-size:11px">Tidak Lulus</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {{-- Rekap Kelas --}}
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-door-open text-primary me-1"></i>Rekap Kelas</span>
+                            <a href="{{ route('kelas.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+ Tambah</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-3" style="font-size: 10px;">Kelas</th>
+                                            <th class="text-center" style="font-size: 10px;">Mahasiswa</th>
+                                            <th class="text-center" style="font-size: 10px;">% Lulus</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($kelasList as $kls)
+                                            <tr>
+                                                <td class="ps-3">
+                                                    <span class="fw-600 text-dark">{{ $kls->nama }}</span>
+                                                    <div class="text-muted" style="font-size:11px">{{ $kls->kode }} ·
+                                                        {{ $kls->semester }} {{ $kls->tahun_ajaran }}</div>
+                                                </td>
+                                                <td class="text-center align-middle small">{{ $kls->mahasiswa_count }}</td>
+                                                <td class="text-center align-middle">
+                                                    @php
+                                                        $r = $rekapKelas->firstWhere('kelas_id', $kls->id);
+                                                    @endphp
+                                                    @if ($r)
+                                                        <span
+                                                            class="badge 
+                                    {{ $r['pct_lulus'] >= 80 ? 'bg-success' : ($r['pct_lulus'] >= 60 ? 'bg-warning text-dark' : 'bg-danger') }}">
+                                                            {{ $r['pct_lulus'] }}%
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-secondary">—</span>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle">
+                                                    <a href="{{ route('kelas.show', $kls->id) }}"
+                                                        class="btn btn-sm btn-outline-secondary py-0 px-2">Detail</a>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-3">Belum ada kelas.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Daftar Mata Kuliah --}}
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-book text-warning me-1"></i>Daftar Mata Kuliah</span>
+                    <a href="{{ route('matakuliah.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+
+                        Tambah</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3" style="font-size: 10px;">Kode</th>
+                                    <th style="font-size: 10px;">Mata Kuliah</th>
+                                    <th style="font-size: 10px;">Kelas</th>
+                                    <th class="text-center" style="font-size: 10px;">Jenis</th>
+                                    <th class="text-center" style="font-size: 10px;">Mhs</th>
+                                    <th class="text-center" style="font-size: 10px;">Dinilai</th>
+                                    <th style="font-size: 10px;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($mataKuliahList as $mk)
+                                    <tr>
+                                        <td class="ps-3 align-middle"><code class="small">{{ $mk->kode }}</code>
+                                        </td>
+                                        <td>
+                                            <div class="fw-600 text-dark">{{ $mk->nama }}</div>
+                                            <div class="text-muted" style="font-size:11px">{{ $mk->sks }}
+                                                SKS · {{ $mk->dosen ?? '—' }}</div>
+                                        </td>
+                                        <td class="align-middle small">{{ $mk->kelas->nama }}</td>
+                                        <td class="text-center align-middle">
+                                            <span
+                                                class="badge {{ $mk->jenis == 'teori' ? 'bg-info text-dark' : ($mk->jenis == 'praktikum' ? 'bg-success' : 'bg-primary') }}">
+                                                {{ $mk->label_jenis }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center align-middle small">{{ $mk->mahasiswa_count }}</td>
+                                        <td class="text-center align-middle"><span
+                                                class="badge bg-secondary">{{ $mk->nilai_akhir_count }}</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="{{ route('nilai.index', $mk->id) }}"
+                                                class="btn btn-sm btn-outline-primary py-0 px-2 me-1"
+                                                title="Input Nilai"><i class="bi bi-clipboard-data"></i></a>
+                                            <a href="{{ route('absensi.index', $mk->id) }}"
+                                                class="btn btn-sm btn-outline-secondary py-0 px-2" title="Absensi"><i
+                                                    class="bi bi-calendar-check"></i></a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted py-3">Belum ada mata kuliah.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
-        {{-- Ranking Mahasiswa (Nav Tabs per Kelas) --}}
-        <div class="col-lg-4">
-            <div class="card h-100">
+        {{-- KANAN: Ranking & Berisiko --}}
+        <div class="col-lg-4 d-flex flex-column gap-3">
+            {{-- Ranking Mahasiswa (Nav Tabs per Kelas) --}}
+            <div class="card shadow-sm">
                 <div class="card-header p-0 border-bottom-0 bg-light d-flex align-items-center justify-content-between pe-3"
                     style="border-radius: 12px 12px 0 0;">
                     <ul class="nav nav-tabs card-header-tabs ms-2 mt-1 border-0" id="rankingTabs" role="tablist">
@@ -355,11 +482,9 @@
                     @endforeach
                 </div>
             </div>
-        </div>
 
-        {{-- Mahasiswa Berisiko (Students at Risk) --}}
-        <div class="col-lg-4">
-            <div class="card h-100 border-danger-subtle">
+            {{-- Mahasiswa Berisiko (Students at Risk) --}}
+            <div class="card border-danger-subtle shadow-sm">
                 <div class="card-header bg-danger-subtle text-danger d-flex justify-content-between align-items-center">
                     <span><i class="bi bi-exclamation-triangle-fill me-1"></i>Mahasiswa Berisiko</span>
                     <span class="badge bg-danger rounded-pill">{{ $mahasiswaBerisiko->count() }}</span>
@@ -392,131 +517,6 @@
                                 55 atau kehadiran di bawah 75%.</small>
                         </div>
                     @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Row Kelas & Mata Kuliah --}}
-    <div class="row g-3">
-        {{-- Rekap Kelas --}}
-        <div class="col-lg-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-door-open text-primary me-1"></i>Rekap Kelas</span>
-                    <a href="{{ route('kelas.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+ Tambah</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-3" style="font-size: 10px;">Kelas</th>
-                                    <th class="text-center" style="font-size: 10px;">Mahasiswa</th>
-                                    <th class="text-center" style="font-size: 10px;">% Lulus</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($kelasList as $kls)
-                                    <tr>
-                                        <td class="ps-3">
-                                            <span class="fw-600 text-dark">{{ $kls->nama }}</span>
-                                            <div class="text-muted" style="font-size:11px">{{ $kls->kode }} ·
-                                                {{ $kls->semester }} {{ $kls->tahun_ajaran }}</div>
-                                        </td>
-                                        <td class="text-center align-middle small">{{ $kls->mahasiswa_count }}</td>
-                                        <td class="text-center align-middle">
-                                            @php
-                                                $r = $rekapKelas->firstWhere('kelas_id', $kls->id);
-                                            @endphp
-                                            @if ($r)
-                                                <span
-                                                    class="badge 
-            {{ $r['pct_lulus'] >= 80 ? 'bg-success' : ($r['pct_lulus'] >= 60 ? 'bg-warning text-dark' : 'bg-danger') }}">
-                                                    {{ $r['pct_lulus'] }}%
-                                                </span>
-                                            @else
-                                                <span class="badge bg-secondary">—</span>
-                                            @endif
-                                        </td>
-                                        <td class="align-middle">
-                                            <a href="{{ route('kelas.show', $kls->id) }}"
-                                                class="btn btn-sm btn-outline-secondary py-0 px-2">Detail</a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-3">Belum ada kelas.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Mata Kuliah --}}
-        <div class="col-lg-8">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="bi bi-book text-warning me-1"></i>Daftar Mata Kuliah</span>
-                    <a href="{{ route('matakuliah.create') }}" class="btn btn-sm btn-outline-primary py-0 px-2">+
-                        Tambah</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-3" style="font-size: 10px;">Kode</th>
-                                    <th style="font-size: 10px;">Mata Kuliah</th>
-                                    <th style="font-size: 10px;">Kelas</th>
-                                    <th class="text-center" style="font-size: 10px;">Jenis</th>
-                                    <th class="text-center" style="font-size: 10px;">Mhs</th>
-                                    <th class="text-center" style="font-size: 10px;">Dinilai</th>
-                                    <th style="font-size: 10px;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($mataKuliahList as $mk)
-                                    <tr>
-                                        <td class="ps-3 align-middle"><code class="small">{{ $mk->kode }}</code>
-                                        </td>
-                                        <td>
-                                            <div class="fw-600 text-dark">{{ $mk->nama }}</div>
-                                            <div class="text-muted" style="font-size:11px">{{ $mk->sks }}
-                                                SKS · {{ $mk->dosen ?? '—' }}</div>
-                                        </td>
-                                        <td class="align-middle small">{{ $mk->kelas->nama }}</td>
-                                        <td class="text-center align-middle">
-                                            <span
-                                                class="badge {{ $mk->jenis == 'teori' ? 'bg-info text-dark' : ($mk->jenis == 'praktikum' ? 'bg-success' : 'bg-primary') }}">
-                                                {{ $mk->label_jenis }}
-                                            </span>
-                                        </td>
-                                        <td class="text-center align-middle small">{{ $mk->mahasiswa_count }}</td>
-                                        <td class="text-center align-middle"><span
-                                                class="badge bg-secondary">{{ $mk->nilai_akhir_count }}</span>
-                                        </td>
-                                        <td class="align-middle">
-                                            <a href="{{ route('nilai.index', $mk->id) }}"
-                                                class="btn btn-sm btn-outline-primary py-0 px-2 me-1"
-                                                title="Input Nilai"><i class="bi bi-clipboard-data"></i></a>
-                                            <a href="{{ route('absensi.index', $mk->id) }}"
-                                                class="btn btn-sm btn-outline-secondary py-0 px-2" title="Absensi"><i
-                                                    class="bi bi-calendar-check"></i></a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-3">Belum ada mata kuliah.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </div>

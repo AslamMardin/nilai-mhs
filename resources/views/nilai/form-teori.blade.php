@@ -46,19 +46,35 @@
                                 <th style="width:120px">NIM</th>
                                 <th>Nama Mahasiswa</th>
                                 <th class="text-center" style="width:100px">
-                                    Keaktifan<br><span class="badge bg-secondary" style="font-size:10px">×
+                                    Keaktifan 
+                                    <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="keaktifan" title="Buka/Kunci Kolom">
+                                        <i class="bi bi-lock-fill lock-icon"></i>
+                                    </button><br>
+                                    <span class="badge bg-secondary" style="font-size:10px">×
                                         {{ $bobot->keaktifan ?? 20 }}%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
-                                    Tugas<br><span class="badge bg-secondary" style="font-size:10px">×
+                                    Tugas 
+                                    <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="tugas" title="Buka/Kunci Kolom">
+                                        <i class="bi bi-lock-fill lock-icon"></i>
+                                    </button><br>
+                                    <span class="badge bg-secondary" style="font-size:10px">×
                                         {{ $bobot->tugas ?? 20 }}%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
-                                    UTS<br><span class="badge bg-secondary" style="font-size:10px">×
+                                    UTS 
+                                    <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="uts" title="Buka/Kunci Kolom">
+                                        <i class="bi bi-lock-fill lock-icon"></i>
+                                    </button><br>
+                                    <span class="badge bg-secondary" style="font-size:10px">×
                                         {{ $bobot->uts ?? 25 }}%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
-                                    UAS<br><span class="badge bg-secondary" style="font-size:10px">×
+                                    UAS 
+                                    <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="uas" title="Buka/Kunci Kolom">
+                                        <i class="bi bi-lock-fill lock-icon"></i>
+                                    </button><br>
+                                    <span class="badge bg-secondary" style="font-size:10px">×
                                         {{ $bobot->uas ?? 35 }}%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
@@ -79,7 +95,7 @@
                                     @foreach (['keaktifan', 'tugas', 'uts', 'uas'] as $field)
                                         <td class="text-center p-1">
                                             <input type="number" name="nilai[{{ $idx }}][{{ $field }}]"
-                                                class="form-control form-control-sm text-center komponen"
+                                                class="form-control form-control-sm text-center komponen input-{{ $field }} bg-light"
                                                 data-bobot="{{ [
                                                     'keaktifan' => ($bobot->keaktifan ?? 20) / 100,
                                                     'tugas' => ($bobot->tugas ?? 20) / 100,
@@ -88,7 +104,7 @@
                                                 ][$field] }}"
                                                 min="0" max="100" step="0.01"
                                                 value="{{ old("nilai.{$idx}.{$field}", $ex?->$field ?? '') }}"
-                                                placeholder="0">
+                                                placeholder="0" readonly>
                                         </td>
                                     @endforeach
                                     <td class="text-center">
@@ -130,6 +146,34 @@
             });
             if (row.querySelector('.komponen').value) hitungNA(row);
         });
+        document.querySelectorAll('.btn-unlock-col').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const field = this.dataset.field;
+                const icon = this.querySelector('.lock-icon');
+                const inputs = document.querySelectorAll(`.input-${field}`);
+                
+                const isLocked = icon.classList.contains('bi-lock-fill');
+                
+                if (isLocked) {
+                    // Unlock
+                    icon.classList.replace('bi-lock-fill', 'bi-unlock-fill');
+                    icon.parentElement.classList.replace('text-secondary', 'text-primary');
+                    inputs.forEach(inp => {
+                        inp.removeAttribute('readonly');
+                        inp.classList.remove('bg-light');
+                    });
+                } else {
+                    // Lock
+                    icon.classList.replace('bi-unlock-fill', 'bi-lock-fill');
+                    icon.parentElement.classList.replace('text-primary', 'text-secondary');
+                    inputs.forEach(inp => {
+                        inp.setAttribute('readonly', true);
+                        inp.classList.add('bg-light');
+                    });
+                }
+            });
+        });
+        
         document.getElementById('btn-fill-sample')?.addEventListener('click', () => {
             document.querySelectorAll('tr[data-row]').forEach(row => {
                 row.querySelectorAll('.komponen').forEach(inp => {

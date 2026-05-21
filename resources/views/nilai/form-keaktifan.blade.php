@@ -176,6 +176,13 @@
                   <small class="d-block text-muted">15 poin</small>
                 </span>
               </label>
+              <label class="list-group-item d-flex gap-2">
+                <input class="form-check-input flex-shrink-0 indikator-cb" type="checkbox" value="10" data-key="diskusi">
+                <span>
+                  Diskusi
+                  <small class="d-block text-muted">10 poin</small>
+                </span>
+              </label>
             </div>
 
             <div class="d-flex justify-content-between align-items-center px-2">
