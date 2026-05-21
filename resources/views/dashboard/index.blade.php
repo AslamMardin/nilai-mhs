@@ -211,27 +211,8 @@
                             <i class="bi bi-pie-chart text-success me-1"></i>Distribusi Huruf Mutu
                         </div>
                         <div class="card-body d-flex flex-column justify-content-between">
-                            <div>
-                                @foreach (['A' => ['success', '#16a34a'], 'B' => ['primary', '#2563eb'], 'C' => ['warning', '#d97706'], 'D' => ['orange', '#ea580c'], 'E' => ['danger', '#dc2626']] as $h => [$cls, $col])
-                                    @php
-                                        $jml = $distribusi[$h] ?? 0;
-                                        $tot = max(1, array_sum($distribusi));
-                                        $pct = round(($jml / $tot) * 100);
-                                    @endphp
-                                    <div class="d-flex align-items-center gap-2 mb-3">
-                                        <span class="badge badge-{{ strtolower($h) }} px-2"
-                                            style="width:26px">{{ $h }}</span>
-                                        <div class="flex-grow-1">
-                                            <div class="progress" style="height:9px;border-radius:6px">
-                                                <div class="progress-bar"
-                                                    style="width:{{ $pct }}%;background:{{ $col }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <span class="text-muted"
-                                            style="font-size:11px;width:40px;text-align:right">{{ $jml }}</span>
-                                    </div>
-                                @endforeach
+                            <div class="d-flex justify-content-center" style="position:relative;">
+                                <canvas id="chartDistribusi" style="max-height: 200px;"></canvas>
                             </div>
                             <div>
                                 <hr class="my-3">
@@ -554,8 +535,58 @@
     </div>
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Distribusi Huruf Mutu Chart
+            const ctxDistribusi = document.getElementById('chartDistribusi');
+            if (ctxDistribusi) {
+                new Chart(ctxDistribusi, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['A', 'B', 'C', 'D', 'E'],
+                        datasets: [{
+                            data: [
+                                {{ $distribusi['A'] ?? 0 }},
+                                {{ $distribusi['B'] ?? 0 }},
+                                {{ $distribusi['C'] ?? 0 }},
+                                {{ $distribusi['D'] ?? 0 }},
+                                {{ $distribusi['E'] ?? 0 }}
+                            ],
+                            backgroundColor: ['#16a34a', '#2563eb', '#d97706', '#ea580c', '#dc2626'],
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 12,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { size: 11, weight: '600' }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                        const pct = total > 0 ? Math.round((ctx.parsed / total) * 100) : 0;
+                                        return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             const calendarEvents = @json($calendarEvents ?? []);
 
             // Group events by date
