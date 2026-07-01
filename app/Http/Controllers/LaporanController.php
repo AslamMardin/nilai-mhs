@@ -53,15 +53,25 @@ class LaporanController extends Controller
 
     public function transkrip(Request $request)
     {
-        $nim = $request->nim;
+        $nim = trim((string) $request->input('query', $request->input('nim', '')));
         $mahasiswa = null;
         $transkrip = collect();
-        if ($nim) {
-            $mahasiswa = Mahasiswa::with(['kampus', 'kelas'])->where('nim', $nim)->first();
+
+        if ($nim !== '') {
+            $mahasiswa = Mahasiswa::with(['kampus', 'kelas'])
+                ->where(function ($query) use ($nim) {
+                    $query->where('nim', 'like', "%{$nim}%")
+                        ->orWhere('nama', 'like', "%{$nim}%")
+                        ->orWhereRaw('LOWER(nim) LIKE ?', ['%' . strtolower($nim) . '%'])
+                        ->orWhereRaw('LOWER(nama) LIKE ?', ['%' . strtolower($nim) . '%']);
+                })
+                ->first();
+
             if ($mahasiswa) {
                 $transkrip = NilaiAkhir::with('mataKuliah')->where('mahasiswa_id', $mahasiswa->id)->get()->map(fn($na) => ['kode' => $na->mataKuliah->kode, 'nama' => $na->mataKuliah->nama, 'sks' => $na->mataKuliah->sks, 'nilai_teori' => $na->nilai_teori, 'nilai_prak' => $na->nilai_praktikum, 'nilai_akhir' => $na->nilai_akhir, 'huruf_mutu' => $na->huruf_mutu, 'kehadiran' => $na->persentase_kehadiran . '%', 'status' => $na->status_kelulusan]);
             }
         }
+
         return view('laporan.transkrip', compact('mahasiswa', 'transkrip', 'nim'));
     }
 

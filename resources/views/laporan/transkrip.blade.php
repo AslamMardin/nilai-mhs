@@ -6,8 +6,8 @@
   <div class="card-body py-2">
     <form method="GET" class="row g-2 align-items-end">
       <div class="col-md-4">
-        <label class="form-label mb-1 small">NIM Mahasiswa</label>
-        <input type="text" name="nim" class="form-control" placeholder="Contoh: ITBM2024001" value="{{ $nim??'' }}">
+        <label class="form-label mb-1 small">NIM atau Nama Mahasiswa</label>
+        <input type="text" name="query" class="form-control" placeholder="Contoh: ITBM2024001 atau Budi" value="{{ $nim??'' }}">
       </div>
       <div class="col-md-2">
         <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Cari</button>
@@ -109,11 +109,11 @@
 </div>
 
 @elseif($nim)
-<div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>Mahasiswa dengan NIM <strong>{{ $nim }}</strong> tidak ditemukan.</div>
+<div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>Mahasiswa dengan pencarian <strong>{{ $nim }}</strong> tidak ditemukan.</div>
 @else
 <div class="text-center py-5 text-muted">
   <i class="bi bi-file-earmark-text fs-1 d-block mb-2 opacity-25"></i>
-  Masukkan NIM untuk melihat transkrip nilai mahasiswa.
+  Masukkan NIM atau nama untuk melihat transkrip nilai mahasiswa.
 </div>
 @endif
 @endsection
