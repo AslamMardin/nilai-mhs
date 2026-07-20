@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/absensi/{mataKuliah}',       [AbsensiController::class, 'index'])->name('absensi.index');
     Route::post('/absensi/{mataKuliah}',      [AbsensiController::class, 'simpan'])->name('absensi.simpan');
     Route::get('/absensi/{mataKuliah}/rekap', [AbsensiController::class, 'rekap'])->name('absensi.rekap');
+    Route::get('/absensi/{mataKuliah}/rekap/pdf',   [AbsensiController::class, 'exportPdf'])->name('absensi.pdf');
 
     // Nilai
     Route::get('/nilai',                              [NilaiController::class, 'pilih'])->name('nilai.pilih');
