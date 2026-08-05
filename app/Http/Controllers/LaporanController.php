@@ -86,9 +86,10 @@ class LaporanController extends Controller
     public function exportNilaiKelasExcel($kelasId)
     {
         $kelas = \App\Models\Kelas::with(['mahasiswa', 'mataKuliah'])->findOrFail($kelasId);
+        $kampusId = session('kampus_id') ?? Auth::user()->kampus_id;
 
         // 🔒 keamanan kampus
-        if ($kelas->kampus_id != session('kampus_id')) {
+        if ($kelas->kampus_id != $kampusId) {
             return redirect()->route('laporan.nilai-kelas');
         }
 
@@ -102,9 +103,10 @@ class LaporanController extends Controller
     {
         $kelas = Kelas::with(['mahasiswa', 'mataKuliah', 'kampus'])
             ->findOrFail($kelasId);
+        $kampusId = session('kampus_id') ?? Auth::user()->kampus_id;
 
         // 🔒 validasi kampus
-        if ($kelas->kampus_id != session('kampus_id')) {
+        if ($kelas->kampus_id != $kampusId) {
             return redirect()->route('laporan.nilai-kelas');
         }
 

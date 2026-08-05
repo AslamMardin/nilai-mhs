@@ -18,6 +18,12 @@
             <a href="{{ route('mahasiswa.import') }}" class="btn btn-success btn-sm">
                 <i class="bi bi-upload me-1"></i>Import Data
             </a>
+            <a href="{{ route('mahasiswa.export.excel', request()->all()) }}" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-file-earmark-excel me-1"></i>Excel
+            </a>
+            <a href="{{ route('mahasiswa.export.pdf', request()->all()) }}" class="btn btn-outline-danger btn-sm" target="_blank">
+                <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+            </a>
         </div>
     </div>
 

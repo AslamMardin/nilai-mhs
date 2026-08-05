@@ -57,6 +57,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/mahasiswa/template', [MahasiswaController::class, 'downloadTemplate'])
         ->name('mahasiswa.template');
 
+    // export
+    Route::get('/mahasiswa/export/excel', [MahasiswaController::class, 'exportExcel'])->name('mahasiswa.export.excel');
+    Route::get('/mahasiswa/export/pdf', [MahasiswaController::class, 'exportPdf'])->name('mahasiswa.export.pdf');
+
     // hapus banyak data
     Route::delete('/mahasiswa/bulk-delete', [MahasiswaController::class, 'bulkDelete'])->name('mahasiswa.bulkDelete');
 

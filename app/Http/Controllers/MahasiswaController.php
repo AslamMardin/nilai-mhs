@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\MahasiswaExport;
+use App\Exports\DataMahasiswaExport;
 use App\Imports\MahasiswaImport;
 use App\Models\Kampus;
 use App\Models\Kelas;
@@ -11,6 +12,7 @@ use App\Models\MataKuliah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MahasiswaController extends Controller
 {
@@ -111,25 +113,51 @@ class MahasiswaController extends Controller
 
 
 
-public function import(Request $request)
-{
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv',
-        'kampus_id' => 'required',
-        'kelas_id' => 'required',
-    ]);
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+            'kampus_id' => 'required',
+            'kelas_id' => 'required',
+        ]);
 
-    // 🔥 tangkap object import
-    $import = new MahasiswaImport($request->kampus_id, $request->kelas_id);
+        // 🔥 tangkap object import
+        $import = new MahasiswaImport($request->kampus_id, $request->kelas_id);
 
-    Excel::import($import, $request->file('file'));
+        Excel::import($import, $request->file('file'));
 
-    return redirect()->route('mahasiswa.index')->with('success',
-        "Import selesai: 
-        Total {$import->total}, 
-        Berhasil {$import->success}, 
-        Duplikat {$import->duplicate}, 
-        Kosong {$import->skipped}"
-    );
-}
+        return redirect()->route('mahasiswa.index')->with('success',
+            "Import selesai: 
+            Total {$import->total}, 
+            Berhasil {$import->success}, 
+            Duplikat {$import->duplicate}, 
+            Kosong {$import->skipped}"
+        );
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $kampusId = $request->kampus_id ?? session('kampus_id') ?? Auth::user()->kampus_id;
+        $kelasId = $request->kelas_id;
+        $search = $request->search;
+
+        return Excel::download(new DataMahasiswaExport($kampusId, $kelasId, $search), 'Data_Mahasiswa.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $kampusId = $request->kampus_id ?? session('kampus_id') ?? Auth::user()->kampus_id;
+        $kelasId = $request->kelas_id;
+        $search = $request->search;
+
+        $mahasiswa = Mahasiswa::with(['kampus', 'kelas'])
+            ->when($kampusId, fn($q, $k) => $q->where('kampus_id', $k))
+            ->when($kelasId, fn($q, $k) => $q->where('kelas_id', $k))
+            ->when($search, fn($q, $s) => $q->where(fn($q2) => $q2->where('nama', 'like', "%$s%")->orWhere('nim', 'like', "%$s%")))
+            ->orderBy('nim')
+            ->get();
+
+        $pdf = Pdf::loadView('mahasiswa.pdf', compact('mahasiswa'))->setPaper('a4', 'landscape');
+        return $pdf->stream('Data_Mahasiswa.pdf');
+    }
 }
