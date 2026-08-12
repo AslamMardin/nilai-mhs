@@ -30,8 +30,7 @@
                 @if($mataKuliah->hasPraktikum())
                 <th colspan="1">Praktikum</th>
                 @endif
-                <th colspan="3">Kehadiran</th>
-                <th colspan="3">Hasil Akhir</th>
+                <th colspan="2">Hasil Akhir</th>
             </tr>
             <tr>
                 @if($mataKuliah->hasTeori())
@@ -44,12 +43,8 @@
                 @if($mataKuliah->hasPraktikum())
                 <th>Nilai Prak</th>
                 @endif
-                <th>Poin</th>
-                <th>%</th>
-                <th>Ket</th>
                 <th>NA</th>
                 <th>Mutu</th>
-                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -77,19 +72,8 @@
                 <td class="text-center"><b>{{ $np?->nilai_praktikum ?? '-' }}</b></td>
                 @endif
                 
-                <td class="text-center">{{ $na?->poin_kehadiran ?? '-' }}</td>
-                <td class="text-center">{{ $na ? $na->persentase_kehadiran . '%' : '-' }}</td>
-                <td class="text-center">{{ $hadirOk ? 'OK' : 'Kurang' }}</td>
-                
                 <td class="text-center"><b>{{ $na?->nilai_akhir ?? '-' }}</b></td>
                 <td class="text-center">{{ $na?->huruf_mutu ?? '-' }}</td>
-                <td class="text-center">
-                    @if($na)
-                        {{ $na->status_kelulusan == 'lulus' ? 'Lulus' : 'Tidak Lulus' }}
-                    @else
-                        -
-                    @endif
-                </td>
             </tr>
             @endforeach
         </tbody>

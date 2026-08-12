@@ -39,6 +39,8 @@
                     {{-- <a href="{{ route('nilai.excel', $mataKuliah->id) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a> --}}
                     <a href="{{ route('laporan.rekap-mk', $mataKuliah->id) }}" class="btn btn-sm btn-outline-info"><i
                             class="bi bi-bar-chart me-1"></i>Laporan</a>
+                    <a target="_blank" href="{{ route('nilai.pdf', $mataKuliah->id) }}" class="btn btn-sm btn-outline-danger"><i
+                            class="bi bi-file-earmark-pdf me-1"></i>Download PDF</a>
                     <a href="{{ route('nilai.pilih') }}" class="btn btn-sm btn-outline-secondary"><i
                             class="bi bi-arrow-left me-1"></i>Kembali</a>
                 </div>
