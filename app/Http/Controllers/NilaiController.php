@@ -289,6 +289,23 @@ class NilaiController extends Controller {
         $persen = Absensi::hitungPersen($mahasiswaId, $mkId, $mk->total_pertemuan);
         $lolos  = $persen >= 75.0;
 
+        // --- IDE 2: BONUS KEHADIRAN (REWARD SYSTEM) ---
+        // Jika kehadiran 100%, tambah 5 poin ke Nilai Akhir
+        // Jika kehadiran >= 90%, tambah 3 poin ke Nilai Akhir
+        // Jika kehadiran >= 80%, tambah 1 poin ke Nilai Akhir
+        if ($persen == 100) {
+            $nilaiAkhir += 5;
+        } elseif ($persen >= 90) {
+            $nilaiAkhir += 3;
+        } elseif ($persen >= 80) {
+            $nilaiAkhir += 1;
+        }
+
+        // Pastikan Nilai Akhir tidak melebihi 100
+        if ($nilaiAkhir > 100) {
+            $nilaiAkhir = 100;
+        }
+
         $keteranganGagal = null;
         if (!$lolos) {
             $status = 'tidak_lulus';
