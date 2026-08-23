@@ -17,23 +17,34 @@ class NilaiTeori extends Model {
 
 
 public function hitung(): float {
-    $bobot = BobotNilai::first();
-    
-    // --- IDE 3: Leburkan Kehadiran ke dalam Nilai Keaktifan ---
     $mk = MataKuliah::find($this->mata_kuliah_id);
     $jumlahPertemuan = $mk && $mk->total_pertemuan > 0 ? $mk->total_pertemuan : 14;
     $persenHadir = Absensi::hitungPersen($this->mahasiswa_id, $this->mata_kuliah_id, $jumlahPertemuan);
     
-    // Nilai dasar keaktifan dari kehadiran (max 70 jika hadir 100%)
-    $baseKeaktifan = $persenHadir * 0.7;
-    // Gabungkan nilai keaktifan inputan dosen dengan base kehadiran, maksimal 100
-    $keaktifanFinal = min(100, $this->keaktifan + $baseKeaktifan);
+    // Konversi Persentase Kehadiran ke Nilai Kehadiran
+    $nilaiKehadiran = match(true) {
+        $persenHadir == 100 => 100,
+        $persenHadir >= 95  => 95,
+        $persenHadir >= 90  => 90,
+        $persenHadir >= 85  => 85,
+        $persenHadir >= 80  => 80,
+        $persenHadir >= 75  => 75,
+        default             => 0,
+    };
+
+    // Bobot baku sesuai aturan baru
+    $bobotKehadiran = 0.50;
+    $bobotKeaktifan = 0.10;
+    $bobotTugas     = 0.15;
+    $bobotUts       = 0.10;
+    $bobotUas       = 0.15;
 
     return round(
-        ($keaktifanFinal * (($bobot->keaktifan ?? 20)/100)) +
-        ($this->tugas     * (($bobot->tugas ?? 20)/100)) +
-        ($this->uts       * (($bobot->uts ?? 25)/100)) +
-        ($this->uas       * (($bobot->uas ?? 35)/100)),
+        ($nilaiKehadiran * $bobotKehadiran) +
+        ($this->keaktifan * $bobotKeaktifan) +
+        ($this->tugas     * $bobotTugas) +
+        ($this->uts       * $bobotUts) +
+        ($this->uas       * $bobotUas),
     2);
 }
 

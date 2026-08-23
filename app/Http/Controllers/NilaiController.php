@@ -289,17 +289,17 @@ class NilaiController extends Controller {
         $persen = Absensi::hitungPersen($mahasiswaId, $mkId, $mk->total_pertemuan);
         $lolos  = $persen >= 75.0;
 
-        // --- IDE 2: BONUS KEHADIRAN (REWARD SYSTEM) ---
-        // Jika kehadiran 100%, tambah 5 poin ke Nilai Akhir
-        // Jika kehadiran >= 90%, tambah 3 poin ke Nilai Akhir
-        // Jika kehadiran >= 80%, tambah 1 poin ke Nilai Akhir
-        if ($persen == 100) {
-            $nilaiAkhir += 5;
-        } elseif ($persen >= 90) {
-            $nilaiAkhir += 3;
-        } elseif ($persen >= 80) {
-            $nilaiAkhir += 1;
-        }
+        // Terapkan batas minimal nilai berdasarkan persentase kehadiran
+        $batasMinimal = match(true) {
+            $persen >= 95 => 85,
+            $persen >= 90 => 75,
+            $persen >= 80 => 65,
+            $persen >= 75 => 55,
+            default       => 0,
+        };
+
+        // Nilai Akhir adalah nilai terbesar antara Nilai Akademik dan Nilai Minimal Berdasarkan Kehadiran
+        $nilaiAkhir = max($nilaiAkhir, $batasMinimal);
 
         // Pastikan Nilai Akhir tidak melebihi 100
         if ($nilaiAkhir > 100) {
@@ -309,10 +309,14 @@ class NilaiController extends Controller {
         $keteranganGagal = null;
         if (!$lolos) {
             $status = 'tidak_lulus';
-            $keteranganGagal = "Kehadiran {$persen}% (min 75%)";
+            $keteranganGagal = "Kehadiran {$persen}% (minimal 75%)";
+            if ($nilaiAkhir < 55) {
+                $keteranganGagal .= " & Nilai akhir {$nilaiAkhir} (minimal 55)";
+            }
+            $nilaiAkhir = 0; // Memaksa menjadi E sesuai tabel pengujian
         } elseif ($nilaiAkhir < 55) {
             $status = 'tidak_lulus';
-            $keteranganGagal = "Nilai akhir {$nilaiAkhir} (min 55)";
+            $keteranganGagal = "Nilai akhir {$nilaiAkhir} (minimal 55)";
         } else {
             $status = 'lulus';
         }
