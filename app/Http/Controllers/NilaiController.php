@@ -4,6 +4,7 @@ use App\Exports\NilaiMataKuliahExport;
 use App\Models\{Absensi,MataKuliah,NilaiTeori,NilaiPraktikum,NilaiAkhir};
 use App\Models\{NilaiKeaktifanDetail, NilaiTugasDetail};
 use App\Models\BobotNilai;
+use App\Services\PenilaianService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth,DB};
@@ -265,67 +266,17 @@ class NilaiController extends Controller {
     }
 
     /**
-     * Menghitung & menyimpan nilai akhir:
-     * - Teori:           NA = NA_Teori
-     * - Praktikum:       NA = Nilai_Praktikum
-     * - Teori+Praktikum: NA = (NA_Teori * 0.5) + (Nilai_Praktikum * 0.5)
-     * Syarat lulus: kehadiran >= 75% DAN nilai_akhir >= 55
+     * Menghitung & menyimpan nilai akhir via PenilaianService.
      */
     public function hitungNilaiAkhir(int $mahasiswaId, int $mkId): NilaiAkhir {
-        $mk  = MataKuliah::find($mkId);
-        $nt  = NilaiTeori::where('mahasiswa_id',$mahasiswaId)->where('mata_kuliah_id',$mkId)->first();
-        $np  = NilaiPraktikum::where('mahasiswa_id',$mahasiswaId)->where('mata_kuliah_id',$mkId)->first();
-        $naT = $nt?->nilai_akhir_teori ?? 0;
-        $naP = $np?->nilai_praktikum ?? 0;
+        return PenilaianService::prosesNilaiMahasiswa($mahasiswaId, $mkId);
+    }
 
-        $nilaiAkhir = match($mk->jenis) {
-            'teori'           => $naT,
-            'praktikum'       => $naP,
-            'teori_praktikum' => round(($naT * 0.5) + ($naP * 0.5), 2),
-            default           => $naT,
-        };
-
-        $poin   = Absensi::hitungPoin($mahasiswaId, $mkId);
-        $persen = Absensi::hitungPersen($mahasiswaId, $mkId, $mk->total_pertemuan);
-        $lolos  = $persen >= 75.0;
-
-        // Terapkan batas minimal nilai berdasarkan persentase kehadiran
-        $batasMinimal = match(true) {
-            $persen >= 95 => 85,
-            $persen >= 90 => 75,
-            $persen >= 80 => 65,
-            $persen >= 75 => 55,
-            default       => 0,
-        };
-
-        // Nilai Akhir adalah nilai terbesar antara Nilai Akademik dan Nilai Minimal Berdasarkan Kehadiran
-        $nilaiAkhir = max($nilaiAkhir, $batasMinimal);
-
-        // Pastikan Nilai Akhir tidak melebihi 100
-        if ($nilaiAkhir > 100) {
-            $nilaiAkhir = 100;
-        }
-
-        $keteranganGagal = null;
-        if (!$lolos) {
-            $status = 'tidak_lulus';
-            $keteranganGagal = "Kehadiran {$persen}% (minimal 75%)";
-            if ($nilaiAkhir < 55) {
-                $keteranganGagal .= " & Nilai akhir {$nilaiAkhir} (minimal 55)";
-            }
-            $nilaiAkhir = 0; // Memaksa menjadi E sesuai tabel pengujian
-        } elseif ($nilaiAkhir < 55) {
-            $status = 'tidak_lulus';
-            $keteranganGagal = "Nilai akhir {$nilaiAkhir} (minimal 55)";
-        } else {
-            $status = 'lulus';
-        }
-
-        $record = NilaiAkhir::updateOrCreate(
-            ['mahasiswa_id'=>$mahasiswaId,'mata_kuliah_id'=>$mkId],
-            ['nilai_teori'=>$naT,'nilai_praktikum'=>$naP,'nilai_akhir'=>$nilaiAkhir,'huruf_mutu'=>NilaiAkhir::toHuruf($nilaiAkhir),'persentase_kehadiran'=>$persen,'poin_kehadiran'=>$poin,'status_kelulusan'=>$status,'keterangan_gagal'=>$keteranganGagal]
-        );
-        DB::table('pendaftaran_mahasiswa')->where('mahasiswa_id',$mahasiswaId)->where('mata_kuliah_id',$mkId)->update(['status'=>$status==='lulus'?'lulus':'tidak_lulus']);
-        return $record;
+    /**
+     * Kalkulasi ulang seluruh nilai mahasiswa pada sebuah mata kuliah.
+     */
+    public function kalkulasiUlang(MataKuliah $mataKuliah) {
+        PenilaianService::kalkulasiUlangMataKuliah($mataKuliah->id);
+        return redirect()->route('nilai.index', $mataKuliah->id)->with('success', 'Seluruh nilai berhasil dikalkulasi ulang sesuai aturan penilaian terbaru.');
     }
 }

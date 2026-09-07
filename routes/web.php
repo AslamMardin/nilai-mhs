@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/nilai/{mataKuliah}/tugas',          [NilaiController::class, 'simpanTugas'])->name('nilai.simpan-tugas');
     Route::get('/nilai/{mataKuliah}/praktikum',       [NilaiController::class, 'formPraktikum'])->name('nilai.form-praktikum');
     Route::post('/nilai/{mataKuliah}/praktikum',      [NilaiController::class, 'simpanPraktikum'])->name('nilai.simpan-praktikum');
+    Route::post('/nilai/{mataKuliah}/kalkulasi-ulang', [NilaiController::class, 'kalkulasiUlang'])->name('nilai.kalkulasi-ulang');
 
     // Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {

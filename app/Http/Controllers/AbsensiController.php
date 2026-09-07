@@ -46,12 +46,15 @@ class AbsensiController extends Controller {
             'absensi.*.status'       => 'required|in:H,T,S,I,A',
         ]);
         DB::transaction(function() use ($request, $mataKuliah) {
+            $mhsIds = [];
             foreach ($request->absensi as $d) {
                 Absensi::updateOrCreate(
                     ['mahasiswa_id'=>$d['mahasiswa_id'],'mata_kuliah_id'=>$mataKuliah->id,'pertemuan_ke'=>$request->pertemuan_ke],
                     ['tanggal'=>$request->tanggal,'status'=>$d['status'],'keterangan'=>$d['keterangan']??null]
                 );
+                $mhsIds[] = (int) $d['mahasiswa_id'];
             }
+            \App\Services\PenilaianService::sinkronNilaiSetelahAbsensi($mataKuliah->id, $mhsIds);
         });
         return redirect()->route('absensi.index', ['mataKuliah' => $mataKuliah->id, 'pertemuan' => $request->pertemuan_ke])
             ->with('success',"Absensi pertemuan ke-{$request->pertemuan_ke} berhasil disimpan.");
@@ -81,7 +84,7 @@ class AbsensiController extends Controller {
             $poin = $absensiList->sum(fn($a) => Absensi::BOBOT[$a->status] ?? 0);
 
             $persen = $mataKuliah->total_pertemuan > 0
-                ? round(($poin / ($mataKuliah->total_pertemuan * 2)) * 100, 1)
+                ? round(($poin / ($mataKuliah->total_pertemuan * 2)) * 100, 2)
                 : 0;
 
             $hitung = collect(array_keys(Absensi::LABEL))

@@ -19,37 +19,37 @@
 
       @php
         $b = $bobot ?? (object)[
-          'keaktifan'=>20,
+          'kehadiran'=>25,
           'tugas'=>20,
           'uts'=>25,
-          'uas'=>35
+          'uas'=>30
         ];
       @endphp
 
       <div class="row g-3">
 
         <div class="col-md-3">
-          <label>Keaktifan (%)</label>
-          <input type="number" name="keaktifan" class="form-control"
-            value="{{ $b->keaktifan }}" required>
+          <label>Kehadiran (%)</label>
+          <input type="number" name="kehadiran" class="form-control"
+            value="{{ $b->kehadiran ?? 25 }}" required>
         </div>
 
         <div class="col-md-3">
           <label>Tugas (%)</label>
           <input type="number" name="tugas" class="form-control"
-            value="{{ $b->tugas }}" required>
+            value="{{ $b->tugas ?? 20 }}" required>
         </div>
 
         <div class="col-md-3">
           <label>UTS (%)</label>
           <input type="number" name="uts" class="form-control"
-            value="{{ $b->uts }}" required>
+            value="{{ $b->uts ?? 25 }}" required>
         </div>
 
         <div class="col-md-3">
           <label>UAS (%)</label>
           <input type="number" name="uas" class="form-control"
-            value="{{ $b->uas }}" required>
+            value="{{ $b->uas ?? 30 }}" required>
         </div>
 
       </div>

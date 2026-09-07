@@ -10,13 +10,7 @@ class NilaiAkhir extends Model {
     public function mataKuliah() { return $this->belongsTo(MataKuliah::class); }
 
     public static function toHuruf(float $n): string {
-        return match(true) {
-            $n >= 85 => 'A',
-            $n >= 75 => 'B',
-            $n >= 65 => 'C',
-            $n >= 55 => 'D',
-            default  => 'E',
-        };
+        return \App\Services\PenilaianService::konversiHurufMutu($n);
     }
 
     public function getBadgeClassAttribute(): string {

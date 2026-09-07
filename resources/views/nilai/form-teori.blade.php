@@ -17,10 +17,10 @@
     <div class="alert alert-info border-0 py-2 mb-3" style="font-size:12px;background:#eff6ff">
         <i class="bi bi-calculator me-1"></i>
         <strong>Rumus:</strong> NA Teori =
-        (Keaktifan × {{ $bobot->keaktifan ?? 20 }}%) +
+        (Kehadiran × {{ $bobot->kehadiran ?? 25 }}%) +
         (Tugas × {{ $bobot->tugas ?? 20 }}%) +
         (UTS × {{ $bobot->uts ?? 25 }}%) +
-        (UAS × {{ $bobot->uas ?? 35 }}%)
+        (UAS × {{ $bobot->uas ?? 30 }}%)
         &nbsp;|&nbsp; Semua nilai dalam skala 0–100
     </div>
 
@@ -45,13 +45,17 @@
                                 <th class="ps-3" style="width:35px">#</th>
                                 <th style="width:120px">NIM</th>
                                 <th>Nama Mahasiswa</th>
+                                <th class="text-center" style="width:90px">
+                                    Kehadiran<br>
+                                    <span class="badge bg-secondary" style="font-size:10px">×
+                                        {{ $bobot->kehadiran ?? 25 }}%</span>
+                                </th>
                                 <th class="text-center" style="width:100px">
                                     Keaktifan 
                                     <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="keaktifan" title="Buka/Kunci Kolom">
                                         <i class="bi bi-lock-fill lock-icon"></i>
                                     </button><br>
-                                    <span class="badge bg-secondary" style="font-size:10px">×
-                                        {{ $bobot->keaktifan ?? 20 }}%</span>
+                                    <span class="badge bg-secondary" style="font-size:10px">0%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
                                     Tugas 
@@ -75,7 +79,7 @@
                                         <i class="bi bi-lock-fill lock-icon"></i>
                                     </button><br>
                                     <span class="badge bg-secondary" style="font-size:10px">×
-                                        {{ $bobot->uas ?? 35 }}%</span>
+                                        {{ $bobot->uas ?? 30 }}%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
                                     <span class="text-primary fw-700">NA Teori</span><br>
@@ -85,22 +89,29 @@
                         </thead>
                         <tbody>
                             @foreach ($mataKuliah->mahasiswa as $idx => $mhs)
-                                @php $ex = $nilaiTeoriData[$mhs->id] ?? null; @endphp
+                                @php
+                                    $ex = $nilaiTeoriData[$mhs->id] ?? null;
+                                    $totalPertemuan = $mataKuliah->total_pertemuan > 0 ? $mataKuliah->total_pertemuan : 16;
+                                    $persenHadir = \App\Models\Absensi::hitungPersen($mhs->id, $mataKuliah->id, $totalPertemuan);
+                                @endphp
                                 <input type="hidden" name="nilai[{{ $idx }}][mahasiswa_id]"
                                     value="{{ $mhs->id }}">
-                                <tr data-row="{{ $idx }}">
+                                <tr data-row="{{ $idx }}" data-kehadiran="{{ $persenHadir }}" data-bobot-kehadiran="{{ ($bobot->kehadiran ?? 25) / 100 }}">
                                     <td class="ps-3 text-muted">{{ $idx + 1 }}</td>
                                     <td><code style="font-size:11px">{{ $mhs->nim }}</code></td>
                                     <td class="fw-500">{{ $mhs->nama }}</td>
+                                    <td class="text-center">
+                                        <span class="badge {{ $persenHadir >= 75 ? 'bg-success' : 'bg-danger' }}" style="font-size:11px">{{ $persenHadir }}%</span>
+                                    </td>
                                     @foreach (['keaktifan', 'tugas', 'uts', 'uas'] as $field)
                                         <td class="text-center p-1">
                                             <input type="number" name="nilai[{{ $idx }}][{{ $field }}]"
                                                 class="form-control form-control-sm text-center komponen input-{{ $field }} bg-light"
                                                 data-bobot="{{ [
-                                                    'keaktifan' => ($bobot->keaktifan ?? 20) / 100,
+                                                    'keaktifan' => 0,
                                                     'tugas' => ($bobot->tugas ?? 20) / 100,
                                                     'uts' => ($bobot->uts ?? 25) / 100,
-                                                    'uas' => ($bobot->uas ?? 35) / 100,
+                                                    'uas' => ($bobot->uas ?? 30) / 100,
                                                 ][$field] }}"
                                                 min="0" max="100" step="0.01"
                                                 value="{{ old("nilai.{$idx}.{$field}", $ex?->$field ?? '') }}"
@@ -131,7 +142,9 @@
     <script>
         function hitungNA(row) {
             const inputs = row.querySelectorAll('.komponen');
-            let na = 0;
+            const hadir = parseFloat(row.dataset.kehadiran) || 0;
+            const bHadir = parseFloat(row.dataset.bobotKehadiran) || 0.25;
+            let na = hadir * bHadir;
             inputs.forEach(inp => {
                 na += (parseFloat(inp.value) || 0) * parseFloat(inp.dataset.bobot);
             });

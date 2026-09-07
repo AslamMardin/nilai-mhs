@@ -4,12 +4,11 @@
 @section('content')
 
     {{-- Header --}}
-    <div class="alert alert-warning py-2 mb-3" style="font-size:13px">
-        <i class="bi bi-exclamation-triangle me-1"></i>
-        <strong>Perhatian:</strong> Jika Anda melakukan perubahan pada <b>absensi</b>,
-        maka hasil kelulusan <b>tidak otomatis diperbarui</b>.
-        Silakan lakukan <b>simpan ulang nilai (teori/praktikum)</b> agar status nilai akhir diperbarui.
-    </div>
+    @if(session('success'))
+        <div class="alert alert-success py-2 mb-3" style="font-size:13px">
+            <i class="bi bi-check-circle me-1"></i>{{ session('success') }}
+        </div>
+    @endif
     <div class="card mb-3">
         <div class="card-body py-2">
             <div class="d-flex flex-wrap align-items-center gap-3">
@@ -36,6 +35,13 @@
                             class="btn btn-sm btn-outline-success"><i class="bi bi-tools me-1"></i>Input Praktikum</a>
                     @endif
 
+                    <form method="POST" action="{{ route('nilai.kalkulasi-ulang', $mataKuliah->id) }}" class="d-inline" onsubmit="return confirm('Kalkulasi ulang seluruh nilai mahasiswa pada mata kuliah ini?')">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Kalkulasi Ulang
+                        </button>
+                    </form>
+
                     {{-- <a href="{{ route('nilai.excel', $mataKuliah->id) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a> --}}
                     <a href="{{ route('laporan.rekap-mk', $mataKuliah->id) }}" class="btn btn-sm btn-outline-info"><i
                             class="bi bi-bar-chart me-1"></i>Laporan</a>
@@ -51,12 +57,12 @@
 
     {{-- Info bobot --}}
     <div class="alert alert-light border py-2 mb-3" style="font-size:12px">
-        @if ($mataKuliah->hasTeori() && $bobot)
-            <strong>Bobot Teori:</strong>
-            Keaktifan {{ $bobot->keaktifan }}% +
-            Tugas {{ $bobot->tugas }}% +
-            UTS {{ $bobot->uts }}% +
-            UAS {{ $bobot->uas }}%
+        @if ($mataKuliah->hasTeori())
+            <strong>Bobot Akademik:</strong>
+            Kehadiran {{ $bobot->kehadiran ?? 25 }}% +
+            Tugas {{ $bobot->tugas ?? 20 }}% +
+            UTS {{ $bobot->uts ?? 25 }}% +
+            UAS {{ $bobot->uas ?? 30 }}%
         @endif
         @if ($mataKuliah->jenis == 'teori_praktikum')
             &nbsp;|&nbsp; <strong>Nilai Akhir:</strong> Teori 50% + Praktikum 50%

@@ -227,20 +227,25 @@ $mkB23A6 = DB::table('mata_kuliah')->insertGetId([
         $naData = [[80,85,78,82,83],[90,92,88,91,87],[70,72,65,68,74],[85,88,80,84,79],[75,78,72,76,81]];
         foreach ($mhsITBM as $idx => $id) {
             $n = $naData[$idx];
-            $naTeori = round(($n[0]*0.20)+($n[1]*0.20)+($n[2]*0.25)+($n[3]*0.35), 2);
-            DB::table('nilai_teori')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'keaktifan'=>$n[0],'tugas'=>$n[1],'uts'=>$n[2],'uas'=>$n[3],'nilai_akhir_teori'=>$naTeori,'created_at'=>now(),'updated_at'=>now()]);
-            DB::table('nilai_praktikum')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_praktikum'=>$n[4],'created_at'=>now(),'updated_at'=>now()]);
-
-            // Hitung nilai akhir
-            $naFinal = round(($naTeori*0.5)+($n[4]*0.5),2);
             $poin    = 0;
             $absensi = DB::table('absensi')->where('mahasiswa_id',$id)->where('mata_kuliah_id',$mkAlgo)->get();
             $bobot   = ['H'=>2,'T'=>1,'S'=>1,'I'=>0,'A'=>0];
             foreach ($absensi as $a) $poin += $bobot[$a->status] ?? 0;
             $persen  = round(($poin/(16*2))*100, 2);
-            $huruf   = match(true){$naFinal>=85=>'A',$naFinal>=75=>'B',$naFinal>=65=>'C',$naFinal>=55=>'D',default=>'E'};
-            $status  = $persen>=75&&$naFinal>=55?'lulus':'tidak_lulus';
-            DB::table('nilai_akhir')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_teori'=>$naTeori,'nilai_praktikum'=>$n[4],'nilai_akhir'=>$naFinal,'huruf_mutu'=>$huruf,'persentase_kehadiran'=>$persen,'poin_kehadiran'=>$poin,'status_kelulusan'=>$status,'keterangan_gagal'=>$status=='tidak_lulus'?"Kehadiran {$persen}%":null,'created_at'=>now(),'updated_at'=>now()]);
+
+            $naTeori = \App\Services\PenilaianService::hitungNilaiTeori($persen, $n[1], $n[2], $n[3]);
+            DB::table('nilai_teori')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'keaktifan'=>$n[0],'tugas'=>$n[1],'uts'=>$n[2],'uas'=>$n[3],'nilai_akhir_teori'=>$naTeori,'created_at'=>now(),'updated_at'=>now()]);
+            DB::table('nilai_praktikum')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_praktikum'=>$n[4],'created_at'=>now(),'updated_at'=>now()]);
+
+            // Hitung nilai akhir via PenilaianService
+            $naAkademik = \App\Services\PenilaianService::hitungNilaiAkademik('teori_praktikum', $naTeori, $n[4]);
+            $naFinal    = \App\Services\PenilaianService::hitungNilaiAkhir($naAkademik, $persen);
+            $huruf      = \App\Services\PenilaianService::konversiHurufMutu($naFinal);
+            $status     = \App\Services\PenilaianService::tentukanStatusKelulusan($persen, $naFinal);
+            $ketGagal   = \App\Services\PenilaianService::tentukanKeteranganGagal($persen, $naFinal);
+
+            DB::table('nilai_akhir')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_teori'=>$naTeori,'nilai_praktikum'=>$n[4],'nilai_akhir'=>$naFinal,'huruf_mutu'=>$huruf,'persentase_kehadiran'=>$persen,'poin_kehadiran'=>$poin,'status_kelulusan'=>$status,'keterangan_gagal'=>$ketGagal,'created_at'=>now(),'updated_at'=>now()]);
+            DB::table('pendaftaran_mahasiswa')->where('mahasiswa_id',$id)->where('mata_kuliah_id',$mkAlgo)->update(['status'=>$status==='lulus'?'lulus':'tidak_lulus']);
         }
 
         $this->command->info('✅ Seeder OK: 2 kampus, 5 kelas, 5 matkul, 8 mahasiswa, data lengkap.');

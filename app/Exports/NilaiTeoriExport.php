@@ -26,8 +26,10 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
         $nilaiTeori = NilaiTeori::where('mata_kuliah_id', $this->mataKuliah->id)
             ->get()->keyBy('mahasiswa_id');
 
+        $totalPertemuan = $this->mataKuliah->total_pertemuan > 0 ? $this->mataKuliah->total_pertemuan : 16;
         foreach ($mahasiswa as $mhs) {
             $nilai = $nilaiTeori->get($mhs->id);
+            $persenHadir = \App\Models\Absensi::hitungPersen($mhs->id, $this->mataKuliah->id, $totalPertemuan);
             $keaktifan = $nilai?->keaktifan ?? 0;
             $tugas = $nilai?->tugas ?? 0;
             $uts = $nilai?->uts ?? 0;
@@ -38,6 +40,7 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
                 'No' => $no++,
                 'NIM' => $mhs->nim,
                 'Nama' => $mhs->nama,
+                'Kehadiran (%)' => $persenHadir,
                 'Keaktifan' => $keaktifan,
                 'Tugas' => $tugas,
                 'UTS' => $uts,
@@ -51,7 +54,7 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
 
     public function headings(): array
     {
-        return ['No', 'NIM', 'Nama', 'Keaktifan', 'Tugas', 'UTS', 'UAS', 'NA Teori'];
+        return ['No', 'NIM', 'Nama', 'Kehadiran (%)', 'Keaktifan', 'Tugas', 'UTS', 'UAS', 'NA Teori'];
     }
 
     public function title(): string
