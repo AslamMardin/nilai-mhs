@@ -14,11 +14,10 @@ class MataKuliah extends Model {
     }
     public function absensi()        { return $this->hasMany(Absensi::class); }
     public function nilaiTeori()     { return $this->hasMany(NilaiTeori::class); }
-    public function nilaiPraktikum() { return $this->hasMany(NilaiPraktikum::class); }
     public function nilaiAkhir()     { return $this->hasMany(NilaiAkhir::class); }
 
-    public function hasTeori():bool     { return in_array($this->jenis, ['teori','teori_praktikum']); }
-    public function hasPraktikum():bool { return in_array($this->jenis, ['praktikum','teori_praktikum']); }
+    public function hasTeori():bool     { return true; }
+    public function hasPraktikum():bool { return false; }
 
     public function getLabelJenisAttribute():string {
         return match($this->jenis) {

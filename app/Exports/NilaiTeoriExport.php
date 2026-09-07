@@ -34,7 +34,10 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
             $tugas = $nilai?->tugas ?? 0;
             $uts = $nilai?->uts ?? 0;
             $uas = $nilai?->uas ?? 0;
-            $na = $nilai?->nilai_akhir_teori ?? 0;
+
+            $naMurni = \App\Services\PenilaianService::hitungNilaiTeori($persenHadir, $tugas, $uts, $uas);
+            $bonus = \App\Services\PenilaianService::hitungBonusKeaktifan($keaktifan);
+            $nilaiFinish = \App\Services\PenilaianService::hitungNilaiFinish($naMurni, $bonus);
 
             $rows[] = [
                 'No' => $no++,
@@ -45,7 +48,9 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
                 'Tugas' => $tugas,
                 'UTS' => $uts,
                 'UAS' => $uas,
-                'NA Teori' => $na,
+                'NA Murni (100%)' => $naMurni,
+                'Bonus Keaktifan' => $bonus,
+                'Nilai Finish' => $nilaiFinish,
             ];
         }
 
@@ -54,7 +59,7 @@ class NilaiTeoriExport implements FromCollection, WithHeadings, ShouldAutoSize, 
 
     public function headings(): array
     {
-        return ['No', 'NIM', 'Nama', 'Kehadiran (%)', 'Keaktifan', 'Tugas', 'UTS', 'UAS', 'NA Teori'];
+        return ['No', 'NIM', 'Nama', 'Kehadiran (%)', 'Keaktifan', 'Tugas', 'UTS', 'UAS', 'NA Murni (100%)', 'Bonus Keaktifan', 'Nilai Finish'];
     }
 
     public function title(): string

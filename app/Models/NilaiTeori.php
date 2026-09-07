@@ -16,17 +16,28 @@ class NilaiTeori extends Model {
     // }
 
 
-    public function hitung(): float {
+    public function getBonusKeaktifanAttribute(): float {
+        return round(((float) $this->keaktifan) * 0.10, 2);
+    }
+
+    public function getNaMurniAttribute(): float {
         $mk = MataKuliah::find($this->mata_kuliah_id);
         $jumlahPertemuan = $mk && $mk->total_pertemuan > 0 ? $mk->total_pertemuan : 16;
         $persenHadir = Absensi::hitungPersen($this->mahasiswa_id, $this->mata_kuliah_id, $jumlahPertemuan);
-
         return \App\Services\PenilaianService::hitungNilaiTeori(
             $persenHadir,
             (float) $this->tugas,
             (float) $this->uts,
             (float) $this->uas
         );
+    }
+
+    public function getNilaiFinishAttribute(): float {
+        return min(100.0, round($this->na_murni + $this->bonus_keaktifan, 2));
+    }
+
+    public function hitung(): float {
+        return $this->nilai_finish;
     }
 
     public static function simpan(array $d): self {

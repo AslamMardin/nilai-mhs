@@ -15,6 +15,5 @@ class Mahasiswa extends Model {
     }
     public function absensi()        { return $this->hasMany(Absensi::class); }
     public function nilaiTeori()     { return $this->hasMany(NilaiTeori::class); }
-    public function nilaiPraktikum() { return $this->hasMany(NilaiPraktikum::class); }
     public function nilaiAkhir()     { return $this->hasMany(NilaiAkhir::class); }
 }

@@ -68,7 +68,7 @@ class LaporanController extends Controller
                 ->first();
 
             if ($mahasiswa) {
-                $transkrip = NilaiAkhir::with('mataKuliah')->where('mahasiswa_id', $mahasiswa->id)->get()->map(fn($na) => ['kode' => $na->mataKuliah->kode, 'nama' => $na->mataKuliah->nama, 'sks' => $na->mataKuliah->sks, 'nilai_teori' => $na->nilai_teori, 'nilai_prak' => $na->nilai_praktikum, 'nilai_akhir' => $na->nilai_akhir, 'huruf_mutu' => $na->huruf_mutu, 'kehadiran' => $na->persentase_kehadiran . '%', 'status' => $na->status_kelulusan]);
+                $transkrip = NilaiAkhir::with('mataKuliah')->where('mahasiswa_id', $mahasiswa->id)->get()->map(fn($na) => ['kode' => $na->mataKuliah->kode, 'nama' => $na->mataKuliah->nama, 'sks' => $na->mataKuliah->sks, 'nilai_teori' => $na->nilai_teori, 'nilai_akhir' => $na->nilai_akhir, 'huruf_mutu' => $na->huruf_mutu, 'kehadiran' => $na->persentase_kehadiran . '%', 'status' => $na->status_kelulusan, 'keterangan_gagal' => $na->keterangan_gagal]);
             }
         }
 

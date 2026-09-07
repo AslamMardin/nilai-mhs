@@ -22,18 +22,12 @@
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
 
-                    @if ($mataKuliah->hasTeori())
-                        <a href="{{ route('nilai.form-teori', $mataKuliah->id) }}" class="btn btn-sm btn-primary"><i
-                                class="bi bi-pencil-square me-1"></i>Input Teori</a>
-                        <a href="{{ route('nilai.form-keaktifan', $mataKuliah->id) }}"
-                            class="btn btn-sm btn-outline-success"><i class="bi bi-ui-checks me-1"></i>Keaktifan</a>
-                        <a href="{{ route('nilai.form-tugas', $mataKuliah->id) }}" class="btn btn-sm btn-outline-primary"><i
-                                class="bi bi-journal-text me-1"></i>Tugas</a>
-                    @endif
-                    @if ($mataKuliah->hasPraktikum())
-                        <a href="{{ route('nilai.form-praktikum', $mataKuliah->id) }}"
-                            class="btn btn-sm btn-outline-success"><i class="bi bi-tools me-1"></i>Input Praktikum</a>
-                    @endif
+                    <a href="{{ route('nilai.form-teori', $mataKuliah->id) }}" class="btn btn-sm btn-primary"><i
+                            class="bi bi-pencil-square me-1"></i>Input Nilai</a>
+                    <a href="{{ route('nilai.form-keaktifan', $mataKuliah->id) }}"
+                        class="btn btn-sm btn-outline-success"><i class="bi bi-ui-checks me-1"></i>Keaktifan</a>
+                    <a href="{{ route('nilai.form-tugas', $mataKuliah->id) }}" class="btn btn-sm btn-outline-primary"><i
+                            class="bi bi-journal-text me-1"></i>Tugas</a>
 
                     <form method="POST" action="{{ route('nilai.kalkulasi-ulang', $mataKuliah->id) }}" class="d-inline" onsubmit="return confirm('Kalkulasi ulang seluruh nilai mahasiswa pada mata kuliah ini?')">
                         @csrf
@@ -54,21 +48,15 @@
         </div>
     </div>
 
-
     {{-- Info bobot --}}
     <div class="alert alert-light border py-2 mb-3" style="font-size:12px">
-        @if ($mataKuliah->hasTeori())
-            <strong>Bobot Akademik:</strong>
-            Kehadiran {{ $bobot->kehadiran ?? 25 }}% +
-            Tugas {{ $bobot->tugas ?? 20 }}% +
-            UTS {{ $bobot->uts ?? 25 }}% +
-            UAS {{ $bobot->uas ?? 30 }}%
-        @endif
-        @if ($mataKuliah->jenis == 'teori_praktikum')
-            &nbsp;|&nbsp; <strong>Nilai Akhir:</strong> Teori 50% + Praktikum 50%
-        @elseif($mataKuliah->jenis == 'praktikum')
-            <strong>Bobot:</strong> Praktikum 100%
-        @endif
+        <strong>Bobot Penilaian 100%:</strong>
+        Hadir {{ $bobot->kehadiran ?? 25 }}% +
+        Tugas {{ $bobot->tugas ?? 20 }}% +
+        UTS {{ $bobot->uts ?? 25 }}% +
+        UAS {{ $bobot->uas ?? 30 }}% = 100%
+        &nbsp;|&nbsp; <strong>Bonus Keaktifan:</strong> Keaktifan × 10%
+        &nbsp;|&nbsp; <strong>Nilai Finish:</strong> MIN(100, NA Murni + Bonus Keaktifan)
         &nbsp;|&nbsp; <strong>Syarat Lulus:</strong> Kehadiran ≥ 75% <strong>DAN</strong> Nilai Akhir ≥ 55
     </div>
 
@@ -119,112 +107,136 @@
                 <table class="table table-hover align-middle mb-0" style="font-size:13px">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-3" rowspan="2">#</th>
-                            <th rowspan="2">NIM / Nama</th>
-                            @if ($mataKuliah->hasTeori())
-                                <th colspan="5" class="text-center border-start" style="background:#f0f7ff">Nilai Teori
-                                </th>
-                            @endif
-                            @if ($mataKuliah->hasPraktikum())
-                                <th colspan="1" class="text-center border-start" style="background:#f0fff4">Praktikum
-                                </th>
-                            @endif
-                            <th colspan="3" class="text-center border-start" style="background:#fafaf0">Kehadiran</th>
-                            <th colspan="3" class="text-center border-start" style="background:#fff0f0">Hasil Akhir</th>
-                        </tr>
-                        <tr>
-                            @if ($mataKuliah->hasTeori())
-                                <th class="text-center border-start" style="font-size:10px;background:#f0f7ff">Aktif</th>
-                                <th class="text-center" style="font-size:10px;background:#f0f7ff">Tugas</th>
-                                <th class="text-center" style="font-size:10px;background:#f0f7ff">UTS</th>
-                                <th class="text-center" style="font-size:10px;background:#f0f7ff">UAS</th>
-                                <th class="text-center" style="font-size:10px;background:#f0f7ff">NA Teori</th>
-                            @endif
-                            @if ($mataKuliah->hasPraktikum())
-                                <th class="text-center border-start" style="font-size:10px;background:#f0fff4">Nilai Prak
-                                </th>
-                            @endif
-                            <th class="text-center border-start" style="font-size:10px;background:#fafaf0">Poin</th>
-                            <th class="text-center" style="font-size:10px;background:#fafaf0">%</th>
-                            <th class="text-center" style="font-size:10px;background:#fafaf0">Ket</th>
-                            <th class="text-center border-start fw-700" style="font-size:10px;background:#fff0f0">NA</th>
-                            <th class="text-center" style="font-size:10px;background:#fff0f0">Mutu</th>
-                            <th class="text-center" style="font-size:10px;background:#fff0f0">Status</th>
+                            <th class="ps-3 text-center" style="width:35px">#</th>
+                            <th style="min-width:170px">NIM / Nama Mahasiswa</th>
+                            <th class="text-center" style="font-size:11px;background:#f0f7ff" title="Kehadiran × 25%">Hadir<br><span class="text-muted fw-normal">({{ $bobot->kehadiran ?? 25 }}%)</span></th>
+                            <th class="text-center" style="font-size:11px;background:#f0f7ff" title="Skor Keaktifan Mahasiswa">Keaktifan<br><span class="badge bg-info-subtle text-info-emphasis border px-1" style="font-size:9px">Bonus 10%</span></th>
+                            <th class="text-center" style="font-size:11px;background:#f0f7ff" title="Nilai Tugas × 20%">Tugas<br><span class="text-muted fw-normal">({{ $bobot->tugas ?? 20 }}%)</span></th>
+                            <th class="text-center" style="font-size:11px;background:#f0f7ff" title="UTS × 25%">UTS<br><span class="text-muted fw-normal">({{ $bobot->uts ?? 25 }}%)</span></th>
+                            <th class="text-center" style="font-size:11px;background:#f0f7ff" title="UAS × 30%">UAS<br><span class="text-muted fw-normal">({{ $bobot->uas ?? 30 }}%)</span></th>
+                            <th class="text-center border-start fw-600" style="font-size:11px;background:#eef4fb" title="NA Murni = (Hadir×0.25) + (Tugas×0.20) + (UTS×0.25) + (UAS×0.30)">NA Murni<br><span class="text-muted fw-normal">(100%)</span></th>
+                            <th class="text-center" style="font-size:11px;background:#eef4fb" title="Bonus Keaktifan = Keaktifan × 10%">Bonus</th>
+                            <th class="text-center fw-bold" style="font-size:11px;background:#e2eeff" title="Nilai Finish = MIN(100, NA Murni + Bonus)">Nilai Finish</th>
+                            <th class="text-center border-start fw-700" style="font-size:11px;background:#fff0f0" title="Nilai Akhir Final">NA</th>
+                            <th class="text-center" style="font-size:11px;background:#fff0f0" title="Huruf Mutu">Mutu</th>
+                            <th class="text-center" style="font-size:11px;background:#fff0f0" title="Status Kelulusan">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($mahasiswaList as $idx => $mhs)
                             @php
                                 $nt = $mhs->nilaiTeori->first();
-                                $np = $mhs->nilaiPraktikum->first();
                                 $na = $mhs->nilaiAkhir->first();
+                                $totalPertemuan = $mataKuliah->total_pertemuan > 0 ? $mataKuliah->total_pertemuan : 16;
+                                $persenHadir = $na ? (float)$na->persentase_kehadiran : \App\Models\Absensi::hitungPersen($mhs->id, $mataKuliah->id, $totalPertemuan);
+                                
+                                $keaktifan = $nt ? (float)$nt->keaktifan : null;
+                                $tugas     = $nt ? (float)$nt->tugas : null;
+                                $uts       = $nt ? (float)$nt->uts : null;
+                                $uas       = $nt ? (float)$nt->uas : null;
+
+                                // 1. NA Murni = (Hadir * 0.25) + (Tugas * 0.20) + (UTS * 0.25) + (UAS * 0.30)
+                                $naMurni = ($nt !== null) ? \App\Services\PenilaianService::hitungNilaiTeori(
+                                    $persenHadir,
+                                    $tugas ?? 0,
+                                    $uts ?? 0,
+                                    $uas ?? 0
+                                ) : null;
+
+                                // 2. Bonus Keaktifan = Keaktifan * 10%
+                                $bonusKeaktifan = ($keaktifan !== null) ? \App\Services\PenilaianService::hitungBonusKeaktifan($keaktifan) : 0;
+
+                                // 3. Nilai Finish = MIN(100, NA Murni + Bonus Keaktifan)
+                                $nilaiFinish = ($naMurni !== null) ? \App\Services\PenilaianService::hitungNilaiFinish($naMurni, $bonusKeaktifan) : null;
                             @endphp
                             <tr>
-                                <td class="ps-3 text-muted">{{ $idx + 1 }}</td>
+                                <td class="ps-3 text-center text-muted">{{ $idx + 1 }}</td>
                                 <td>
                                     <a href="{{ route('mahasiswa.show', $mhs->id) }}"
                                         class="text-decoration-none text-dark">
-                                        <div class="fw-500">{{ $mhs->nama }}</div>
+                                        <div class="fw-600">{{ $mhs->nama }}</div>
                                         <code style="font-size:11px;color:#64748b">{{ $mhs->nim }}</code>
                                     </a>
                                 </td>
-                                @if ($mataKuliah->hasTeori())
-                                    <td class="text-center border-start">{{ $nt?->keaktifan ?? '—' }}</td>
-                                    <td class="text-center">{{ $nt?->tugas ?? '—' }}</td>
-                                    <td class="text-center">{{ $nt?->uts ?? '—' }}</td>
-                                    <td class="text-center">{{ $nt?->uas ?? '—' }}</td>
-                                    <td class="text-center fw-600">{{ $nt?->nilai_akhir_teori ?? '—' }}</td>
-                                @endif
-                                @if ($mataKuliah->hasPraktikum())
-                                    <td class="text-center border-start fw-600">{{ $np?->nilai_praktikum ?? '—' }}</td>
-                                @endif
-                                <td class="text-center border-start">{{ $na?->poin_kehadiran ?? '—' }}</td>
+
+                                {{-- Hadir (25%) --}}
+                                <td class="text-center border-start">
+                                    <span class="fw-500">{{ number_format($persenHadir, 1) }}</span>
+                                </td>
+
+                                {{-- Keaktifan (Bonus 10%) --}}
                                 <td class="text-center">
-                                    @if ($na)
-                                        <span
-                                            class="badge {{ $na->persentase_kehadiran >= 75 ? 'bg-success' : 'bg-danger' }}"
-                                            style="font-size:11px">{{ $na->persentase_kehadiran }}%</span>
+                                    {{ $keaktifan !== null ? number_format($keaktifan, 2) : '—' }}
+                                </td>
+
+                                {{-- Tugas (20%) --}}
+                                <td class="text-center fw-500">
+                                    {{ $tugas !== null ? number_format($tugas, 2) : '—' }}
+                                </td>
+
+                                {{-- UTS (25%) --}}
+                                <td class="text-center">
+                                    {{ $uts !== null ? number_format($uts, 2) : '—' }}
+                                </td>
+
+                                {{-- UAS (30%) --}}
+                                <td class="text-center">
+                                    {{ $uas !== null ? number_format($uas, 2) : '—' }}
+                                </td>
+
+                                {{-- NA Murni (100%) --}}
+                                <td class="text-center border-start fw-600" style="background:#fcfdff">
+                                    {{ $naMurni !== null ? number_format($naMurni, 2) : '—' }}
+                                </td>
+
+                                {{-- Bonus --}}
+                                <td class="text-center" style="background:#fcfdff">
+                                    @if($bonusKeaktifan > 0)
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size:11px">+{{ number_format($bonusKeaktifan, 2) }}</span>
+                                    @elseif($keaktifan !== null)
+                                        <span class="text-muted">0</span>
                                     @else
-                                        —
+                                        <span class="text-muted">—</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    @if ($na)
-                                        @if ($na->persentase_kehadiran >= 75)
-                                            <i class="bi bi-check-circle-fill text-success"></i>
-                                        @else<i class="bi bi-x-circle-fill text-danger" title="Kehadiran < 75%"></i>
-                                        @endif
-                                    @else
-                                        —
-                                    @endif
+
+                                {{-- Nilai Finish --}}
+                                <td class="text-center fw-bold border-end" style="background:#eef6ff;font-size:14px">
+                                    <span class="text-primary">{{ $nilaiFinish !== null ? number_format($nilaiFinish, 2) : '—' }}</span>
                                 </td>
-                                <td class="text-center border-start fw-700" style="font-size:16px">
-                                    {{ $na?->nilai_akhir ?? '—' }}</td>
-                                <td class="text-center">
+
+                                {{-- NA --}}
+                                <td class="text-center border-start fw-700" style="font-size:15px;background:#fff8f8">
+                                    {{ $na?->nilai_akhir !== null ? number_format($na->nilai_akhir, 2) : '—' }}
+                                </td>
+
+                                {{-- Mutu --}}
+                                <td class="text-center" style="background:#fff8f8">
                                     @if ($na?->huruf_mutu)
-                                        <span
-                                            class="badge badge-{{ strtolower($na->huruf_mutu) }} px-2">{{ $na->huruf_mutu }}</span>
+                                        <span class="badge badge-{{ strtolower($na->huruf_mutu) }} px-2">{{ $na->huruf_mutu }}</span>
                                     @else
-                                        —
+                                        <span class="text-muted">—</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+
+                                {{-- Status --}}
+                                <td class="text-center" style="background:#fff8f8">
                                     @if ($na)
                                         @if ($na->status_kelulusan == 'lulus')
-                                            <span class="badge bg-success">Lulus</span>
+                                            <span class="badge bg-success"><i class="bi bi-check me-1"></i>Lulus</span>
                                         @elseif($na->status_kelulusan == 'tidak_lulus')
-                                            <span class="badge bg-danger" title="{{ $na->keterangan_gagal }}">Tidak
-                                                Lulus</span>
-                                        @else<span class="badge bg-secondary">Belum</span>
+                                            <span class="badge bg-danger" title="{{ $na->keterangan_gagal }}"><i class="bi bi-x me-1"></i>Tidak Lulus</span>
+                                        @else
+                                            <span class="badge bg-secondary">Belum</span>
                                         @endif
-                                    @else<span class="badge bg-light text-muted border"
-                                            style="font-size:11px">—</span>
+                                    @else
+                                        <span class="badge bg-light text-muted border" style="font-size:11px">—</span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="15" class="text-center text-muted py-4">Belum ada mahasiswa terdaftar.</td>
+                                <td colspan="13" class="text-center text-muted py-4">Belum ada mahasiswa terdaftar.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -10,7 +10,7 @@
  
   <i class="bi bi-lightbulb me-1"></i>
   <strong>Saran:</strong> Lakukan input <b>absensi terlebih dahulu</b>, kemudian lanjutkan ke 
-  <b>penilaian teori/praktikum</b> agar hasil nilai akhir akurat.
+  <b>penilaian</b> agar hasil nilai akhir akurat.
 </div>
 <div class="row g-3">
   @forelse($mataKuliahList as $mk)
@@ -38,12 +38,7 @@
         </div>
         <div class="d-flex gap-2 flex-wrap">
           <a href="{{ route('nilai.index',$mk->id) }}" class="btn btn-sm btn-primary flex-grow-1"><i class="bi bi-eye me-1"></i>Lihat Nilai</a>
-          @if($mk->hasTeori())
-          <a href="{{ route('nilai.form-teori',$mk->id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Teori</a>
-          @endif
-          @if($mk->hasPraktikum())
-          <a href="{{ route('nilai.form-praktikum',$mk->id) }}" class="btn btn-sm btn-outline-success"><i class="bi bi-tools"></i> Prak</a>
-          @endif
+          <a href="{{ route('nilai.form-teori',$mk->id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> Input Nilai</a>
         </div>
       </div>
     </div>

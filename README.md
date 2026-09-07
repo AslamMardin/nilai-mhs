@@ -8,73 +8,71 @@ Aplikasi berbasis **Laravel** untuk mengelola data akademik secara komprehensif,
 **Nilai-Mhs** dirancang untuk memudahkan dosen dan pengelola kampus dalam:
 - Mengelola data master (Kampus, Kelas, Mata Kuliah, Mahasiswa).
 - Menginput absensi harian secara efisien dengan riwayat dan persentase kehadiran per pertemuan.
-- Menghitung nilai mahasiswa menggunakan **standar bobot baku**: **Kehadiran 25%**, **Tugas 20%**, **UTS 25%**, dan **UAS 30%**.
-- Menerapkan **aturan nilai minimum berdasarkan persentase kehadiran** serta penetapan alasan ketidaklulusan otomatis.
-- Mengelola penilaian praktikum dan kombinasi teori + praktikum.
+- Menghitung nilai mahasiswa menggunakan **standar bobot 100% murni**: **Kehadiran 25%**, **Tugas 20%**, **UTS 25%**, dan **UAS 30%**.
+- Menerapkan **Keaktifan Mahasiswa sebagai BONUS Nilai (maksimal 10%)** yang langsung ditambahkan menghasilkan **Nilai Finish**.
+- Menetapkan **Nilai Akhir (NA)** dan **Huruf Mutu** langsung dari **Nilai Finish** secara transparan tanpa nilai tersembunyi.
+- Memvalidasi syarat kelulusan otomatis (Kehadiran $\ge 75\%$ dan NA $\ge 55$).
 - Sinkronisasi otomatis antara absensi dan nilai akhir mahasiswa via `PenilaianService`.
-- Mengekspor data dalam format PDF dan Excel.
+- Mengekspor data rekapitulasi nilai dalam format PDF dan Excel (XLSX).
 
 ---
 
-## 📊 Logika & Aturan Sistem Penilaian (Revisi Terbaru)
+## 📊 Logika & Aturan Sistem Penilaian (Standar Terbaru)
 
 Sistem menggunakan logika penilaian terpusat yang konsisten di seluruh modul (`PenilaianService`):
 
-### 1. Bobot Penilaian Final (Total 100%)
+### 1. Bobot Penilaian Komponen 100% (NA Murni)
 | Komponen | Bobot | Keterangan |
 | :--- | :---: | :--- |
-| **Kehadiran** | **25%** | Menggunakan persentase kehadiran aktual riil |
-| **Tugas Terstruktur & Mandiri** | **20%** | Rata-rata tugas mahasiswa |
-| **Tugas Mandiri (UTS)** | **25%** | Nilai Ujian Tengah Semester |
-| **Tugas Mandiri (UAS)** | **30%** | Nilai Ujian Akhir Semester |
+| **Kehadiran** | **25%** | Persentase kehadiran riil dari total pertemuan |
+| **Tugas** | **20%** | Rata-rata nilai tugas terstruktur & mandiri (nilai murni yang tampil di tabel) |
+| **UTS** | **25%** | Nilai Ujian Tengah Semester |
+| **UAS** | **30%** | Nilai Ujian Akhir Semester |
+| **Total Bobot** | **100%** | Komponen baku nilai akademik |
 
-$$\text{Nilai Akademik} = (\text{Kehadiran} \times 0.25) + (\text{Tugas} \times 0.20) + (\text{UTS} \times 0.25) + (\text{UAS} \times 0.30)$$
+$$\text{NA Murni} = (\text{Hadir} \times 0.25) + (\text{Tugas} \times 0.20) + (\text{UTS} \times 0.25) + (\text{UAS} \times 0.30)$$
 
-> **Catatan:** Komponen keaktifan tidak dijadikan bobot terpisah (bobot 0% pada NA). Seluruh reward/bonus kehadiran lama ($+5, +3, +1$) dinonaktifkan sepenuhnya.
+> **Catatan:** Nilai Tugas yang ditampilkan pada tabel adalah nilai murni dari database yang sama persis dengan yang dimasukkan ke dalam rumus NA Murni (tanpa angka kurung, tanpa nilai tersembunyi, dan tanpa nilai praktikum).
 
-### 2. Nilai Minimum Berdasarkan Kehadiran
-Setelah nilai akademik dihitung, diberlakukan ambang nilai minimum berdasarkan persentase kehadiran riil:
+### 2. Keaktifan sebagai BONUS (Maksimal 10%)
+Keaktifan bukan merupakan komponen pembagi bobot 100%, melainkan murni berfungsi sebagai **reward / BONUS tambahan nilai**:
 
-| Persentase Kehadiran | Nilai Minimum |
-| :---: | :---: |
-| **$\ge 95\%$** | **85** (A) |
-| **$90 - 94.99\%$** | **75** (B) |
-| **$80 - 89.99\%$** | **65** (C) |
-| **$75 - 79.99\%$** | **55** (D) |
-| **$< 75\%$** | **Tidak Lulus** (tanpa batas minimum) |
+$$\text{Bonus Keaktifan} = \text{Keaktifan} \times 10\%$$
 
-* Untuk mahasiswa dengan kehadiran $\ge 75\%$:  
-  $$\text{Nilai Akhir} = \max(\text{Nilai Akademik}, \text{Nilai Minimum Kehadiran})$$
-  *(Nilai akademik yang lebih tinggi dari batas minimum tidak akan diturunkan).*
-* Untuk mahasiswa dengan kehadiran $< 75\%$:  
-  $$\text{Nilai Akhir} = \text{Nilai Akademik}$$
-  *(Nilai asli dan huruf mutu tetap dipertahankan sesuai capaian angka, tidak dinolkan).*
-* Nilai akhir selalu dibatasi pada rentang $0 \le \text{Nilai Akhir} \le 100$.
+*Contoh:*
+- Skor Keaktifan $58{,}13 \rightarrow \text{Bonus} = +5{,}81$
+- Skor Keaktifan $64{,}06 \rightarrow \text{Bonus} = +6{,}41$
 
-### 3. Konversi Huruf Mutu
-Dilakukan setelah Nilai Akhir final diperoleh:
-* **$\ge 85$** $\rightarrow$ **A**
-* **$75 - 84.99$** $\rightarrow$ **B**
-* **$65 - 74.99$** $\rightarrow$ **C**
-* **$55 - 64.99$** $\rightarrow$ **D**
-* **$< 55$** $\rightarrow$ **E**
+### 3. Perhitungan Nilai Finish
+Bonus Keaktifan langsung diterapkan ke dalam **Nilai Finish** dengan batas maksimal 100:
 
-### 4. Syarat & Alasan Ketidaklulusan
-Mahasiswa dinyatakan **LULUS** hanya jika:
+$$\text{Nilai Finish} = \min(100{,}00, \, \text{NA Murni} + \text{Bonus Keaktifan})$$
+
+### 4. Nilai Akhir (NA) & Konversi Huruf Mutu
+Nilai Akhir (NA) menggunakan **Nilai Finish** secara langsung tanpa aturan nilai alternatif/tersembunyi:
+
+$$\text{Nilai Akhir (NA)} = \text{Nilai Finish}$$
+
+Konversi Huruf Mutu ditentukan dari Nilai Akhir (NA):
+* **$\ge 85.00$** $\rightarrow$ **A**
+* **$75.00 - 84.99$** $\rightarrow$ **B**
+* **$65.00 - 74.99$** $\rightarrow$ **C**
+* **$55.00 - 64.99$** $\rightarrow$ **D**
+* **$< 55.00$** $\rightarrow$ **E**
+
+### 5. Syarat & Alasan Ketidaklulusan
+Mahasiswa dinyatakan **LULUS** hanya jika memenuhi kedua kriteria berikut:
 $$\text{Kehadiran} \ge 75\% \quad \text{DAN} \quad \text{Nilai Akhir} \ge 55$$
 
-Jika mahasiswa tidak lulus, sistem secara otomatis mencatat alasan ketidaklulusan:
+Jika salah satu atau kedua syarat tidak terpenuhi, sistem secara otomatis mencatat status **Tidak Lulus** beserta keterangannya:
 * **Kehadiran $< 75\%$**: `"Kehadiran 74% (minimal 75%)"`
 * **Nilai Akhir $< 55$**: `"Nilai akhir 50 (minimal 55)"`
 * **Keduanya tidak terpenuhi**: `"Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)"`
-* **Lulus**: `null` (tidak ada catatan gagal)
+* **Lulus**: `null` (status Lulus)
 
-### 5. Kombinasi Teori & Praktikum
-* **Mata Kuliah Teori**: $\text{Nilai Akademik} = \text{NA Teori}$.
-* **Mata Kuliah Praktikum**: $\text{Nilai Akademik} = \text{Nilai Praktikum}$.
-* **Mata Kuliah Teori + Praktikum**:  
-  $$\text{Nilai Akademik Final} = (\text{NA Teori} \times 0.5) + (\text{Nilai Praktikum} \times 0.5)$$
-  Aturan minimum kehadiran diterapkan pada Nilai Akademik Final (tidak diterapkan dua kali).
+### 6. Struktur Kolom Rekap Nilai
+Tabel rekap nilai menampilkan alur penilaian yang jelas dan transparan:
+$$\text{Hadir (25\%)} \mid \text{Keaktifan (Bonus 10\%)} \mid \text{Tugas (20\%)} \mid \text{UTS (25\%)} \mid \text{UAS (30\%)} \mid \mathbf{\text{NA Murni (100\%)}} \mid \mathbf{\text{Bonus}} \mid \mathbf{\text{Nilai Finish}} \mid \mathbf{\text{NA}} \mid \text{Mutu} \mid \text{Status}$$
 
 ---
 
@@ -159,10 +157,11 @@ Berikut adalah beberapa pratinjau antarmuka aplikasi:
    - **Tugas:** Dosen bebas menambahkan kolom-kolom tugas spesifik dan mengisi skornya. Sistem otomatis membagi rata-ratanya.
 
 4. **Ujian & Penilaian Akhir (Akhir Semester):**
-   - Dosen menginput nilai UTS dan UAS di form **Input Teori**.
-   - Sistem secara otomatis menghitung Nilai Akademik dengan bobot baku: Kehadiran (25%), Tugas (20%), UTS (25%), UAS (30%).
-   - Sistem menerapkan aturan nilai minimum berdasarkan kehadiran ($\ge 95\% \rightarrow 85$, $90-94.99\% \rightarrow 75$, $80-89.99\% \rightarrow 65$, $75-79.99\% \rightarrow 55$).
-   - Nilai akhir diperoleh dari $\max(\text{Nilai Akademik}, \text{Nilai Minimum})$ untuk kehadiran $\ge 75\%$.
+   - Dosen menginput nilai UTS dan UAS di form **Input Teori** (atau mengedit kolom nilai jika diperlukan).
+   - Sistem secara otomatis menghitung **NA Murni (100%)**: Kehadiran (25%) + Tugas (20%) + UTS (25%) + UAS (30%).
+   - Sistem menghitung **Bonus Keaktifan**: $\text{Keaktifan} \times 10\%$.
+   - Sistem menghasilkan **Nilai Finish**: $\min(100{,}00, \, \text{NA Murni} + \text{Bonus Keaktifan})$.
+   - **Nilai Akhir (NA)** dan **Huruf Mutu** (A, B, C, D, E) ditetapkan langsung dari Nilai Finish.
    - Sistem memvalidasi syarat kelulusan (Kehadiran $\ge 75\%$ DAN Nilai Akhir $\ge 55$). Mahasiswa dengan kehadiran $< 75\%$ otomatis berstatus **Tidak Lulus** tanpa penghapusan nilai asli.
    - Tombol **Kalkulasi Ulang** tersedia di halaman rekap nilai untuk menyinkronkan seluruh nilai mahasiswa kapan saja.
 

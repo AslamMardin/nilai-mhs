@@ -117,8 +117,7 @@
                         <tr>
                             <th class="ps-3">#</th>
                             <th>Mahasiswa</th>
-                            <th class="text-center">Teori</th>
-                            <th class="text-center">Prak</th>
+                            <th class="text-center">Akademik</th>
                             <th class="text-center">NA</th>
                             <th class="text-center">Mutu</th>
                             <th class="text-center">Kehadiran</th>
@@ -134,7 +133,6 @@
                                         style="font-size:11px;color:#64748b">{{ $na->mahasiswa->nim }}</code>
                                 </td>
                                 <td class="text-center">{{ $na->nilai_teori > 0 ? $na->nilai_teori : '—' }}</td>
-                                <td class="text-center">{{ $na->nilai_praktikum > 0 ? $na->nilai_praktikum : '—' }}</td>
                                 <td class="text-center fw-700 fs-6">{{ $na->nilai_akhir }}</td>
                                 <td class="text-center">
                                     @if ($na->huruf_mutu)
@@ -157,7 +155,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">Belum ada data nilai.</td>
+                                <td colspan="7" class="text-center text-muted py-4">Belum ada data nilai.</td>
                             </tr>
                         @endforelse
                     </tbody>

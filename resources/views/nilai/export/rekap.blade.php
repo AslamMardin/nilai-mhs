@@ -24,56 +24,60 @@
                 <th rowspan="2">No</th>
                 <th rowspan="2">NIM</th>
                 <th rowspan="2">Nama Mahasiswa</th>
-                @if($mataKuliah->hasTeori())
-                <th colspan="5">Nilai Teori</th>
-                @endif
-                @if($mataKuliah->hasPraktikum())
-                <th colspan="1">Praktikum</th>
-                @endif
-                <th colspan="2">Hasil Akhir</th>
+                <th colspan="8">Komponen Penilaian</th>
+                <th colspan="3">Hasil Akhir</th>
             </tr>
             <tr>
-                @if($mataKuliah->hasTeori())
-                <th>Aktif</th>
-                <th>Tugas</th>
-                <th>UTS</th>
-                <th>UAS</th>
-                <th>NA Teori</th>
-                @endif
-                @if($mataKuliah->hasPraktikum())
-                <th>Nilai Prak</th>
-                @endif
+                <th>Hadir (25%)</th>
+                <th>Keaktifan</th>
+                <th>Tugas (20%)</th>
+                <th>UTS (25%)</th>
+                <th>UAS (30%)</th>
+                <th>NA Murni (100%)</th>
+                <th>Bonus</th>
+                <th>Nilai Finish</th>
                 <th>NA</th>
                 <th>Mutu</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             @foreach($mahasiswaList as $idx => $mhs)
             @php
                 $nt = $mhs->nilaiTeori->first();
-                $np = $mhs->nilaiPraktikum->first();
                 $na = $mhs->nilaiAkhir->first();
-                $hadirOk = $na && $na->persentase_kehadiran >= 75;
+                $persenHadir = $na ? (float)$na->persentase_kehadiran : \App\Models\Absensi::hitungPersen($mhs->id, $mataKuliah->id, $mataKuliah->total_pertemuan > 0 ? $mataKuliah->total_pertemuan : 16);
+                $keaktifan = $nt ? (float)$nt->keaktifan : null;
+                $tugas     = $nt ? (float)$nt->tugas : null;
+                $uts       = $nt ? (float)$nt->uts : null;
+                $uas       = $nt ? (float)$nt->uas : null;
+
+                $naMurni = ($nt !== null) ? \App\Services\PenilaianService::hitungNilaiTeori(
+                    $persenHadir,
+                    $tugas ?? 0,
+                    $uts ?? 0,
+                    $uas ?? 0
+                ) : null;
+                $bonusKeaktifan = ($keaktifan !== null) ? \App\Services\PenilaianService::hitungBonusKeaktifan($keaktifan) : 0;
+                $nilaiFinish = ($naMurni !== null) ? \App\Services\PenilaianService::hitungNilaiFinish($naMurni, $bonusKeaktifan) : null;
             @endphp
             <tr>
                 <td class="text-center">{{ $idx+1 }}</td>
                 <td class="text-center">{{ $mhs->nim }}</td>
                 <td>{{ $mhs->nama }}</td>
                 
-                @if($mataKuliah->hasTeori())
-                <td class="text-center">{{ $nt?->keaktifan ?? '-' }}</td>
-                <td class="text-center">{{ $nt?->tugas ?? '-' }}</td>
-                <td class="text-center">{{ $nt?->uts ?? '-' }}</td>
-                <td class="text-center">{{ $nt?->uas ?? '-' }}</td>
-                <td class="text-center"><b>{{ $nt?->nilai_akhir_teori ?? '-' }}</b></td>
-                @endif
+                <td class="text-center">{{ number_format($persenHadir, 1) }}%</td>
+                <td class="text-center">{{ $keaktifan !== null ? number_format($keaktifan, 2) : '-' }}</td>
+                <td class="text-center">{{ $tugas !== null ? number_format($tugas, 2) : '-' }}</td>
+                <td class="text-center">{{ $uts !== null ? number_format($uts, 2) : '-' }}</td>
+                <td class="text-center">{{ $uas !== null ? number_format($uas, 2) : '-' }}</td>
+                <td class="text-center">{{ $naMurni !== null ? number_format($naMurni, 2) : '-' }}</td>
+                <td class="text-center">{{ $bonusKeaktifan > 0 ? '+' . number_format($bonusKeaktifan, 2) : '0' }}</td>
+                <td class="text-center"><b>{{ $nilaiFinish !== null ? number_format($nilaiFinish, 2) : '-' }}</b></td>
                 
-                @if($mataKuliah->hasPraktikum())
-                <td class="text-center"><b>{{ $np?->nilai_praktikum ?? '-' }}</b></td>
-                @endif
-                
-                <td class="text-center"><b>{{ $na?->nilai_akhir ?? '-' }}</b></td>
+                <td class="text-center"><b>{{ $na?->nilai_akhir !== null ? number_format($na->nilai_akhir, 2) : '-' }}</b></td>
                 <td class="text-center">{{ $na?->huruf_mutu ?? '-' }}</td>
+                <td class="text-center">{{ $na ? ($na->status_kelulusan == 'lulus' ? 'Lulus' : 'Tidak Lulus') : '-' }}</td>
             </tr>
             @endforeach
         </tbody>

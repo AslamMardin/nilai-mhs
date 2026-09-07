@@ -79,9 +79,13 @@
                 <span class="badge {{ $na->persentase_kehadiran>=75?'bg-success':'bg-danger' }}">{{ $na->persentase_kehadiran }}%</span>
               </td>
               <td class="text-center">
-                <span class="badge {{ $na->status_kelulusan=='lulus'?'bg-success':'bg-danger' }}">
-                  {{ $na->status_kelulusan=='lulus'?'Lulus':'TL' }}
-                </span>
+                @if($na->status_kelulusan=='lulus')
+                  <span class="badge bg-success">Lulus</span>
+                @elseif($na->status_kelulusan=='tidak_lulus')
+                  <span class="badge bg-danger" title="{{ $na->keterangan_gagal }}">Tidak Lulus</span>
+                @else
+                  <span class="badge bg-secondary">Belum</span>
+                @endif
               </td>
             </tr>
             @empty

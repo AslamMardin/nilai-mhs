@@ -45,23 +45,12 @@ return new class extends Migration {
             $table->unique(['mahasiswa_id', 'mata_kuliah_id'], 'uq_nilai_teori');
         });
 
-        // ── Nilai Praktikum (bobot: 100%) ───────────────────────
-        Schema::create('nilai_praktikum', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('mahasiswa_id')->constrained('mahasiswa')->cascadeOnDelete();
-            $table->foreignId('mata_kuliah_id')->constrained('mata_kuliah')->cascadeOnDelete();
-            $table->decimal('nilai_praktikum', 5, 2)->default(0);
-            $table->timestamps();
-            $table->unique(['mahasiswa_id', 'mata_kuliah_id'], 'uq_nilai_praktikum');
-        });
-
         // ── Nilai Akhir (hasil kalkulasi final) ─────────────────
         Schema::create('nilai_akhir', function (Blueprint $table) {
             $table->id();
             $table->foreignId('mahasiswa_id')->constrained('mahasiswa')->cascadeOnDelete();
             $table->foreignId('mata_kuliah_id')->constrained('mata_kuliah')->cascadeOnDelete();
             $table->decimal('nilai_teori', 5, 2)->default(0);
-            $table->decimal('nilai_praktikum', 5, 2)->default(0);
             $table->decimal('nilai_akhir', 5, 2)->default(0);
             $table->char('huruf_mutu', 1)->nullable();
             $table->decimal('persentase_kehadiran', 5, 2)->default(0);
@@ -75,7 +64,6 @@ return new class extends Migration {
 
     public function down(): void {
         Schema::dropIfExists('nilai_akhir');
-        Schema::dropIfExists('nilai_praktikum');
         Schema::dropIfExists('nilai_teori');
         Schema::dropIfExists('absensi');
         Schema::dropIfExists('pendaftaran_mahasiswa');

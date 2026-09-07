@@ -33,7 +33,7 @@
 
     <div class="alert alert-info border-0 py-2 mb-3" style="font-size:12px;background:#eff6ff">
         <i class="bi bi-info-circle me-1"></i>
-        <strong>Info:</strong> Klik pada sel pertemuan untuk memunculkan Checklist Indikator Keaktifan (Maksimal 100 poin). Rata-ratanya akan masuk ke Nilai Teori.
+        <strong>Info:</strong> Klik pada sel pertemuan untuk memunculkan Checklist Indikator Keaktifan (Maksimal 100 poin). Rata-rata nilai keaktifan otomatis dikatrol sebesar <strong>+10% sebagai bonus penambah nilai Tugas</strong> (maksimal nilai tugas 100).
     </div>
 
     <div class="card">

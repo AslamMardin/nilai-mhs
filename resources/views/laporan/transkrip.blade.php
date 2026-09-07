@@ -65,7 +65,7 @@
   <div class="card-body p-0">
     <table class="table table-hover mb-0" style="font-size:13px">
       <thead class="table-light">
-        <tr><th class="ps-3">#</th><th>Kode</th><th>Mata Kuliah</th><th class="text-center">SKS</th><th class="text-center">Teori</th><th class="text-center">Prak</th><th class="text-center">NA</th><th class="text-center">Mutu</th><th class="text-center">Kehadiran</th><th class="text-center">Status</th></tr>
+        <tr><th class="ps-3">#</th><th>Kode</th><th>Mata Kuliah</th><th class="text-center">SKS</th><th class="text-center">Akademik</th><th class="text-center">NA</th><th class="text-center">Mutu</th><th class="text-center">Kehadiran</th><th class="text-center">Status</th></tr>
       </thead>
       <tbody>
         @forelse($transkrip as $i => $t)
@@ -75,7 +75,6 @@
           <td>{{ $t['nama'] }}</td>
           <td class="text-center">{{ $t['sks'] }}</td>
           <td class="text-center">{{ $t['nilai_teori']>0?$t['nilai_teori']:'—' }}</td>
-          <td class="text-center">{{ $t['nilai_prak']>0?$t['nilai_prak']:'—' }}</td>
           <td class="text-center fw-700 fs-6">{{ $t['nilai_akhir'] }}</td>
           <td class="text-center">
             @if($t['huruf_mutu'])<span class="badge badge-{{ strtolower($t['huruf_mutu']) }}">{{ $t['huruf_mutu'] }}</span>@else—@endif
@@ -85,12 +84,12 @@
           </td>
           <td class="text-center">
             @if($t['status']=='lulus')<span class="badge bg-success">Lulus</span>
-            @elseif($t['status']=='tidak_lulus')<span class="badge bg-danger">Tidak Lulus</span>
+            @elseif($t['status']=='tidak_lulus')<span class="badge bg-danger" title="{{ $t['keterangan_gagal'] ?? '' }}">Tidak Lulus</span>
             @else<span class="badge bg-secondary">Belum</span>@endif
           </td>
         </tr>
         @empty
-        <tr><td colspan="10" class="text-center text-muted py-4">Belum ada data nilai.</td></tr>
+        <tr><td colspan="9" class="text-center text-muted py-4">Belum ada data nilai.</td></tr>
         @endforelse
       </tbody>
       @if($transkrip->count())
@@ -98,7 +97,7 @@
         <tr>
           <td colspan="3" class="ps-3 text-end">Total / Rata-rata</td>
           <td class="text-center">{{ $totalSks }}</td>
-          <td colspan="2"></td>
+          <td></td>
           <td class="text-center text-primary">{{ number_format($rataRata,2) }}</td>
           <td colspan="3"></td>
         </tr>

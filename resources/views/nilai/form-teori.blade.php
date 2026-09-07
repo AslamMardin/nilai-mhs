@@ -50,12 +50,12 @@
                                     <span class="badge bg-secondary" style="font-size:10px">×
                                         {{ $bobot->kehadiran ?? 25 }}%</span>
                                 </th>
-                                <th class="text-center" style="width:100px">
+                                <th class="text-center" style="width:115px">
                                     Keaktifan 
                                     <button type="button" class="btn btn-link p-0 text-secondary btn-unlock-col ms-1" data-field="keaktifan" title="Buka/Kunci Kolom">
                                         <i class="bi bi-lock-fill lock-icon"></i>
                                     </button><br>
-                                    <span class="badge bg-secondary" style="font-size:10px">0%</span>
+                                    <span class="badge bg-info-subtle text-info-emphasis border px-1" style="font-size:9px" title="Bonus Keaktifan 10% ditambahkan ke Nilai Finish">Bonus 10%</span>
                                 </th>
                                 <th class="text-center" style="width:100px">
                                     Tugas 
@@ -141,17 +141,30 @@
 @push('scripts')
     <script>
         function hitungNA(row) {
-            const inputs = row.querySelectorAll('.komponen');
             const hadir = parseFloat(row.dataset.kehadiran) || 0;
             const bHadir = parseFloat(row.dataset.bobotKehadiran) || 0.25;
-            let na = hadir * bHadir;
-            inputs.forEach(inp => {
-                na += (parseFloat(inp.value) || 0) * parseFloat(inp.dataset.bobot);
-            });
-            na = Math.round(na * 100) / 100;
+            const bTugas = parseFloat(row.querySelector('.input-tugas')?.dataset.bobot) || 0.20;
+            const bUts   = parseFloat(row.querySelector('.input-uts')?.dataset.bobot) || 0.25;
+            const bUas   = parseFloat(row.querySelector('.input-uas')?.dataset.bobot) || 0.30;
+
+            const tugas     = parseFloat(row.querySelector('.input-tugas')?.value) || 0;
+            const uts       = parseFloat(row.querySelector('.input-uts')?.value) || 0;
+            const uas       = parseFloat(row.querySelector('.input-uas')?.value) || 0;
+            const keaktifan = parseFloat(row.querySelector('.input-keaktifan')?.value) || 0;
+
+            // 1. NA Murni = (Hadir * 0.25) + (Tugas * 0.20) + (UTS * 0.25) + (UAS * 0.30)
+            let naMurni = (hadir * bHadir) + (tugas * bTugas) + (uts * bUts) + (uas * bUas);
+            naMurni = Math.round(naMurni * 100) / 100;
+
+            // 2. Bonus Keaktifan = Keaktifan * 10%
+            const bonus = Math.round((keaktifan * 0.10) * 100) / 100;
+
+            // 3. Nilai Finish = MIN(100, NA Murni + Bonus)
+            let nilaiFinish = Math.min(100, Math.round((naMurni + bonus) * 100) / 100);
+
             const prev = row.querySelector('.na-preview');
-            prev.textContent = na.toFixed(2);
-            prev.style.color = na >= 75 ? '#16a34a' : na >= 55 ? '#d97706' : '#dc2626';
+            prev.textContent = nilaiFinish.toFixed(2);
+            prev.style.color = nilaiFinish >= 75 ? '#16a34a' : nilaiFinish >= 55 ? '#d97706' : '#dc2626';
         }
         document.querySelectorAll('tr[data-row]').forEach(row => {
             row.querySelectorAll('.komponen').forEach(inp => {

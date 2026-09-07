@@ -1,7 +1,7 @@
 <?php namespace App\Http\Controllers;
 use App\Exports\NilaiTeoriExport;
 use App\Exports\NilaiMataKuliahExport;
-use App\Models\{Absensi,MataKuliah,NilaiTeori,NilaiPraktikum,NilaiAkhir};
+use App\Models\{Absensi,MataKuliah,NilaiTeori,NilaiAkhir};
 use App\Models\{NilaiKeaktifanDetail, NilaiTugasDetail};
 use App\Models\BobotNilai;
 use App\Services\PenilaianService;
@@ -23,7 +23,6 @@ class NilaiController extends Controller {
         $bobot = BobotNilai::first();
         $mahasiswaList = $mataKuliah->mahasiswa()->with([
             'nilaiTeori'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
-            'nilaiPraktikum' => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiAkhir'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
         ])->get();
         return view('nilai.index', compact('mataKuliah','mahasiswaList', 'bobot'));
@@ -33,7 +32,6 @@ class NilaiController extends Controller {
         $mataKuliah->load(['kampus','kelas']);
         $mahasiswaList = $mataKuliah->mahasiswa()->with([
             'nilaiTeori'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
-            'nilaiPraktikum' => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiAkhir'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
         ])->get();
 
@@ -47,7 +45,6 @@ class NilaiController extends Controller {
         $mataKuliah->load(['kampus','kelas']);
         $mahasiswaList = $mataKuliah->mahasiswa()->with([
             'nilaiTeori'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
-            'nilaiPraktikum' => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiAkhir'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
         ])->get();
 
@@ -245,24 +242,6 @@ class NilaiController extends Controller {
             }
         });
         return redirect()->route('nilai.index',$mataKuliah->id)->with('success','Nilai tugas detail berhasil disimpan.');
-    }
-
-    public function formPraktikum(MataKuliah $mataKuliah) {
-        abort_unless($mataKuliah->hasPraktikum(), 403);
-        $mataKuliah->load(['kampus','kelas','mahasiswa']);
-        $nilaiPrakData = NilaiPraktikum::where('mata_kuliah_id',$mataKuliah->id)->get()->keyBy('mahasiswa_id');
-        return view('nilai.form-praktikum', compact('mataKuliah','nilaiPrakData'));
-    }
-
-    public function simpanPraktikum(Request $request, MataKuliah $mataKuliah) {
-        $request->validate(['nilai'=>'required|array','nilai.*.mahasiswa_id'=>'required|exists:mahasiswa,id','nilai.*.nilai_praktikum'=>'required|numeric|min:0|max:100']);
-        DB::transaction(function() use ($request, $mataKuliah) {
-            foreach ($request->nilai as $d) {
-                NilaiPraktikum::updateOrCreate(['mahasiswa_id'=>$d['mahasiswa_id'],'mata_kuliah_id'=>$mataKuliah->id],['nilai_praktikum'=>$d['nilai_praktikum']]);
-                $this->hitungNilaiAkhir($d['mahasiswa_id'], $mataKuliah->id);
-            }
-        });
-        return redirect()->route('nilai.index',$mataKuliah->id)->with('success','Nilai praktikum berhasil disimpan.');
     }
 
     /**

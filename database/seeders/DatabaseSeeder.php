@@ -223,8 +223,8 @@ $mkB23A6 = DB::table('mata_kuliah')->insertGetId([
             }
         }
 
-        // ── Nilai Teori & Praktikum (Algoritma) ──
-        $naData = [[80,85,78,82,83],[90,92,88,91,87],[70,72,65,68,74],[85,88,80,84,79],[75,78,72,76,81]];
+        // ── Nilai Mahasiswa (Algoritma) ──
+        $naData = [[80,85,78,82],[90,92,88,91],[70,72,65,68],[85,88,80,84],[75,78,72,76]];
         foreach ($mhsITBM as $idx => $id) {
             $n = $naData[$idx];
             $poin    = 0;
@@ -235,17 +235,9 @@ $mkB23A6 = DB::table('mata_kuliah')->insertGetId([
 
             $naTeori = \App\Services\PenilaianService::hitungNilaiTeori($persen, $n[1], $n[2], $n[3]);
             DB::table('nilai_teori')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'keaktifan'=>$n[0],'tugas'=>$n[1],'uts'=>$n[2],'uas'=>$n[3],'nilai_akhir_teori'=>$naTeori,'created_at'=>now(),'updated_at'=>now()]);
-            DB::table('nilai_praktikum')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_praktikum'=>$n[4],'created_at'=>now(),'updated_at'=>now()]);
 
-            // Hitung nilai akhir via PenilaianService
-            $naAkademik = \App\Services\PenilaianService::hitungNilaiAkademik('teori_praktikum', $naTeori, $n[4]);
-            $naFinal    = \App\Services\PenilaianService::hitungNilaiAkhir($naAkademik, $persen);
-            $huruf      = \App\Services\PenilaianService::konversiHurufMutu($naFinal);
-            $status     = \App\Services\PenilaianService::tentukanStatusKelulusan($persen, $naFinal);
-            $ketGagal   = \App\Services\PenilaianService::tentukanKeteranganGagal($persen, $naFinal);
-
-            DB::table('nilai_akhir')->insert(['mahasiswa_id'=>$id,'mata_kuliah_id'=>$mkAlgo,'nilai_teori'=>$naTeori,'nilai_praktikum'=>$n[4],'nilai_akhir'=>$naFinal,'huruf_mutu'=>$huruf,'persentase_kehadiran'=>$persen,'poin_kehadiran'=>$poin,'status_kelulusan'=>$status,'keterangan_gagal'=>$ketGagal,'created_at'=>now(),'updated_at'=>now()]);
-            DB::table('pendaftaran_mahasiswa')->where('mahasiswa_id',$id)->where('mata_kuliah_id',$mkAlgo)->update(['status'=>$status==='lulus'?'lulus':'tidak_lulus']);
+            // Hitung nilai akhir via PenilaianService (Kehadiran 25% + Tugas 20% + UTS 25% + UAS 30% = 100%)
+            \App\Services\PenilaianService::prosesNilaiMahasiswa($id, $mkAlgo);
         }
 
         $this->command->info('✅ Seeder OK: 2 kampus, 5 kelas, 5 matkul, 8 mahasiswa, data lengkap.');
