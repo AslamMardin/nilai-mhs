@@ -125,7 +125,10 @@ body{background:#f1f4f8;font-size:14px;font-family:'Segoe UI',system-ui,sans-ser
     <i class="bi bi-file-earmark-text"></i> Transkrip
   </a>
 
-  
+  <div class="nav-section">Informasi</div>
+  <a href="{{ route('informasi') }}" class="nl {{ request()->routeIs('informasi') ? 'active' : '' }}">
+    <i class="bi bi-info-circle"></i> Informasi Sistem
+  </a>
 
   <div class="nav-section">Pengaturan</div>
     <a href="{{ route('backup.index') }}" class="nl {{ request()->routeIs('backup.index') ? 'active' : '' }}">

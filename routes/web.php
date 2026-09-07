@@ -111,6 +111,12 @@ Route::middleware('auth')->group(function () {
         )->name('nilai-kelas.pdf');
     });
 
+    // Informasi Sistem
+    Route::get('/informasi', function () {
+        $bobot = \App\Models\BobotNilai::first();
+        return view('informasi.index', compact('bobot'));
+    })->name('informasi');
+
 
 
     // pengaturan
