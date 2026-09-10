@@ -28,7 +28,7 @@
   <span class="sp sp-S">S</span> Sakit=1 &nbsp;
   <span class="sp sp-I">I</span> Izin=0 &nbsp;
   <span class="sp sp-A">A</span> Absen=0 &nbsp;
-  &nbsp;|&nbsp; <strong>Syarat Lulus:</strong> Kehadiran ≥ 75% dari total pertemuan
+  &nbsp;|&nbsp; <strong>Syarat Lulus:</strong> Kehadiran ≥ 60% dari total pertemuan
 </div>
 
 <div class="row g-3">

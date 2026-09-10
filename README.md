@@ -11,7 +11,7 @@ Aplikasi berbasis **Laravel** untuk mengelola data akademik secara komprehensif,
 - Menghitung nilai mahasiswa menggunakan **standar bobot 100% murni**: **Kehadiran 25%**, **Tugas 20%**, **UTS 25%**, dan **UAS 30%**.
 - Menerapkan **Keaktifan Mahasiswa sebagai BONUS Nilai (maksimal 10%)** yang langsung ditambahkan menghasilkan **Nilai Finish**.
 - Menetapkan **Nilai Akhir (NA)** dan **Huruf Mutu** langsung dari **Nilai Finish** secara transparan tanpa nilai tersembunyi.
-- Memvalidasi syarat kelulusan otomatis (Kehadiran $\ge 75\%$ dan NA $\ge 55$).
+- Memvalidasi syarat kelulusan otomatis (Kehadiran $\ge 60\%$ dan NA $\ge 55$).
 - Sinkronisasi otomatis antara absensi dan nilai akhir mahasiswa via `PenilaianService`.
 - Mengekspor data rekapitulasi nilai dalam format PDF dan Excel (XLSX).
 
@@ -62,12 +62,12 @@ Konversi Huruf Mutu ditentukan dari Nilai Akhir (NA):
 
 ### 5. Syarat & Alasan Ketidaklulusan
 Mahasiswa dinyatakan **LULUS** hanya jika memenuhi kedua kriteria berikut:
-$$\text{Kehadiran} \ge 75\% \quad \text{DAN} \quad \text{Nilai Akhir} \ge 55$$
+$$\text{Kehadiran} \ge 60\% \quad \text{DAN} \quad \text{Nilai Akhir} \ge 55$$
 
 Jika salah satu atau kedua syarat tidak terpenuhi, sistem secara otomatis mencatat status **Tidak Lulus** beserta keterangannya:
-* **Kehadiran $< 75\%$**: `"Kehadiran 74% (minimal 75%)"`
+* **Kehadiran $< 60\%$**: `"Kehadiran 59% (minimal 60%)"`
 * **Nilai Akhir $< 55$**: `"Nilai akhir 50 (minimal 55)"`
-* **Keduanya tidak terpenuhi**: `"Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)"`
+* **Keduanya tidak terpenuhi**: `"Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)"`
 * **Lulus**: `null` (status Lulus)
 
 ### 6. Struktur Kolom Rekap Nilai
@@ -162,7 +162,7 @@ Berikut adalah beberapa pratinjau antarmuka aplikasi:
    - Sistem menghitung **Bonus Keaktifan**: $\text{Keaktifan} \times 10\%$.
    - Sistem menghasilkan **Nilai Finish**: $\min(100{,}00, \, \text{NA Murni} + \text{Bonus Keaktifan})$.
    - **Nilai Akhir (NA)** dan **Huruf Mutu** (A, B, C, D, E) ditetapkan langsung dari Nilai Finish.
-   - Sistem memvalidasi syarat kelulusan (Kehadiran $\ge 75\%$ DAN Nilai Akhir $\ge 55$). Mahasiswa dengan kehadiran $< 75\%$ otomatis berstatus **Tidak Lulus** tanpa penghapusan nilai asli.
+   - Sistem memvalidasi syarat kelulusan (Kehadiran $\ge 60\%$ DAN Nilai Akhir $\ge 55$). Mahasiswa dengan kehadiran $< 60\%$ otomatis berstatus **Tidak Lulus** tanpa penghapusan nilai asli.
    - Tombol **Kalkulasi Ulang** tersedia di halaman rekap nilai untuk menyinkronkan seluruh nilai mahasiswa kapan saja.
 
 5. **Pelaporan (Laporan & Cetak):**

@@ -353,7 +353,7 @@
                                     <i class="bi bi-check-circle-fill me-1"></i>Kriteria LULUS
                                 </div>
                                 <div style="font-size:13px">
-                                    <span class="badge bg-success me-1">✓</span> Kehadiran <strong>≥ 75%</strong><br>
+                                    <span class="badge bg-success me-1">✓</span> Kehadiran <strong>≥ 60%</strong><br>
                                     <div class="text-center my-1" style="font-size:12px;color:#64748b">DAN</div>
                                     <span class="badge bg-success me-1">✓</span> Nilai Akhir <strong>≥ 55</strong>
                                 </div>
@@ -363,7 +363,7 @@
                                     <i class="bi bi-x-circle-fill me-1"></i>Tidak Lulus jika:
                                 </div>
                                 <ul class="mb-0 ps-3" style="font-size:12px;color:#78350f">
-                                    <li>Kehadiran &lt; 75%, <strong>atau</strong></li>
+                                    <li>Kehadiran &lt; 60%, <strong>atau</strong></li>
                                     <li>Nilai Akhir &lt; 55, <strong>atau</strong></li>
                                     <li>Keduanya tidak terpenuhi</li>
                                 </ul>

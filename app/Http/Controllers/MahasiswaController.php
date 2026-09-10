@@ -94,7 +94,7 @@ class MahasiswaController extends Controller
 
    public function formImport()
 {
-    $idKampus = session('kampus_id');
+    $idKampus = session('kampus_id') ?? 1;
 
     $kampusID = Kampus::with([
         'kelas' => function ($q) {

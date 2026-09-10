@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                     ->whereHas('mahasiswa', fn($q) => $q->where('kampus_id', $kampusId))
                     ->where(function($q) {
                         $q->where('status_kelulusan', 'tidak_lulus')
-                          ->orWhere('persentase_kehadiran', '<', 75.0)
+                          ->orWhere('persentase_kehadiran', '<', 60.0)
                           ->orWhere('nilai_akhir', '<', 55);
                     })
                     ->latest()

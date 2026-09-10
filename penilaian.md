@@ -114,9 +114,9 @@ Setelah `Nilai Akademik` dihitung, tentukan nilai minimum berdasarkan persentase
 | **90–94,99%** |          **75** |
 | **80–89,99%** |          **65** |
 | **75–79,99%** |          **55** |
-|      **<75%** | **Tidak Lulus** |
+|      **<60%** | **Tidak Lulus** |
 
-Untuk mahasiswa dengan kehadiran ≥75%:
+Untuk mahasiswa dengan kehadiran ≥60%:
 
 ```text
 Nilai Akhir =
@@ -156,12 +156,12 @@ Jadi nilai akademik yang lebih tinggi **tidak boleh diturunkan** oleh aturan min
 Mahasiswa dinyatakan **LULUS** hanya jika:
 
 ```text
-Kehadiran >= 75%
+Kehadiran >= 60%
 DAN
 Nilai Akhir >= 55
 ```
 
-Jika kehadiran <75%, mahasiswa **WAJIB Tidak Lulus**, meskipun nilai akademiknya tinggi.
+Jika kehadiran <60%, mahasiswa **WAJIB Tidak Lulus**, meskipun nilai akademiknya tinggi.
 
 Contoh:
 
@@ -179,10 +179,10 @@ Status = Tidak Lulus
 
 Sistem harus menyimpan/menentukan alasan ketidaklulusan.
 
-Jika kehadiran <75%:
+Jika kehadiran <60%:
 
 ```text
-Kehadiran 74% (minimal 75%)
+Kehadiran 59% (minimal 60%)
 ```
 
 Jika nilai akhir <55:
@@ -194,7 +194,7 @@ Nilai akhir 50 (minimal 55)
 Jika keduanya tidak terpenuhi:
 
 ```text
-Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)
+Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)
 ```
 
 Jika lulus, tidak ada alasan ketidaklulusan.
@@ -249,7 +249,7 @@ Kehadiran sudah diperhitungkan melalui:
 
 * bobot 25%;
 * minimum nilai berdasarkan kehadiran;
-* syarat kehadiran minimal 75%.
+* syarat kehadiran minimal 60%.
 
 Pastikan tidak ada fungsi lama yang masih menambahkan bonus setelah `nilai_akhir` dihitung.
 
@@ -393,7 +393,7 @@ Lakukan pengujian berikut:
 |       77% |             50 |      55 |      **55** |   D   |    Lulus    |
 |       74% |             95 |       - |      **95** |   A*  | Tidak Lulus |
 
-`*` Huruf mutu tetap berdasarkan nilai angka, tetapi status tetap Tidak Lulus karena kehadiran <75%.
+`*` Huruf mutu tetap berdasarkan nilai angka, tetapi status tetap Tidak Lulus karena kehadiran <60%.
 
 ---
 
@@ -582,14 +582,14 @@ MINIMUM KEHADIRAN:
 90–94,99%  → 75
 80–89,99%  → 65
 75–79,99%  → 55
-<75%       → Tidak Lulus
+<60%       → Tidak Lulus
 
-Jika kehadiran >=75%:
+Jika kehadiran >=60%:
 
 Nilai Akhir =
 MAX(Nilai Akademik, Minimum Kehadiran)
 
-Jika kehadiran <75%:
+Jika kehadiran <60%:
 
 Status = TIDAK LULUS
 

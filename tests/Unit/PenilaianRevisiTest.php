@@ -109,17 +109,17 @@ class PenilaianRevisiTest extends TestCase
      */
     public function test_pengujian_alasan_ketidaklulusan()
     {
-        // Hadir < 75%
-        $ket1 = PenilaianService::tentukanKeteranganGagal(74.0, 95.0);
-        $this->assertEquals('Kehadiran 74% (minimal 75%)', $ket1);
+        // Hadir < 60%
+        $ket1 = PenilaianService::tentukanKeteranganGagal(59.0, 95.0);
+        $this->assertEquals('Kehadiran 59% (minimal 60%)', $ket1);
 
         // Nilai akhir < 55
         $ket2 = PenilaianService::tentukanKeteranganGagal(80.0, 50.0);
         $this->assertEquals('Nilai akhir 50 (minimal 55)', $ket2);
 
         // Keduanya tidak terpenuhi
-        $ket3 = PenilaianService::tentukanKeteranganGagal(70.0, 50.0);
-        $this->assertEquals('Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)', $ket3);
+        $ket3 = PenilaianService::tentukanKeteranganGagal(59.0, 50.0);
+        $this->assertEquals('Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)', $ket3);
 
         // Lulus
         $ket4 = PenilaianService::tentukanKeteranganGagal(80.0, 65.0);

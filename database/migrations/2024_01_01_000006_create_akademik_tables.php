@@ -18,7 +18,7 @@ return new class extends Migration {
         });
 
         // ── Absensi ─────────────────────────────────────────────
-        // H=2, T=1, S=1, I=0, A=0 | syarat lulus ≥ 75%
+        // H=2, T=1, S=1, I=0, A=0 | syarat lulus ≥ 60%
         Schema::create('absensi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('mahasiswa_id')->constrained('mahasiswa')->cascadeOnDelete();

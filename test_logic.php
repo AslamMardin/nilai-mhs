@@ -85,15 +85,15 @@ echo ($na2 == 85 ? "✅ PASS" : "❌ FAIL") . ": Hadir 100%, Akademik 80 -> NA {
 if ($na1 != 90 || $na2 != 85) $allPassed = false;
 
 echo "\n=== 5. PENGUJIAN ALASAN KETIDAKLULUSAN (Bagian 6) ===\n";
-$k1 = PenilaianService::tentukanKeteranganGagal(74, 95);
+$k1 = PenilaianService::tentukanKeteranganGagal(59, 95);
 $k2 = PenilaianService::tentukanKeteranganGagal(80, 50);
-$k3 = PenilaianService::tentukanKeteranganGagal(70, 50);
+$k3 = PenilaianService::tentukanKeteranganGagal(59, 50);
 $k4 = PenilaianService::tentukanKeteranganGagal(80, 65);
-echo ($k1 === 'Kehadiran 74% (minimal 75%)' ? "✅ PASS" : "❌ FAIL") . ": {$k1}\n";
+echo ($k1 === 'Kehadiran 59% (minimal 60%)' ? "✅ PASS" : "❌ FAIL") . ": {$k1}\n";
 echo ($k2 === 'Nilai akhir 50 (minimal 55)' ? "✅ PASS" : "❌ FAIL") . ": {$k2}\n";
-echo ($k3 === 'Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)' ? "✅ PASS" : "❌ FAIL") . ": {$k3}\n";
+echo ($k3 === 'Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)' ? "✅ PASS" : "❌ FAIL") . ": {$k3}\n";
 echo ($k4 === null ? "✅ PASS" : "❌ FAIL") . ": Lulus -> null\n";
-if ($k1 !== 'Kehadiran 74% (minimal 75%)' || $k2 !== 'Nilai akhir 50 (minimal 55)' || $k3 !== 'Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)' || $k4 !== null) {
+if ($k1 !== 'Kehadiran 59% (minimal 60%)' || $k2 !== 'Nilai akhir 50 (minimal 55)' || $k3 !== 'Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)' || $k4 !== null) {
     $allPassed = false;
 }
 

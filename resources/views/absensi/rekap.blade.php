@@ -133,7 +133,7 @@
                                     @if ($r['lolos'])
                                         <span class="badge bg-success">Lolos</span>
                                     @else
-                                        <span class="badge bg-danger" title="Kurang dari 75%">Tidak Lolos</span>
+                                        <span class="badge bg-danger" title="Kurang dari 60%">Tidak Lolos</span>
                                     @endif
                                 </td>
                             </tr>

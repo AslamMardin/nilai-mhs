@@ -18,9 +18,14 @@ class DashboardController extends Controller
 
         // Stats utama
 
-        $totalMahasiswa = Mahasiswa::where('kampus_id', $kampusId)->where('status', 'aktif')->count();
-        $totalMataKuliah = MataKuliah::where('kampus_id', $kampusId)->count();
-        $totalKelas = Kelas::where('kampus_id', $kampusId)->count();
+        // $totalMahasiswa = Mahasiswa::where('kampus_id', $kampusId)->where('status', 'aktif')->count();
+        $totalMahasiswa = Mahasiswa::where('status', 'aktif')->count();
+
+        // $totalMataKuliah = MataKuliah::where('kampus_id', $kampusId)->count();
+        $totalMataKuliah = MataKuliah::count();
+
+        // $totalKelas = Kelas::where('kampus_id', $kampusId)->count();
+        $totalKelas = Kelas::count();
 
         // Kelulusan
         $nilaiQuery = NilaiAkhir::whereHas('mahasiswa', fn ($q) => $q->where('kampus_id', $kampusId));

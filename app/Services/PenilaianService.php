@@ -72,7 +72,7 @@ class PenilaianService
      * 90 - 94.99% -> 75
      * 80 - 89.99% -> 65
      * 75 - 79.99% -> 55
-     * < 75%       -> null (Tidak Lulus / tidak ada minimum)
+     * < 60%       -> null (Tidak Lulus / tidak ada minimum)
      */
     public static function hitungMinimumKehadiran(float $persenHadir): ?float
     {
@@ -124,23 +124,23 @@ class PenilaianService
 
     /**
      * Syarat Kelulusan:
-     * LULUS hanya jika: Kehadiran >= 75% DAN Nilai Akhir >= 55
+     * LULUS hanya jika: Kehadiran >= 60% DAN Nilai Akhir >= 55
      */
     public static function tentukanStatusKelulusan(float $persenHadir, float $nilaiAkhir): string
     {
-        return ($persenHadir >= 75.0 && $nilaiAkhir >= 55.0) ? 'lulus' : 'tidak_lulus';
+        return ($persenHadir >= 60.0 && $nilaiAkhir >= 55.0) ? 'lulus' : 'tidak_lulus';
     }
 
     /**
      * Alasan Ketidaklulusan:
-     * - Kehadiran < 75%: "Kehadiran 74% (minimal 75%)"
+     * - Kehadiran < 60%: "Kehadiran 59% (minimal 60%)"
      * - Nilai akhir < 55: "Nilai akhir 50 (minimal 55)"
-     * - Keduanya: "Kehadiran 70% (minimal 75%); Nilai akhir 50 (minimal 55)"
+     * - Keduanya: "Kehadiran 59% (minimal 60%); Nilai akhir 50 (minimal 55)"
      * - Lulus: null
      */
     public static function tentukanKeteranganGagal(float $persenHadir, float $nilaiAkhir): ?string
     {
-        $gagalKehadiran = $persenHadir < 75.0;
+        $gagalKehadiran = $persenHadir < 60.0;
         $gagalNilai     = $nilaiAkhir < 55.0;
 
         if (!$gagalKehadiran && !$gagalNilai) {
@@ -151,11 +151,11 @@ class PenilaianService
         $fmtNilai = (float) $nilaiAkhir;
 
         if ($gagalKehadiran && $gagalNilai) {
-            return "Kehadiran {$fmtHadir}% (minimal 75%); Nilai akhir {$fmtNilai} (minimal 55)";
+            return "Kehadiran {$fmtHadir}% (minimal 60%); Nilai akhir {$fmtNilai} (minimal 55)";
         }
 
         if ($gagalKehadiran) {
-            return "Kehadiran {$fmtHadir}% (minimal 75%)";
+            return "Kehadiran {$fmtHadir}% (minimal 60%)";
         }
 
         return "Nilai akhir {$fmtNilai} (minimal 55)";

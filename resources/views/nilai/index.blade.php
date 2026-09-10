@@ -57,7 +57,7 @@
         UAS {{ $bobot->uas ?? 30 }}% = 100%
         &nbsp;|&nbsp; <strong>Bonus Keaktifan:</strong> Keaktifan × 10%
         &nbsp;|&nbsp; <strong>Nilai Finish:</strong> MIN(100, NA Murni + Bonus Keaktifan)
-        &nbsp;|&nbsp; <strong>Syarat Lulus:</strong> Kehadiran ≥ 75% <strong>DAN</strong> Nilai Akhir ≥ 55
+        &nbsp;|&nbsp; <strong>Syarat Lulus:</strong> Kehadiran ≥ 60% <strong>DAN</strong> Nilai Akhir ≥ 55
     </div>
 
     {{-- Statistik ringkas --}}

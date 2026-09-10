@@ -80,7 +80,7 @@
             @if($t['huruf_mutu'])<span class="badge badge-{{ strtolower($t['huruf_mutu']) }}">{{ $t['huruf_mutu'] }}</span>@else—@endif
           </td>
           <td class="text-center">
-            <span class="badge {{ str_replace('%','',$t['kehadiran'])>=75?'bg-success':'bg-danger' }}">{{ $t['kehadiran'] }}</span>
+            <span class="badge {{ str_replace('%','',$t['kehadiran'])>=60?'bg-success':'bg-danger' }}">{{ $t['kehadiran'] }}</span>
           </td>
           <td class="text-center">
             @if($t['status']=='lulus')<span class="badge bg-success">Lulus</span>

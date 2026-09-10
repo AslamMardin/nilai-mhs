@@ -76,7 +76,7 @@
                 @if($na->huruf_mutu)<span class="badge badge-{{ strtolower($na->huruf_mutu) }}">{{ $na->huruf_mutu }}</span>@else—@endif
               </td>
               <td class="text-center">
-                <span class="badge {{ $na->persentase_kehadiran>=75?'bg-success':'bg-danger' }}">{{ $na->persentase_kehadiran }}%</span>
+                <span class="badge {{ $na->persentase_kehadiran>=60?'bg-success':'bg-danger' }}">{{ $na->persentase_kehadiran }}%</span>
               </td>
               <td class="text-center">
                 @if($na->status_kelulusan=='lulus')
