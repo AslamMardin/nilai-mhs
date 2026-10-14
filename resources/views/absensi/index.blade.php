@@ -71,7 +71,7 @@
           <div class="table-responsive">
             <table class="table table-bordered align-middle mb-0">
               <thead class="table-light">
-                <tr><th class="ps-2" style="width:30px">#</th><th>NIM</th><th>Nama</th><th class="text-center">Status</th><th>Keterangan</th></tr>
+                <tr><th class="ps-2" style="width:30px">#</th><th>NIM</th><th>Nama</th><th class="text-center status-col">Status</th><th>Keterangan</th></tr>
               </thead>
               <tbody>
                 @foreach($mataKuliah->mahasiswa as $idx => $mhs)
@@ -84,8 +84,8 @@
                   <td class="ps-2 text-muted small">{{ $idx+1 }}</td>
                   <td><code class="small">{{ $mhs->nim }}</code></td>
                   <td class="small">{{ $mhs->nama }}</td>
-                  <td class="text-center">
-                    <div class="d-flex gap-1 justify-content-center flex-wrap">
+                  <td class="text-center status-col">
+                    <div class="d-flex gap-1 justify-content-center flex-nowrap status-options">
                       @foreach(['H'=>'success','T'=>'warning','S'=>'info','I'=>'secondary','A'=>'danger'] as $st=>$cls)
                       <div>
                         <input type="radio" class="btn-check absensi-radio" autocomplete="off"
@@ -187,6 +187,12 @@
   </div>
 </div>
 @endsection
+@push('styles')
+<style>
+.status-col{width:220px;min-width:220px;white-space:nowrap}
+.status-options{width:max-content;margin-inline:auto}
+</style>
+@endpush
 @push('scripts')
 <script>
 document.getElementById('btn-all-h')?.addEventListener('click',()=>{
