@@ -5,16 +5,23 @@
     @php use Illuminate\Support\Str; @endphp
 
     <style>
-        /* Card Hover Animations & Shadows */
+        *,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+
         .card {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        .distribution-card,
+        .distribution-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
         }
 
         .sc {
@@ -23,14 +30,8 @@
             color: #fff;
             position: relative;
             overflow: hidden;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
             cursor: default;
-        }
-
-        .sc:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
         }
 
         .sc-num {
@@ -54,18 +55,12 @@
             transform: translateY(-50%);
             font-size: 46px;
             opacity: .25;
-            transition: transform 0.3s ease;
-        }
-
-        .sc:hover .sc-ico {
-            transform: translateY(-50%) scale(1.1) rotate(5deg);
         }
 
         /* Tabs Styling */
         .card-header-tabs .nav-link {
             color: #64748b;
             border-radius: 6px 6px 0 0;
-            transition: all 0.2s ease;
             font-weight: 600;
             border: none !important;
             padding: 10px 16px;
@@ -206,7 +201,7 @@
             <div class="row g-3">
                 {{-- Distribusi Huruf Mutu --}}
                 <div class="col-md-6">
-                    <div class="card h-100">
+                    <div class="card h-100 distribution-card">
                         <div class="card-header d-flex align-items-center gap-1">
                             <i class="bi bi-pie-chart text-success me-1"></i>Distribusi Huruf Mutu
                         </div>
@@ -451,7 +446,7 @@
                 </div>
                 <div class="card-body p-2 tab-content">
                     {{-- Panel Semua (Global) --}}
-                    <div class="tab-pane fade show active" id="panel-semua" role="tabpanel">
+                    <div class="tab-pane show active" id="panel-semua" role="tabpanel">
                         <table class="table table-sm mb-0">
                             <tbody>
                                 @forelse ($rankingMahasiswa as $i => $mhs)
@@ -488,7 +483,7 @@
 
                     {{-- Panel per Kelas --}}
                     @foreach ($kelasList as $kls)
-                        <div class="tab-pane fade" id="panel-kelas-{{ $kls->id }}" role="tabpanel">
+                        <div class="tab-pane" id="panel-kelas-{{ $kls->id }}" role="tabpanel">
                             <table class="table table-sm mb-0">
                                 <tbody>
                                     @forelse ($rankingPerKelas[$kls->id] ?? [] as $i => $mhs)
@@ -556,10 +551,16 @@
                             backgroundColor: ['#16a34a', '#2563eb', '#d97706', '#ea580c', '#dc2626'],
                             borderWidth: 2,
                             borderColor: '#fff',
-                            hoverOffset: 6
+                            hoverOffset: 0
                         }]
                     },
                     options: {
+                        animation: false,
+                        transitions: {
+                            active: {
+                                animation: { duration: 0 }
+                            }
+                        },
                         responsive: true,
                         maintainAspectRatio: true,
                         cutout: '60%',
@@ -574,6 +575,7 @@
                                 }
                             },
                             tooltip: {
+                                animation: { duration: 0 },
                                 callbacks: {
                                     label: function(ctx) {
                                         const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
