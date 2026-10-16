@@ -24,6 +24,14 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
         }
 
+        .distribution-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            height: 220px;
+            margin-inline: auto;
+        }
+
         .sc {
             border-radius: 12px;
             padding: 20px;
@@ -206,8 +214,8 @@
                             <i class="bi bi-pie-chart text-success me-1"></i>Distribusi Huruf Mutu
                         </div>
                         <div class="card-body d-flex flex-column justify-content-between">
-                            <div class="d-flex justify-content-center" style="position:relative;">
-                                <canvas id="chartDistribusi" style="max-height: 200px;"></canvas>
+                            <div class="distribution-chart-container">
+                                <canvas id="chartDistribusi"></canvas>
                             </div>
                             <div>
                                 <hr class="my-3">
@@ -562,7 +570,7 @@
                             }
                         },
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
                         cutout: '60%',
                         plugins: {
                             legend: {
