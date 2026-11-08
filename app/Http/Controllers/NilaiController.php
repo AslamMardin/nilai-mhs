@@ -24,6 +24,8 @@ class NilaiController extends Controller {
         $mahasiswaList = $mataKuliah->mahasiswa()->with([
             'nilaiTeori'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
             'nilaiAkhir'     => fn($q)=>$q->where('mata_kuliah_id',$mataKuliah->id),
+        ])->withExists([
+            'absensi as has_absensi' => fn($q) => $q->where('mata_kuliah_id', $mataKuliah->id),
         ])->get();
         return view('nilai.index', compact('mataKuliah','mahasiswaList', 'bobot'));
     }

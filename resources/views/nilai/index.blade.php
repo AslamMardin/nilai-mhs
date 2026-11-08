@@ -159,9 +159,25 @@
                                     </a>
                                 </td>
 
-                                {{-- Hadir (25%) --}}
+                                {{-- Kehadiran: warna menunjukkan ketercapaian syarat minimal 60%. --}}
                                 <td class="text-center border-start">
-                                    <span class="fw-500">{{ number_format($persenHadir, 1) }}</span>
+                                    @if(!$mhs->has_absensi)
+                                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">—</span>
+                                        <div class="small text-muted mt-1">Belum ada data</div>
+                                    @else
+                                        @php
+                                            $badgeHadir = $persenHadir >= 60
+                                                ? 'bg-success-subtle text-success border-success-subtle'
+                                                : ($persenHadir >= 50
+                                                    ? 'bg-warning-subtle text-warning-emphasis border-warning-subtle'
+                                                    : 'bg-danger-subtle text-danger border-danger-subtle');
+                                            $statusHadir = $persenHadir >= 60
+                                                ? 'Memenuhi'
+                                                : ($persenHadir >= 50 ? 'Perlu perhatian' : 'Rendah');
+                                        @endphp
+                                        <span class="badge {{ $badgeHadir }} border">{{ number_format($persenHadir, 1) }}%</span>
+                                        {{-- <div class="small text-muted mt-1">{{ $statusHadir }}</div> --}}
+                                    @endif
                                 </td>
 
                                 {{-- Keaktifan (Bonus 10%) --}}
